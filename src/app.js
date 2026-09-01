@@ -1,6 +1,7 @@
 import express from "express";
 import morgan from "morgan";
 import indexRoutes from './routes/indexRoutes';
+import equipoRoutes from './routes/Equipo.routes';
 import exphbs from "express-handlebars";
 import path from "path";
 
@@ -18,10 +19,11 @@ app.engine(
 //middleware
 app.use(morgan('dev'));
 app.use(express.urlencoded({extended: false}));
-
+app.use(express.json())
 //rutas
 app.set("view engine", ".hbs");
 
 app.use(indexRoutes);
+app.use(equipoRoutes);
 
 export default app; //Exporto el obj
