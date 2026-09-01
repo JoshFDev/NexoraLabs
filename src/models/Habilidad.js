@@ -28,6 +28,34 @@ const habilidadEsquema = new Schema(
         },
         descripcion: {
             type: String
+        },
+        nivel_minimo: {
+            type: String,
+            enum: ["principiante", "intermedio", "avanzado", "experto"],
+            default: "principiante"
+        },
+        tiempo_estimado: {
+            type: String
+        },
+        etiquetas: {
+            type: [String],
+            default: []
+        },
+        categorias_similares: {
+            type: [String],
+            default: []
+        },
+        popularidad: {
+            type: Number,
+            min: 0,
+            default: 0
+        },
+        icono: {
+            type: String
+        },
+        visible: {
+            type: Boolean,
+            default: true
         }
     },
     {
