@@ -7,7 +7,9 @@ const router = Router();
 
 router.get('/miembros-equipo', async (req, res) => {
     try {
-        const miembros = await MiembroEquipo.find();
+        const miembros = await MiembroEquipo.find()
+            .populate('equipo_id', 'nombre')
+            .populate('usuario_id', 'nombre email rol');
         res.json(miembros);
     } catch (error) {
         console.log(error);
@@ -17,7 +19,9 @@ router.get('/miembros-equipo', async (req, res) => {
 
 router.get('/miembro-equipo/:id', async (req, res) => {
     try {
-        const miembro = await MiembroEquipo.findById(req.params.id);
+        const miembro = await MiembroEquipo.findById(req.params.id)
+            .populate('equipo_id', 'nombre')
+            .populate('usuario_id', 'nombre email rol');
         if (!miembro) return res.status(httpStatus.NOT_FOUND).json(notFound("Miembro no encontrado"));
         res.json(miembro);
     } catch (error) {

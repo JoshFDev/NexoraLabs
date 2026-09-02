@@ -7,7 +7,8 @@ const router = Router();
 
 router.get('/equipos', async (req, res) => {
     try {
-        const equipos = await Equipo.find();
+        const equipos = await Equipo.find()
+            .populate('proyecto_id', 'titulo');
         res.json(equipos);
     } catch (error) {
         console.log(error);
@@ -28,7 +29,8 @@ router.post('/equipo/agregar', async (req, res) => {
 
 router.get('/equipo/:id', async (req, res) => {
     try {
-        const equipo = await Equipo.findById(req.params.id);
+        const equipo = await Equipo.findById(req.params.id)
+            .populate('proyecto_id', 'titulo');
         if (!equipo) return res.status(httpStatus.NOT_FOUND).json(notFound("Equipo no encontrado"));
         res.json(equipo);
     } catch (error) {

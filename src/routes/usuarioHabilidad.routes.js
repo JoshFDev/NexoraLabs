@@ -8,7 +8,9 @@ const router = Router();
 //Listar todas las habilidades de los usuarios
 router.get('/usuarios-habilidades', async (req, res) => {
     try {
-        const usuarioHabilidades = await UsuarioHabilidad.find();
+        const usuarioHabilidades = await UsuarioHabilidad.find()
+            .populate('usuario_id', 'nombre email')
+            .populate('habilidad_id', 'nombre');
         res.json(usuarioHabilidades);
     } catch (error) {
         console.log(error);
@@ -19,7 +21,9 @@ router.get('/usuarios-habilidades', async (req, res) => {
 //Ver una relación usuario-habilidad por id
 router.get('/usuario-habilidad/:id', async (req, res) => {
     try {
-        const usuarioHabilidad = await UsuarioHabilidad.findById(req.params.id);
+        const usuarioHabilidad = await UsuarioHabilidad.findById(req.params.id)
+            .populate('usuario_id', 'nombre email')
+            .populate('habilidad_id', 'nombre');
         if (!usuarioHabilidad) return res.status(httpStatus.NOT_FOUND).json(notFound("Relación usuario-habilidad no encontrada"));
         res.json(usuarioHabilidad);
     } catch (error) {

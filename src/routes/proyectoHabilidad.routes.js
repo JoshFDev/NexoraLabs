@@ -8,7 +8,9 @@ const router = Router();
 //Listar todas las habilidades de los proyectos
 router.get('/proyectos-habilidades', async (req, res) => {
     try {
-        const proyectoHabilidades = await ProyectoHabilidad.find();
+        const proyectoHabilidades = await ProyectoHabilidad.find()
+            .populate('proyecto_id', 'titulo')
+            .populate('habilidad_id', 'nombre');
         res.json(proyectoHabilidades);
     } catch (error) {
         console.log(error);
@@ -19,7 +21,9 @@ router.get('/proyectos-habilidades', async (req, res) => {
 //Ver una relación proyecto-habilidad por id
 router.get('/proyecto-habilidad/:id', async (req, res) => {
     try {
-        const proyectoHabilidad = await ProyectoHabilidad.findById(req.params.id);
+        const proyectoHabilidad = await ProyectoHabilidad.findById(req.params.id)
+            .populate('proyecto_id', 'titulo')
+            .populate('habilidad_id', 'nombre');
         if (!proyectoHabilidad) return res.status(httpStatus.NOT_FOUND).json(notFound("Relación proyecto-habilidad no encontrada"));
         res.json(proyectoHabilidad);
     } catch (error) {

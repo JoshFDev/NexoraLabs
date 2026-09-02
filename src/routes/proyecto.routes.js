@@ -8,7 +8,9 @@ const router = Router();
 //Listar todos los proyectos
 router.get('/proyectos', async (req, res) => {
     try {
-        const proyectos = await Proyecto.find();
+        const proyectos = await Proyecto.find()
+            .populate('creador_id', 'nombre email')
+            .populate('habilidades_requeridas', 'nombre');
         res.json(proyectos);
     } catch (error) {
         console.log(error);
@@ -19,7 +21,9 @@ router.get('/proyectos', async (req, res) => {
 //Ver un proyecto por id
 router.get('/proyecto/:id', async (req, res) => {
     try {
-        const proyecto = await Proyecto.findById(req.params.id);
+        const proyecto = await Proyecto.findById(req.params.id)
+            .populate('creador_id', 'nombre email')
+            .populate('habilidades_requeridas', 'nombre');
         if (!proyecto) return res.status(httpStatus.NOT_FOUND).json(notFound("Proyecto no encontrado"));
         res.json(proyecto);
     } catch (error) {

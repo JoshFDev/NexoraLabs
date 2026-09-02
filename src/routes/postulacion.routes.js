@@ -8,7 +8,10 @@ const router = Router();
 //Listar todas las postulaciones
 router.get('/postulaciones', async (req, res) => {
     try {
-        const postulaciones = await Postulacion.find();
+        const postulaciones = await Postulacion.find()
+            .populate('proyecto_id', 'titulo')
+            .populate('usuario_id', 'nombre email')
+            .populate('habilidades_ofrecidas', 'nombre');
         res.json(postulaciones);
     } catch (error) {
         console.log(error);
@@ -19,7 +22,10 @@ router.get('/postulaciones', async (req, res) => {
 //Ver una postulación por id
 router.get('/postulacion/:id', async (req, res) => {
     try {
-        const postulacion = await Postulacion.findById(req.params.id);
+        const postulacion = await Postulacion.findById(req.params.id)
+            .populate('proyecto_id', 'titulo')
+            .populate('usuario_id', 'nombre email')
+            .populate('habilidades_ofrecidas', 'nombre');
         if (!postulacion) return res.status(httpStatus.NOT_FOUND).json(notFound("Postulación no encontrada"));
         res.json(postulacion);
     } catch (error) {
