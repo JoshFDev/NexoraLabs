@@ -25,12 +25,15 @@ router.get('/usuario-habilidad/:id', async (req, res) => {
     }
 });
 
-//Crear relación usuario-habilidad
+//Crear o actualizar relación usuario-habilidad (upsert)
 router.post('/usuario-habilidad/agregar', async (req, res) => {
     try {
-        const usuarioHabilidad = new UsuarioHabilidad(req.body);
-        const usuarioHabilidadRegistrada = await usuarioHabilidad.save();
-        res.json(usuarioHabilidadRegistrada);
+        const usuarioHabilidad = await UsuarioHabilidad.findOneAndUpdate(
+            { usuario_id: req.body.usuario_id, habilidad_id: req.body.habilidad_id },
+            { nivel: req.body.nivel, años_experiencia: req.body.años_experiencia },
+            { upsert: true, new: true }
+        );
+        res.json(usuarioHabilidad);
     } catch (error) {
         console.log(error);
         res.status(500).json({ error });
