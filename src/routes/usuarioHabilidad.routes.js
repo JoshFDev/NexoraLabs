@@ -1,5 +1,7 @@
 import { Router } from "express";
 import UsuarioHabilidad from "../models/UsuarioHabilidad";
+import { serverError, notFound } from "../shared/errors/errorHandler";
+import httpStatus from "../shared/errors/httpStatus";
 
 const router = Router();
 
@@ -10,7 +12,7 @@ router.get('/usuarios-habilidades', async (req, res) => {
         res.json(usuarioHabilidades);
     } catch (error) {
         console.log(error);
-        res.status(500).json({ error });
+        res.status(500).json(serverError(error));
     }
 });
 
@@ -18,10 +20,11 @@ router.get('/usuarios-habilidades', async (req, res) => {
 router.get('/usuario-habilidad/:id', async (req, res) => {
     try {
         const usuarioHabilidad = await UsuarioHabilidad.findById(req.params.id);
+        if (!usuarioHabilidad) return res.status(httpStatus.NOT_FOUND).json(notFound("Relación usuario-habilidad no encontrada"));
         res.json(usuarioHabilidad);
     } catch (error) {
         console.log(error);
-        res.status(500).json({ error });
+        res.status(500).json(serverError(error));
     }
 });
 
@@ -33,10 +36,10 @@ router.post('/usuario-habilidad/agregar', async (req, res) => {
             { nivel: req.body.nivel, años_experiencia: req.body.años_experiencia },
             { upsert: true, new: true }
         );
-        res.json(usuarioHabilidad);
+        res.status(httpStatus.CREATED).json(usuarioHabilidad);
     } catch (error) {
         console.log(error);
-        res.status(500).json({ error });
+        res.status(500).json(serverError(error));
     }
 });
 
@@ -44,10 +47,11 @@ router.post('/usuario-habilidad/agregar', async (req, res) => {
 router.put('/usuario-habilidad/:id', async (req, res) => {
     try {
         const actualizada = await UsuarioHabilidad.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        if (!actualizada) return res.status(httpStatus.NOT_FOUND).json(notFound("Relación usuario-habilidad no encontrada"));
         res.json(actualizada);
     } catch (error) {
         console.log(error);
-        res.status(500).json({ error });
+        res.status(500).json(serverError(error));
     }
 });
 
@@ -55,10 +59,11 @@ router.put('/usuario-habilidad/:id', async (req, res) => {
 router.delete('/usuario-habilidad/:id', async (req, res) => {
     try {
         const eliminada = await UsuarioHabilidad.findByIdAndDelete(req.params.id);
+        if (!eliminada) return res.status(httpStatus.NOT_FOUND).json(notFound("Relación usuario-habilidad no encontrada"));
         res.json({ message: "Relación eliminada", usuarioHabilidad: eliminada });
     } catch (error) {
         console.log(error);
-        res.status(500).json({ error });
+        res.status(500).json(serverError(error));
     }
 });
 

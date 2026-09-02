@@ -1,5 +1,7 @@
 import { Router } from "express";
 import Proyecto from "../models/Proyecto";
+import { serverError, notFound } from "../shared/errors/errorHandler";
+import httpStatus from "../shared/errors/httpStatus";
 
 const router = Router();
 
@@ -10,7 +12,7 @@ router.get('/proyectos', async (req, res) => {
         res.json(proyectos);
     } catch (error) {
         console.log(error);
-        res.status(500).json({ error });
+        res.status(500).json(serverError(error));
     }
 });
 
@@ -18,10 +20,11 @@ router.get('/proyectos', async (req, res) => {
 router.get('/proyecto/:id', async (req, res) => {
     try {
         const proyecto = await Proyecto.findById(req.params.id);
+        if (!proyecto) return res.status(httpStatus.NOT_FOUND).json(notFound("Proyecto no encontrado"));
         res.json(proyecto);
     } catch (error) {
         console.log(error);
-        res.status(500).json({ error });
+        res.status(500).json(serverError(error));
     }
 });
 
@@ -30,10 +33,10 @@ router.post('/proyecto/agregar', async (req, res) => {
     try {
         const proyecto = new Proyecto(req.body);
         const proyectoRegistrado = await proyecto.save();
-        res.json(proyectoRegistrado);
+        res.status(httpStatus.CREATED).json(proyectoRegistrado);
     } catch (error) {
         console.log(error);
-        res.status(500).json({ error });
+        res.status(500).json(serverError(error));
     }
 });
 
@@ -41,10 +44,11 @@ router.post('/proyecto/agregar', async (req, res) => {
 router.put('/proyecto/:id', async (req, res) => {
     try {
         const actualizado = await Proyecto.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        if (!actualizado) return res.status(httpStatus.NOT_FOUND).json(notFound("Proyecto no encontrado"));
         res.json(actualizado);
     } catch (error) {
         console.log(error);
-        res.status(500).json({ error });
+        res.status(500).json(serverError(error));
     }
 });
 
@@ -52,10 +56,11 @@ router.put('/proyecto/:id', async (req, res) => {
 router.delete('/proyecto/:id', async (req, res) => {
     try {
         const eliminado = await Proyecto.findByIdAndDelete(req.params.id);
+        if (!eliminado) return res.status(httpStatus.NOT_FOUND).json(notFound("Proyecto no encontrado"));
         res.json({ message: "Proyecto eliminado", proyecto: eliminado });
     } catch (error) {
         console.log(error);
-        res.status(500).json({ error });
+        res.status(500).json(serverError(error));
     }
 });
 

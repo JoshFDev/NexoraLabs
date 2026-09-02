@@ -1,10 +1,12 @@
 import jwt from "jsonwebtoken";
+import { unauthorized } from "../shared/errors/errorHandler";
+import httpStatus from "../shared/errors/httpStatus";
 
 export default (req, res, next) => {
     const token = req.header("Authorization");
 
     if (!token) {
-        return res.status(401).json({ error: "Acceso denegado, no hay token" });
+        return res.status(httpStatus.UNAUTHORIZED).json(unauthorized("Acceso denegado, no hay token"));
     }
 
     try {
@@ -12,6 +14,6 @@ export default (req, res, next) => {
         req.usuario = verificado;
         next();
     } catch (error) {
-        return res.status(401).json({ error: "Token no válido" });
+        return res.status(httpStatus.UNAUTHORIZED).json(unauthorized("Token no válido"));
     }
 };

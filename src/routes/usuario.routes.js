@@ -3,7 +3,7 @@ import Usuario from "../models/Usuario";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import verifyToken from "../middleware/verifyToken";
-import { httpStatus, badRequest, unauthorized, serverError } from "../shared/errors/errorHandler";
+import { httpStatus, badRequest, unauthorized, serverError, notFound } from "../shared/errors/errorHandler";
 
 const router = Router();
 
@@ -22,6 +22,7 @@ router.get('/usuarios', async (req,res) => {
 router.get('/usuario/perfil', verifyToken, async (req, res) => {
     try {
         const usuario = await Usuario.findById(req.usuario.id).select('-password');
+        if (!usuario) return res.status(httpStatus.NOT_FOUND).json(notFound("Usuario no encontrado"));
         res.json(usuario);
     } catch (error) {
         console.log(error);
@@ -33,6 +34,7 @@ router.get('/usuario/perfil', verifyToken, async (req, res) => {
 router.get('/usuario/:id', async (req,res) => {
     try{
         const usuario = await Usuario.findById(req.params.id);
+        if (!usuario) return res.status(httpStatus.NOT_FOUND).json(notFound("Usuario no encontrado"));
         res.json(usuario);
     }catch(error){
         console.log(error);
@@ -97,6 +99,7 @@ router.post('/usuario/login', async (req, res) => {
 router.put('/usuario/:id',async (req,res) => {
     try{
         const actualizado = await Usuario.findByIdAndUpdate(req.params.id, req.body, {new: true});
+        if (!actualizado) return res.status(httpStatus.NOT_FOUND).json(notFound("Usuario no encontrado"));
         res.json(actualizado);
     }catch(error){
         console.log(error);
@@ -109,6 +112,7 @@ router.put('/usuario/:id',async (req,res) => {
 router.delete('/usuario/:id', async(req,res) => {
     try{
         const eliminado = await Usuario.findByIdAndDelete(req.params.id);
+        if (!eliminado) return res.status(httpStatus.NOT_FOUND).json(notFound("Usuario no encontrado"));
         res.json({message: "Usuario eliminado", usuario: eliminado});
     }catch(error){
         console.log(error);

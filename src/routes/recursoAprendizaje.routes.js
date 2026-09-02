@@ -1,5 +1,7 @@
 import { Router } from "express";
 import RecursoAprendizaje from "../models/RecursoAprendizaje";
+import { serverError, notFound } from "../shared/errors/errorHandler";
+import httpStatus from "../shared/errors/httpStatus";
 
 const router = Router();
 
@@ -10,7 +12,7 @@ router.get('/recursos-aprendizaje', async (req, res) => {
         res.json(recursos);
     } catch (error) {
         console.log(error);
-        res.status(500).json({ error });
+        res.status(500).json(serverError(error));
     }
 });
 
@@ -18,10 +20,11 @@ router.get('/recursos-aprendizaje', async (req, res) => {
 router.get('/recurso-aprendizaje/:id', async (req, res) => {
     try {
         const recurso = await RecursoAprendizaje.findById(req.params.id);
+        if (!recurso) return res.status(httpStatus.NOT_FOUND).json(notFound("Recurso no encontrado"));
         res.json(recurso);
     } catch (error) {
         console.log(error);
-        res.status(500).json({ error });
+        res.status(500).json(serverError(error));
     }
 });
 
@@ -30,10 +33,10 @@ router.post('/recurso-aprendizaje/agregar', async (req, res) => {
     try {
         const recurso = new RecursoAprendizaje(req.body);
         const recursoRegistrado = await recurso.save();
-        res.json(recursoRegistrado);
+        res.status(httpStatus.CREATED).json(recursoRegistrado);
     } catch (error) {
         console.log(error);
-        res.status(500).json({ error });
+        res.status(500).json(serverError(error));
     }
 });
 
@@ -41,10 +44,11 @@ router.post('/recurso-aprendizaje/agregar', async (req, res) => {
 router.put('/recurso-aprendizaje/:id', async (req, res) => {
     try {
         const actualizado = await RecursoAprendizaje.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        if (!actualizado) return res.status(httpStatus.NOT_FOUND).json(notFound("Recurso no encontrado"));
         res.json(actualizado);
     } catch (error) {
         console.log(error);
-        res.status(500).json({ error });
+        res.status(500).json(serverError(error));
     }
 });
 
@@ -52,10 +56,11 @@ router.put('/recurso-aprendizaje/:id', async (req, res) => {
 router.delete('/recurso-aprendizaje/:id', async (req, res) => {
     try {
         const eliminado = await RecursoAprendizaje.findByIdAndDelete(req.params.id);
+        if (!eliminado) return res.status(httpStatus.NOT_FOUND).json(notFound("Recurso no encontrado"));
         res.json({ message: "Recurso eliminado", recurso: eliminado });
     } catch (error) {
         console.log(error);
-        res.status(500).json({ error });
+        res.status(500).json(serverError(error));
     }
 });
 

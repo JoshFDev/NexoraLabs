@@ -1,5 +1,7 @@
 import { Router } from "express";
 import Habilidad from "../models/Habilidad";
+import { serverError, notFound } from "../shared/errors/errorHandler";
+import httpStatus from "../shared/errors/httpStatus";
 
 const router = Router();
 
@@ -10,7 +12,7 @@ router.get('/habilidades', async (req, res) => {
         res.json(habilidades);
     } catch (error) {
         console.log(error);
-        res.status(500).json({ error });
+        res.status(500).json(serverError(error));
     }
 });
 
@@ -18,10 +20,11 @@ router.get('/habilidades', async (req, res) => {
 router.get('/habilidad/:id', async (req, res) => {
     try {
         const habilidad = await Habilidad.findById(req.params.id);
+        if (!habilidad) return res.status(httpStatus.NOT_FOUND).json(notFound("Habilidad no encontrada"));
         res.json(habilidad);
     } catch (error) {
         console.log(error);
-        res.status(500).json({ error });
+        res.status(500).json(serverError(error));
     }
 });
 
@@ -30,10 +33,10 @@ router.post('/habilidad/agregar', async (req, res) => {
     try {
         const habilidad = new Habilidad(req.body);
         const habilidadRegistrada = await habilidad.save();
-        res.json(habilidadRegistrada);
+        res.status(httpStatus.CREATED).json(habilidadRegistrada);
     } catch (error) {
         console.log(error);
-        res.status(500).json({ error });
+        res.status(500).json(serverError(error));
     }
 });
 
@@ -41,10 +44,11 @@ router.post('/habilidad/agregar', async (req, res) => {
 router.put('/habilidad/:id', async (req, res) => {
     try {
         const actualizada = await Habilidad.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        if (!actualizada) return res.status(httpStatus.NOT_FOUND).json(notFound("Habilidad no encontrada"));
         res.json(actualizada);
     } catch (error) {
         console.log(error);
-        res.status(500).json({ error });
+        res.status(500).json(serverError(error));
     }
 });
 
@@ -52,10 +56,11 @@ router.put('/habilidad/:id', async (req, res) => {
 router.delete('/habilidad/:id', async (req, res) => {
     try {
         const eliminada = await Habilidad.findByIdAndDelete(req.params.id);
+        if (!eliminada) return res.status(httpStatus.NOT_FOUND).json(notFound("Habilidad no encontrada"));
         res.json({ message: "Habilidad eliminada", habilidad: eliminada });
     } catch (error) {
         console.log(error);
-        res.status(500).json({ error });
+        res.status(500).json(serverError(error));
     }
 });
 
