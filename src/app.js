@@ -9,6 +9,7 @@ import recursoAprendizajeRoutes from './routes/recursoAprendizaje.routes';
 import postulacionRoutes from './routes/postulacion.routes';
 import usuarioHabilidadRoutes from './routes/usuarioHabilidad.routes';
 import proyectoHabilidadRoutes from './routes/proyectoHabilidad.routes';
+import miembroEquipoRoutes from './routes/miembroEquipo.routes';
 import exphbs from "express-handlebars";
 import path from "path";
 
@@ -39,5 +40,6 @@ app.use(recursoAprendizajeRoutes);
 app.use(postulacionRoutes);
 app.use(usuarioHabilidadRoutes);
 app.use(proyectoHabilidadRoutes);
+app.use(miembroEquipoRoutes);
 
 export default app; //Exporto el obj
