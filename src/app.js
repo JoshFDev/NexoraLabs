@@ -3,6 +3,8 @@ import morgan from "morgan";
 import indexRoutes from './routes/indexRoutes';
 import equipoRoutes from './routes/equipo.routes';
 import usuarioRoutes from './routes/usuario.routes'
+import proyectoRoutes from './routes/proyecto.routes';
+import habilidadRoutes from './routes/habilidad.routes'
 import exphbs from "express-handlebars";
 import path from "path";
 
@@ -27,5 +29,7 @@ app.set("view engine", ".hbs");
 app.use(indexRoutes);
 app.use(equipoRoutes);
 app.use(usuarioRoutes);
+app.use(habilidadRoutes);
+app.use(proyectoRoutes);
 
 export default app; //Exporto el obj
