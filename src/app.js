@@ -4,7 +4,8 @@ import indexRoutes from './routes/indexRoutes';
 import equipoRoutes from './routes/equipo.routes';
 import usuarioRoutes from './routes/usuario.routes'
 import proyectoRoutes from './routes/proyecto.routes';
-import habilidadRoutes from './routes/habilidad.routes'
+import habilidadRoutes from './routes/habilidad.routes';
+import recursoAprendizajeRoutes from './routes/recursoAprendizaje.routes';
 import exphbs from "express-handlebars";
 import path from "path";
 
@@ -31,5 +32,6 @@ app.use(equipoRoutes);
 app.use(usuarioRoutes);
 app.use(habilidadRoutes);
 app.use(proyectoRoutes);
+app.use(recursoAprendizajeRoutes);
 
 export default app; //Exporto el obj

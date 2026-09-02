@@ -26,6 +26,45 @@ const recursoAprendizajeEsquema = new Schema(
         habilidad_id: {
             type: Schema.Types.ObjectId,
             ref: "Habilidad"
+        },
+        valoracion_promedio: {
+            type: Number,
+            min: 0,
+            max: 5,
+            default: 0
+        },
+        num_valoraciones: {
+            type: Number,
+            min: 0,
+            default: 0
+        },
+        recomendado_por: {
+            type: [Schema.Types.ObjectId],
+            ref: "Usuario",
+            default: []
+        },
+        comentarios: {
+            type: [
+                {
+                    usuario_id: {
+                        type: Schema.Types.ObjectId,
+                        ref: "Usuario"
+                    },
+                    texto: {
+                        type: String
+                    },
+                    calificacion: {
+                        type: Number,
+                        min: 1,
+                        max: 5
+                    },
+                    fecha: {
+                        type: Date,
+                        default: Date.now
+                    }
+                }
+            ],
+            default: []
         }
     },
     {
