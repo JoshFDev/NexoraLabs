@@ -3,6 +3,7 @@ import Usuario from "../models/Usuario";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import verifyToken from "../middleware/verifyToken";
+import { httpStatus, badRequest, unauthorized, serverError } from "../shared/errors/errorHandler";
 
 const router = Router();
 
@@ -13,7 +14,7 @@ router.get('/usuarios', async (req,res) => {
         res.json(usuarios);
     } catch (error){
         console.log(error);
-        res.status(500).json({ error });
+        res.status(500).json(serverError(error));
     }
 });
 
@@ -24,7 +25,7 @@ router.get('/usuario/perfil', verifyToken, async (req, res) => {
         res.json(usuario);
     } catch (error) {
         console.log(error);
-        res.status(500).json({ error });
+        res.status(500).json(serverError(error));
     }
 });
 
@@ -35,7 +36,7 @@ router.get('/usuario/:id', async (req,res) => {
         res.json(usuario);
     }catch(error){
         console.log(error);
-        res.status(500).json({error});
+        res.status(500).json(serverError(error));
     }
 });
 
@@ -57,7 +58,7 @@ router.post('/usuario/registro', async (req,res) =>{
         res.json(usuarioSinPassword);
     }catch (error){
         console.log(error);
-        res.status(500).json({error});
+        res.status(500).json(serverError(error));
     }
 });
 
@@ -69,13 +70,13 @@ router.post('/usuario/login', async (req, res) => {
         //Buscar usuario por email
         const usuario = await Usuario.findOne({ email });
         if (!usuario) {
-            return res.status(400).json({ error: "Usuario no encontrado" });
+            return res.status(httpStatus.BAD_REQUEST).json(badRequest("Usuario no encontrado"));
         }
 
         //Comparar password ingresado con el hasheado en la DB
         const passwordValido = await bcrypt.compare(password, usuario.password);
         if (!passwordValido) {
-            return res.status(400).json({ error: "Contraseña incorrecta" });
+            return res.status(httpStatus.BAD_REQUEST).json(badRequest("Contraseña incorrecta"));
         }
 
         //Generar token con los datos del usuario
@@ -88,7 +89,7 @@ router.post('/usuario/login', async (req, res) => {
         res.json({ token, usuario: { id: usuario._id, nombre: usuario.nombre, email: usuario.email, rol: usuario.rol } });
     }catch (error){
         console.log(error);
-        res.status(500).json({error});
+        res.status(500).json(serverError(error));
     }
 });
 
@@ -99,7 +100,7 @@ router.put('/usuario/:id',async (req,res) => {
         res.json(actualizado);
     }catch(error){
         console.log(error);
-        res.status(500).json({error});
+        res.status(500).json(serverError(error));
     }
 });
 
@@ -111,7 +112,7 @@ router.delete('/usuario/:id', async(req,res) => {
         res.json({message: "Usuario eliminado", usuario: eliminado});
     }catch(error){
         console.log(error);
-        res.status(500).json({error});
+        res.status(500).json(serverError(error));
     }
 });
 

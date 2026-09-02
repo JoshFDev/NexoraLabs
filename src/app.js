@@ -12,6 +12,8 @@ import proyectoHabilidadRoutes from './routes/proyectoHabilidad.routes';
 import miembroEquipoRoutes from './routes/miembroEquipo.routes';
 import exphbs from "express-handlebars";
 import path from "path";
+import notFound from './shared/errors/notFound';
+import errorHandlerMiddleware from './shared/errors/errorHandlerMiddleware';
 
 const app = express();
 
@@ -41,5 +43,9 @@ app.use(postulacionRoutes);
 app.use(usuarioHabilidadRoutes);
 app.use(proyectoHabilidadRoutes);
 app.use(miembroEquipoRoutes);
+
+//Manejo de errores (después de todas las rutas)
+app.use(notFound);
+app.use(errorHandlerMiddleware);
 
 export default app; //Exporto el obj
