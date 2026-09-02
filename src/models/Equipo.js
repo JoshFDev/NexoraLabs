@@ -16,6 +16,12 @@ const equipoEsquema = new Schema(
         descripcion: {
             type: String
         },
+        escudo: {
+            type: String
+        },
+        logo: {
+            type: String
+        },
         fecha_creacion: {
             type: Date,
             default: Date.now

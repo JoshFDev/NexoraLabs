@@ -50,7 +50,7 @@ const habilidadEsquema = new Schema(
             min: 0,
             default: 0
         },
-        icono: {
+        imagen: {
             type: String
         },
         visible: {
