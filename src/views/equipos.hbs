@@ -1,0 +1,13 @@
+<h1>Lista de Equipos</h1>
+
+{{#each equipos}}
+    <div>
+        <h3>{{this.nombre}}</h3>
+        <p>{{this.descripcion}}</p>
+        <p>Estado: {{this.estado}}</p>
+        <a href="/equipo/editar/{{this._id}}">Editar</a>
+        <a href="/equipo/eliminar/{{this._id}}">Eliminar</a>
+    </div>
+{{else}}
+    <p>No hay equipos registrados.</p>
+{{/each}}
