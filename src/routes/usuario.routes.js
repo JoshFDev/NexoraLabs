@@ -45,7 +45,24 @@ router.get('/usuario/:id', async (req,res) => {
 //Registro de usuario (con password hasheado):
 router.post('/usuario/registro', async (req,res) =>{
     try{
-        const { password } = req.body;
+        const { nombre, apellido_paterno, email, password } = req.body;
+
+        if (!nombre || !apellido_paterno || !email || !password) {
+            return res.status(httpStatus.BAD_REQUEST).json(badRequest("Todos los campos obligatorios son requeridos (nombre, apellido_paterno, email, password)"));
+        }
+
+        if (!/^[\w.+-]+@[\w-]+\.[\w.-]+$/.test(email)) {
+            return res.status(httpStatus.BAD_REQUEST).json(badRequest("Formato de email no válido"));
+        }
+
+        if (password.length < 8) {
+            return res.status(httpStatus.BAD_REQUEST).json(badRequest("La contraseña debe tener al menos 8 caracteres"));
+        }
+
+        const emailExiste = await Usuario.findOne({ email });
+        if (emailExiste) {
+            return res.status(httpStatus.CONFLICT).json(badRequest("El email ya está registrado"));
+        }
 
         //Hashear el password con bcrypt
         const salt = await bcrypt.genSalt(10);
@@ -68,6 +85,10 @@ router.post('/usuario/registro', async (req,res) =>{
 router.post('/usuario/login', async (req, res) => {
     try{
         const { email, password } = req.body;
+
+        if (!email || !password) {
+            return res.status(httpStatus.BAD_REQUEST).json(badRequest("Email y contraseña son requeridos"));
+        }
 
         //Buscar usuario por email
         const usuario = await Usuario.findOne({ email });

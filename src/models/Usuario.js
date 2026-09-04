@@ -4,27 +4,32 @@ const usuarioEsquema = new Schema(
         nombre: {
             type: String,
             required: true,
-            trim: true
+            trim: true,
+            maxlength: 50
         },
         apellido_paterno: {
             type: String,
             required: true,
-            trim: true
+            trim: true,
+            maxlength: 50
         },
         apellido_materno: {
             type: String,
-            trim: true
+            trim: true,
+            maxlength: 50
         },
         email: {
             type: String,
             required: true,
             unique: true,
             lowercase: true,
-            trim: true
+            trim: true,
+            match: [/^[\w.+-]+@[\w-]+\.[\w.-]+$/, "Formato de email no válido"]
         },
         password: {
             type: String,
-            required: true
+            required: true,
+            minlength: 8
         },
         telefono: {
             type: String,
