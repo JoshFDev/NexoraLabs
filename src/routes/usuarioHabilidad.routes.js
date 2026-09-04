@@ -2,6 +2,7 @@ import { Router } from "express";
 import UsuarioHabilidad from "../models/UsuarioHabilidad";
 import { serverError, notFound } from "../shared/errors/errorHandler";
 import httpStatus from "../shared/errors/httpStatus";
+import verifyToken from "../middleware/verifyToken";
 
 const router = Router();
 
@@ -33,7 +34,7 @@ router.get('/usuario-habilidad/:id', async (req, res) => {
 });
 
 //Crear o actualizar relación usuario-habilidad (upsert)
-router.post('/usuario-habilidad/agregar', async (req, res) => {
+router.post('/usuario-habilidad/agregar', verifyToken, async (req, res) => {
     try {
         const usuarioHabilidad = await UsuarioHabilidad.findOneAndUpdate(
             { usuario_id: req.body.usuario_id, habilidad_id: req.body.habilidad_id },
@@ -48,7 +49,7 @@ router.post('/usuario-habilidad/agregar', async (req, res) => {
 });
 
 //Actualizar relación usuario-habilidad
-router.put('/usuario-habilidad/:id', async (req, res) => {
+router.put('/usuario-habilidad/:id', verifyToken, async (req, res) => {
     try {
         const actualizada = await UsuarioHabilidad.findByIdAndUpdate(req.params.id, req.body, { new: true });
         if (!actualizada) return res.status(httpStatus.NOT_FOUND).json(notFound("Relación usuario-habilidad no encontrada"));
@@ -60,7 +61,7 @@ router.put('/usuario-habilidad/:id', async (req, res) => {
 });
 
 //Eliminar relación usuario-habilidad
-router.delete('/usuario-habilidad/:id', async (req, res) => {
+router.delete('/usuario-habilidad/:id', verifyToken, async (req, res) => {
     try {
         const eliminada = await UsuarioHabilidad.findByIdAndDelete(req.params.id);
         if (!eliminada) return res.status(httpStatus.NOT_FOUND).json(notFound("Relación usuario-habilidad no encontrada"));

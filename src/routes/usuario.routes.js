@@ -117,7 +117,7 @@ router.post('/usuario/login', async (req, res) => {
 });
 
 //Actualizar usuaurio 
-router.put('/usuario/:id',async (req,res) => {
+router.put('/usuario/:id',verifyToken, async (req,res) => {
     try{
         const actualizado = await Usuario.findByIdAndUpdate(req.params.id, req.body, {new: true});
         if (!actualizado) return res.status(httpStatus.NOT_FOUND).json(notFound("Usuario no encontrado"));
@@ -130,7 +130,7 @@ router.put('/usuario/:id',async (req,res) => {
 
 
 //Eliminar usuario:
-router.delete('/usuario/:id', async(req,res) => {
+router.delete('/usuario/:id', verifyToken, async(req,res) => {
     try{
         const eliminado = await Usuario.findByIdAndDelete(req.params.id);
         if (!eliminado) return res.status(httpStatus.NOT_FOUND).json(notFound("Usuario no encontrado"));

@@ -2,6 +2,7 @@ import { Router } from "express";
 import Habilidad from "../models/Habilidad";
 import { serverError, notFound, badRequest } from "../shared/errors/errorHandler";
 import httpStatus from "../shared/errors/httpStatus";
+import verifyToken from "../middleware/verifyToken";
 
 const router = Router();
 
@@ -29,7 +30,7 @@ router.get('/habilidad/:id', async (req, res) => {
 });
 
 //Crear habilidad
-router.post('/habilidad/agregar', async (req, res) => {
+router.post('/habilidad/agregar', verifyToken, async (req, res) => {
     try {
         const { nombre, categoria } = req.body;
         if (!nombre || !categoria) {
@@ -45,7 +46,7 @@ router.post('/habilidad/agregar', async (req, res) => {
 });
 
 //Actualizar habilidad
-router.put('/habilidad/:id', async (req, res) => {
+router.put('/habilidad/:id', verifyToken, async (req, res) => {
     try {
         const actualizada = await Habilidad.findByIdAndUpdate(req.params.id, req.body, { new: true });
         if (!actualizada) return res.status(httpStatus.NOT_FOUND).json(notFound("Habilidad no encontrada"));
@@ -57,7 +58,7 @@ router.put('/habilidad/:id', async (req, res) => {
 });
 
 //Eliminar habilidad
-router.delete('/habilidad/:id', async (req, res) => {
+router.delete('/habilidad/:id', verifyToken, async (req, res) => {
     try {
         const eliminada = await Habilidad.findByIdAndDelete(req.params.id);
         if (!eliminada) return res.status(httpStatus.NOT_FOUND).json(notFound("Habilidad no encontrada"));
