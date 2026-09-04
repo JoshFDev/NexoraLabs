@@ -61,10 +61,21 @@ router.delete('/proyecto/:id', verifyToken, authorize("admin", "mentor", "desarr
     }
 });
 
-//Ruta para listar los proyectos con filtros:
+//Ruta para listar los proyectos con filtros y paginación:
+//GET /proyectos?categoria=web&buscar=react&pagina=1&limite=10
 router.get('/proyectos', async (req,res) => {
     try{
         const {categoria, estado, nivel, buscar} = req.query;
+
+        // PAGINACIÓN: leemos pagina y limite del query
+        // Number() los convierte a número (vienen como texto desde la URL)
+        // Si vienen vacíos, usamos valores por defecto: pagina=1, limite=10
+        const pagina = Number(req.query.pagina) || 1;
+        const limite = Number(req.query.limite) || 10;
+
+        // Evitamos números inválidos (negativos o cero)
+        const salto = (pagina - 1) * limite;
+
         const filtros = {};
 
         if(categoria) filtros.categoria = categoria;
@@ -78,10 +89,24 @@ router.get('/proyectos', async (req,res) => {
             ];
         }
 
-        const proyectos = await Proyecto.find(filtros).populate('creador_id', 'nombre email')
-        .populate('habilidades_requeridas', 'nombre');
+        // countDocuments cuenta cuántos cumplen los filtros (para el total)
+        const total = await Proyecto.countDocuments(filtros);
 
-        res.json(proyectos);
+        // .skip() se salta los de páginas anteriores, .limit() fija cuántos traer
+        const proyectos = await Proyecto.find(filtros)
+            .skip(salto)
+            .limit(limite)
+            .populate('creador_id', 'nombre email')
+            .populate('habilidades_requeridas', 'nombre');
+
+        // Devolvemos los datos + la info de paginación
+        res.json({
+            total,
+            pagina,
+            limite,
+            total_paginas: Math.ceil(total / limite), // redondea hacia arriba
+            proyectos
+        });
 
     }catch(error){
         console.log(error);

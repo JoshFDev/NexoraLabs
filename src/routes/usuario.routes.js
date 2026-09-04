@@ -31,9 +31,23 @@ router.get('/usuarios', async (req,res) => {
             ];
         }
 
+        // PAGINACIÓN
+        const pagina = Number(req.query.pagina) || 1;
+        const limite = Number(req.query.limite) || 10;
+        const salto = (pagina - 1) * limite;
+
+        const total = await Usuario.countDocuments(filtros);
+
         // .select('-password') oculta el campo password de la respuesta
-        const usuarios = await Usuario.find(filtros).select('-password');
-        res.json(usuarios);
+        const usuarios = await Usuario.find(filtros).skip(salto).limit(limite).select('-password');
+
+        res.json({
+            total,
+            pagina,
+            limite,
+            total_paginas: Math.ceil(total / limite),
+            usuarios
+        });
     } catch (error){
         console.log(error);
         res.status(500).json(serverError(error));

@@ -23,9 +23,25 @@ router.get('/equipos', async (req, res) => {
             ];
         }
 
+        // PAGINACIÓN
+        const pagina = Number(req.query.pagina) || 1;
+        const limite = Number(req.query.limite) || 10;
+        const salto = (pagina - 1) * limite;
+
+        const total = await Equipo.countDocuments(filtros);
+
         const equipos = await Equipo.find(filtros)
+            .skip(salto)
+            .limit(limite)
             .populate('proyecto_id', 'titulo');
-        res.json(equipos);
+
+        res.json({
+            total,
+            pagina,
+            limite,
+            total_paginas: Math.ceil(total / limite),
+            equipos
+        });
     } catch (error) {
         console.log(error);
         res.status(500).json(serverError(error));

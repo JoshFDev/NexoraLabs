@@ -28,8 +28,22 @@ router.get('/recursos-aprendizaje', async (req, res) => {
             ];
         }
 
-        const recursos = await RecursoAprendizaje.find(filtros);
-        res.json(recursos);
+        // PAGINACIÓN
+        const pagina = Number(req.query.pagina) || 1;
+        const limite = Number(req.query.limite) || 10;
+        const salto = (pagina - 1) * limite;
+
+        const total = await RecursoAprendizaje.countDocuments(filtros);
+
+        const recursos = await RecursoAprendizaje.find(filtros).skip(salto).limit(limite);
+
+        res.json({
+            total,
+            pagina,
+            limite,
+            total_paginas: Math.ceil(total / limite),
+            recursos
+        });
     } catch (error) {
         console.log(error);
         res.status(500).json(serverError(error));

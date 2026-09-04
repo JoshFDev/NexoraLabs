@@ -31,8 +31,22 @@ router.get('/habilidades', async (req, res) => {
             ];
         }
 
-        const habilidades = await Habilidad.find(filtros);
-        res.json(habilidades);
+        // PAGINACIÓN
+        const pagina = Number(req.query.pagina) || 1;
+        const limite = Number(req.query.limite) || 10;
+        const salto = (pagina - 1) * limite;
+
+        const total = await Habilidad.countDocuments(filtros);
+
+        const habilidades = await Habilidad.find(filtros).skip(salto).limit(limite);
+
+        res.json({
+            total,
+            pagina,
+            limite,
+            total_paginas: Math.ceil(total / limite),
+            habilidades
+        });
     } catch (error) {
         console.log(error);
         res.status(500).json(serverError(error));
