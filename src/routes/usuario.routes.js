@@ -1,4 +1,5 @@
 import { Router } from "express";
+import rateLimit from "express-rate-limit";
 import Usuario from "../models/Usuario";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -117,8 +118,18 @@ router.post('/usuario/registro', async (req,res) =>{
     }
 });
 
+//Limitador ESTRICTO solo para el login (anti fuerza bruta):
+//10 intentos por IP cada 15 minutos; al superarlos responde 429
+const limitadorLogin = rateLimit({
+    windowMs: 15 * 60 * 1000, // ventana de 15 minutos
+    limit: 10,                // solo 10 intentos por IP
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: "Demasiados intentos de login, espera 15 minutos" }
+});
+
 //Login de usuario:
-router.post('/usuario/login', async (req, res) => {
+router.post('/usuario/login', limitadorLogin, async (req, res) => {
     try{
         const { email, password } = req.body;
 
