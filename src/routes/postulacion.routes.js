@@ -1,6 +1,7 @@
 import { Router } from "express";
 import Postulacion from "../models/Postulacion";
-import { serverError, notFound } from "../shared/errors/errorHandler";
+import Proyecto from "../models/Proyecto";
+import { serverError, notFound, badRequest } from "../shared/errors/errorHandler";
 import httpStatus from "../shared/errors/httpStatus";
 import verifyToken from "../middleware/verifyToken";
 import authorize from "../middleware/authorize";
@@ -66,6 +67,35 @@ router.delete('/postulacion/:id', verifyToken, authorize("admin"), async (req, r
         const eliminada = await Postulacion.findByIdAndDelete(req.params.id);
         if (!eliminada) return res.status(httpStatus.NOT_FOUND).json(notFound("Postulación no encontrada"));
         res.json({ message: "Postulación eliminada", postulacion: eliminada });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json(serverError(error));
+    }
+});
+
+//Postular a un proyecto (lógica de negocio)
+router.post('/proyecto/:id/postular', verifyToken, async (req, res) => {
+    try {
+        const proyectoId = req.params.id;
+        const usuarioId = req.usuario.id;
+
+        const proyecto = await Proyecto.findById(proyectoId);
+        if (!proyecto) return res.status(httpStatus.NOT_FOUND).json(notFound("Proyecto no encontrado"));
+
+        const yaPostulo = await Postulacion.findOne({ proyecto_id: proyectoId, usuario_id: usuarioId });
+        if (yaPostulo) {
+            return res.status(httpStatus.CONFLICT).json(badRequest("Ya te has postulado a este proyecto"));
+        }
+
+        const postulacion = new Postulacion({
+            proyecto_id: proyectoId,
+            usuario_id: usuarioId,
+            mensaje: req.body.mensaje,
+            habilidades_ofrecidas: req.body.habilidades_ofrecidas || []
+        });
+
+        const postulacionRegistrada = await postulacion.save();
+        res.status(httpStatus.CREATED).json(postulacionRegistrada);
     } catch (error) {
         console.log(error);
         res.status(500).json(serverError(error));

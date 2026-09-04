@@ -70,4 +70,41 @@ router.delete('/recurso-aprendizaje/:id', verifyToken, authorize("admin", "mento
     }
 });
 
+//Calificar un recurso de aprendizaje (lógica de negocio)
+router.post('/recurso-aprendizaje/:id/calificar', verifyToken, async (req, res) => {
+    try {
+        const recursoId = req.params.id;
+        const usuarioId = req.usuario.id;
+        const { calificacion, texto } = req.body;
+
+        if (!calificacion || calificacion < 1 || calificacion > 5) {
+            return res.status(httpStatus.BAD_REQUEST).json(badRequest("La calificación debe ser un número entre 1 y 5"));
+        }
+
+        const recurso = await RecursoAprendizaje.findById(recursoId);
+        if (!recurso) return res.status(httpStatus.NOT_FOUND).json(notFound("Recurso no encontrado"));
+
+        const yaComento = recurso.comentarios.find(c => c.usuario_id && c.usuario_id.toString() === usuarioId);
+        if (yaComento) {
+            return res.status(httpStatus.CONFLICT).json(badRequest("Ya has calificado este recurso"));
+        }
+
+        recurso.comentarios.push({
+            usuario_id: usuarioId,
+            texto: texto || "",
+            calificacion
+        });
+
+        recurso.num_valoraciones += 1;
+        const total = recurso.comentarios.reduce((acc, c) => acc + c.calificacion, 0);
+        recurso.valoracion_promedio = total / recurso.comentarios.length;
+
+        const recursoActualizado = await recurso.save();
+        res.status(httpStatus.CREATED).json(recursoActualizado);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json(serverError(error));
+    }
+});
+
 export default router;

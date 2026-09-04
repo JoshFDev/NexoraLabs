@@ -1,6 +1,7 @@
 import { Router } from "express";
 import MiembroEquipo from "../models/MiembroEquipo";
-import { serverError, notFound } from "../shared/errors/errorHandler";
+import Equipo from "../models/Equipo";
+import { serverError, notFound, badRequest } from "../shared/errors/errorHandler";
 import httpStatus from "../shared/errors/httpStatus";
 import verifyToken from "../middleware/verifyToken";
 import authorize from "../middleware/authorize";
@@ -59,6 +60,38 @@ router.delete('/miembro-equipo/:id', verifyToken, authorize("admin", "mentor"), 
         const eliminado = await MiembroEquipo.findByIdAndDelete(req.params.id);
         if (!eliminado) return res.status(httpStatus.NOT_FOUND).json(notFound("Miembro no encontrado"));
         res.json({ message: "Miembro eliminado", miembro: eliminado });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json(serverError(error));
+    }
+});
+
+//Unirse a un equipo (lógica de negocio)
+router.post('/equipo/:id/unirse', verifyToken, async (req, res) => {
+    try {
+        const equipoId = req.params.id;
+        const usuarioId = req.usuario.id;
+
+        const equipo = await Equipo.findById(equipoId);
+        if (!equipo) return res.status(httpStatus.NOT_FOUND).json(notFound("Equipo no encontrado"));
+
+        if (equipo.estado !== "activo") {
+            return res.status(httpStatus.BAD_REQUEST).json(badRequest("El equipo no está activo"));
+        }
+
+        const yaEsMiembro = await MiembroEquipo.findOne({ equipo_id: equipoId, usuario_id: usuarioId });
+        if (yaEsMiembro) {
+            return res.status(httpStatus.CONFLICT).json(badRequest("Ya formas parte de este equipo"));
+        }
+
+        const miembro = new MiembroEquipo({
+            equipo_id: equipoId,
+            usuario_id: usuarioId,
+            rol: req.body.rol || "miembro"
+        });
+
+        const miembroRegistrado = await miembro.save();
+        res.status(httpStatus.CREATED).json(miembroRegistrado);
     } catch (error) {
         console.log(error);
         res.status(500).json(serverError(error));

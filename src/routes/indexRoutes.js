@@ -57,7 +57,11 @@ const rutas = [
     { metodo: "GET", ruta: "/proyecto-habilidad/:id", descripcion: "Ver relación proyecto-habilidad" },
     { metodo: "POST", ruta: "/proyecto-habilidad/agregar", descripcion: "Crear relación proyecto-habilidad (admin/mentor)" },
     { metodo: "PUT", ruta: "/proyecto-habilidad/:id", descripcion: "Actualizar relación proyecto-habilidad" },
-    { metodo: "DELETE", ruta: "/proyecto-habilidad/:id", descripcion: "Eliminar relación proyecto-habilidad" }
+    { metodo: "DELETE", ruta: "/proyecto-habilidad/:id", descripcion: "Eliminar relación proyecto-habilidad" },
+
+    { metodo: "POST", ruta: "/proyecto/:id/postular", descripcion: "Postular a un proyecto (autenticado)" },
+    { metodo: "POST", ruta: "/equipo/:id/unirse", descripcion: "Unirse a un equipo (autenticado)" },
+    { metodo: "POST", ruta: "/recurso-aprendizaje/:id/calificar", descripcion: "Calificar un recurso (autenticado)" }
 ];
 
 router.get('/', (req, res) => {
