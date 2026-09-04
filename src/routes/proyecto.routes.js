@@ -1,6 +1,6 @@
 import { Router } from "express";
 import Proyecto from "../models/Proyecto";
-import { serverError, notFound } from "../shared/errors/errorHandler";
+import { serverError, notFound, badRequest } from "../shared/errors/errorHandler";
 import httpStatus from "../shared/errors/httpStatus";
 
 const router = Router();
@@ -35,6 +35,10 @@ router.get('/proyecto/:id', async (req, res) => {
 //Crear proyecto
 router.post('/proyecto/agregar', async (req, res) => {
     try {
+        const { creador_id, titulo, descripcion } = req.body;
+        if (!creador_id || !titulo || !descripcion) {
+            return res.status(httpStatus.BAD_REQUEST).json(badRequest("Todos los campos obligatorios son requeridos (creador_id, titulo, descripcion)"));
+        }
         const proyecto = new Proyecto(req.body);
         const proyectoRegistrado = await proyecto.save();
         res.status(httpStatus.CREATED).json(proyectoRegistrado);

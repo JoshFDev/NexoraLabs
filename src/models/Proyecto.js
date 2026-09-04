@@ -10,14 +10,17 @@ const proyectoEsquema = new Schema(
         titulo: {
             type: String,
             required: true,
-            trim: true
+            trim: true,
+            maxlength: 100
         },
         descripcion: {
             type: String,
-            required: true
+            required: true,
+            maxlength: 2000
         },
         categoria: {
-            type: String
+            type: String,
+            maxlength: 50
         },
         nivel_dificultad: {
             type: String,

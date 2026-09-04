@@ -11,10 +11,12 @@ const equipoEsquema = new Schema(
         nombre: {
             type: String,
             required: true,
-            trim: true
+            trim: true,
+            maxlength: 80
         },
         descripcion: {
-            type: String
+            type: String,
+            maxlength: 1000
         },
         escudo: {
             type: String

@@ -1,6 +1,6 @@
 import { Router } from "express";
 import RecursoAprendizaje from "../models/RecursoAprendizaje";
-import { serverError, notFound } from "../shared/errors/errorHandler";
+import { serverError, notFound, badRequest } from "../shared/errors/errorHandler";
 import httpStatus from "../shared/errors/httpStatus";
 
 const router = Router();
@@ -31,6 +31,10 @@ router.get('/recurso-aprendizaje/:id', async (req, res) => {
 //Crear recurso de aprendizaje
 router.post('/recurso-aprendizaje/agregar', async (req, res) => {
     try {
+        const { titulo } = req.body;
+        if (!titulo) {
+            return res.status(httpStatus.BAD_REQUEST).json(badRequest("El campo titulo es obligatorio"));
+        }
         const recurso = new RecursoAprendizaje(req.body);
         const recursoRegistrado = await recurso.save();
         res.status(httpStatus.CREATED).json(recursoRegistrado);

@@ -5,13 +5,16 @@ const recursoAprendizajeEsquema = new Schema(
         titulo: {
             type: String,
             required: true,
-            trim: true
+            trim: true,
+            maxlength: 120
         },
         descripcion: {
-            type: String
+            type: String,
+            maxlength: 2000
         },
         url: {
-            type: String
+            type: String,
+            match: [/^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/, "URL no válida"]
         },
         tipo: {
             type: String,

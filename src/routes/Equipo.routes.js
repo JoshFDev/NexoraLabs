@@ -1,6 +1,6 @@
 import { Router } from "express";
 import Equipo from "../models/Equipo";
-import { serverError, notFound } from "../shared/errors/errorHandler";
+import { serverError, notFound, badRequest } from "../shared/errors/errorHandler";
 import httpStatus from "../shared/errors/httpStatus";
 
 const router = Router();
@@ -18,6 +18,10 @@ router.get('/equipos', async (req, res) => {
 
 router.post('/equipo/agregar', async (req, res) => {
     try {
+        const { proyecto_id, nombre } = req.body;
+        if (!proyecto_id || !nombre) {
+            return res.status(httpStatus.BAD_REQUEST).json(badRequest("Todos los campos obligatorios son requeridos (proyecto_id, nombre)"));
+        }
         const equipo = new Equipo(req.body);
         const equipoRegistrado = await equipo.save();
         res.status(httpStatus.CREATED).json(equipoRegistrado);

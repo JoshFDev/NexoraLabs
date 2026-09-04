@@ -1,6 +1,6 @@
 import { Router } from "express";
 import Habilidad from "../models/Habilidad";
-import { serverError, notFound } from "../shared/errors/errorHandler";
+import { serverError, notFound, badRequest } from "../shared/errors/errorHandler";
 import httpStatus from "../shared/errors/httpStatus";
 
 const router = Router();
@@ -31,6 +31,10 @@ router.get('/habilidad/:id', async (req, res) => {
 //Crear habilidad
 router.post('/habilidad/agregar', async (req, res) => {
     try {
+        const { nombre, categoria } = req.body;
+        if (!nombre || !categoria) {
+            return res.status(httpStatus.BAD_REQUEST).json(badRequest("Todos los campos obligatorios son requeridos (nombre, categoria)"));
+        }
         const habilidad = new Habilidad(req.body);
         const habilidadRegistrada = await habilidad.save();
         res.status(httpStatus.CREATED).json(habilidadRegistrada);

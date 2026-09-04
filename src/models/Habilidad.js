@@ -6,7 +6,8 @@ const habilidadEsquema = new Schema(
             type: String,
             required: true,
             unique: true,
-            trim: true
+            trim: true,
+            maxlength: 60
         },
         categoria: {
             type: String,
