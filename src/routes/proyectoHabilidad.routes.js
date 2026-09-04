@@ -3,6 +3,7 @@ import ProyectoHabilidad from "../models/ProyectoHabilidad";
 import { serverError, notFound } from "../shared/errors/errorHandler";
 import httpStatus from "../shared/errors/httpStatus";
 import verifyToken from "../middleware/verifyToken";
+import authorize from "../middleware/authorize";
 
 const router = Router();
 
@@ -34,7 +35,7 @@ router.get('/proyecto-habilidad/:id', async (req, res) => {
 });
 
 //Crear relación proyecto-habilidad
-router.post('/proyecto-habilidad/agregar', verifyToken, async (req, res) => {
+router.post('/proyecto-habilidad/agregar', verifyToken, authorize("admin", "mentor"), async (req, res) => {
     try {
         const proyectoHabilidad = new ProyectoHabilidad(req.body);
         const proyectoHabilidadRegistrada = await proyectoHabilidad.save();
@@ -46,7 +47,7 @@ router.post('/proyecto-habilidad/agregar', verifyToken, async (req, res) => {
 });
 
 //Actualizar relación proyecto-habilidad
-router.put('/proyecto-habilidad/:id', verifyToken, async (req, res) => {
+router.put('/proyecto-habilidad/:id', verifyToken, authorize("admin", "mentor"), async (req, res) => {
     try {
         const actualizada = await ProyectoHabilidad.findByIdAndUpdate(req.params.id, req.body, { new: true });
         if (!actualizada) return res.status(httpStatus.NOT_FOUND).json(notFound("Relación proyecto-habilidad no encontrada"));
@@ -58,7 +59,7 @@ router.put('/proyecto-habilidad/:id', verifyToken, async (req, res) => {
 });
 
 //Eliminar relación proyecto-habilidad
-router.delete('/proyecto-habilidad/:id', verifyToken, async (req, res) => {
+router.delete('/proyecto-habilidad/:id', verifyToken, authorize("admin", "mentor"), async (req, res) => {
     try {
         const eliminada = await ProyectoHabilidad.findByIdAndDelete(req.params.id);
         if (!eliminada) return res.status(httpStatus.NOT_FOUND).json(notFound("Relación proyecto-habilidad no encontrada"));

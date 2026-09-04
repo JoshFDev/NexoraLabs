@@ -3,6 +3,7 @@ import RecursoAprendizaje from "../models/RecursoAprendizaje";
 import { serverError, notFound, badRequest } from "../shared/errors/errorHandler";
 import httpStatus from "../shared/errors/httpStatus";
 import verifyToken from "../middleware/verifyToken";
+import authorize from "../middleware/authorize";
 
 const router = Router();
 
@@ -30,7 +31,7 @@ router.get('/recurso-aprendizaje/:id', async (req, res) => {
 });
 
 //Crear recurso de aprendizaje
-router.post('/recurso-aprendizaje/agregar', verifyToken, async (req, res) => {
+router.post('/recurso-aprendizaje/agregar', verifyToken, authorize("admin", "mentor"), async (req, res) => {
     try {
         const { titulo } = req.body;
         if (!titulo) {
@@ -46,7 +47,7 @@ router.post('/recurso-aprendizaje/agregar', verifyToken, async (req, res) => {
 });
 
 //Actualizar recurso de aprendizaje
-router.put('/recurso-aprendizaje/:id', verifyToken, async (req, res) => {
+router.put('/recurso-aprendizaje/:id', verifyToken, authorize("admin", "mentor"), async (req, res) => {
     try {
         const actualizado = await RecursoAprendizaje.findByIdAndUpdate(req.params.id, req.body, { new: true });
         if (!actualizado) return res.status(httpStatus.NOT_FOUND).json(notFound("Recurso no encontrado"));
@@ -58,7 +59,7 @@ router.put('/recurso-aprendizaje/:id', verifyToken, async (req, res) => {
 });
 
 //Eliminar recurso de aprendizaje
-router.delete('/recurso-aprendizaje/:id', verifyToken, async (req, res) => {
+router.delete('/recurso-aprendizaje/:id', verifyToken, authorize("admin", "mentor"), async (req, res) => {
     try {
         const eliminado = await RecursoAprendizaje.findByIdAndDelete(req.params.id);
         if (!eliminado) return res.status(httpStatus.NOT_FOUND).json(notFound("Recurso no encontrado"));

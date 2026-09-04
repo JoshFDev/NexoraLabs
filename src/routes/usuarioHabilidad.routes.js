@@ -3,6 +3,7 @@ import UsuarioHabilidad from "../models/UsuarioHabilidad";
 import { serverError, notFound } from "../shared/errors/errorHandler";
 import httpStatus from "../shared/errors/httpStatus";
 import verifyToken from "../middleware/verifyToken";
+import authorize from "../middleware/authorize";
 
 const router = Router();
 
@@ -61,7 +62,7 @@ router.put('/usuario-habilidad/:id', verifyToken, async (req, res) => {
 });
 
 //Eliminar relación usuario-habilidad
-router.delete('/usuario-habilidad/:id', verifyToken, async (req, res) => {
+router.delete('/usuario-habilidad/:id', verifyToken, authorize("admin"), async (req, res) => {
     try {
         const eliminada = await UsuarioHabilidad.findByIdAndDelete(req.params.id);
         if (!eliminada) return res.status(httpStatus.NOT_FOUND).json(notFound("Relación usuario-habilidad no encontrada"));

@@ -49,7 +49,7 @@ const usuarioEsquema = new Schema(
         rol: {
             type: String,
             required: true,
-            enum: ["estudiante", "desarrollador", "ingeniero", "mentor"],
+            enum: ["admin", "estudiante", "desarrollador", "ingeniero", "mentor"],
             default: "estudiante"
         },
         nivel_experiencia: {

@@ -3,6 +3,7 @@ import Equipo from "../models/Equipo";
 import { serverError, notFound, badRequest } from "../shared/errors/errorHandler";
 import httpStatus from "../shared/errors/httpStatus";
 import verifyToken from "../middleware/verifyToken";
+import authorize from "../middleware/authorize";
 
 const router = Router();
 
@@ -17,7 +18,7 @@ router.get('/equipos', async (req, res) => {
     }
 });
 
-router.post('/equipo/agregar', verifyToken, async (req, res) => {
+router.post('/equipo/agregar', verifyToken, authorize("admin", "mentor"), async (req, res) => {
     try {
         const { proyecto_id, nombre } = req.body;
         if (!proyecto_id || !nombre) {
@@ -44,7 +45,7 @@ router.get('/equipo/:id', async (req, res) => {
     }
 });
 
-router.put('/equipo/:id', verifyToken, async (req, res) => {
+router.put('/equipo/:id', verifyToken, authorize("admin", "mentor"), async (req, res) => {
     try {
         const actualizado = await Equipo.findByIdAndUpdate(req.params.id, req.body, { new: true });
         if (!actualizado) return res.status(httpStatus.NOT_FOUND).json(notFound("Equipo no encontrado"));
@@ -55,7 +56,7 @@ router.put('/equipo/:id', verifyToken, async (req, res) => {
     }
 });
 
-router.delete('/equipo/:id', verifyToken, async (req, res) => {
+router.delete('/equipo/:id', verifyToken, authorize("admin", "mentor"), async (req, res) => {
     try {
         const eliminado = await Equipo.findByIdAndDelete(req.params.id);
         if (!eliminado) return res.status(httpStatus.NOT_FOUND).json(notFound("Equipo no encontrado"));
