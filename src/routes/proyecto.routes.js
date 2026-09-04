@@ -7,19 +7,6 @@ import authorize from "../middleware/authorize";
 
 const router = Router();
 
-//Listar todos los proyectos
-router.get('/proyectos', async (req, res) => {
-    try {
-        const proyectos = await Proyecto.find()
-            .populate('creador_id', 'nombre email')
-            .populate('habilidades_requeridas', 'nombre');
-        res.json(proyectos);
-    } catch (error) {
-        console.log(error);
-        res.status(500).json(serverError(error));
-    }
-});
-
 //Ver un proyecto por id
 router.get('/proyecto/:id', async (req, res) => {
     try {
@@ -71,6 +58,34 @@ router.delete('/proyecto/:id', verifyToken, authorize("admin", "mentor", "desarr
     } catch (error) {
         console.log(error);
         res.status(500).json(serverError(error));
+    }
+});
+
+//Ruta para listar los proyectos con filtros:
+router.get('/proyectos', async (req,res) => {
+    try{
+        const {categoria, estado, nivel, buscar} = req.query;
+        const filtros = {};
+
+        if(categoria) filtros.categoria = categoria;
+        if(estado) filtros.estado = estado;
+        if(nivel) filtros.nivel_dificultad = nivel;
+
+        if(buscar){
+            filtros.$or =[
+                {titulo: {$regex: buscar, $options: "i"}},
+                {descripcion: {$regex: buscar, $options: "i"}}
+            ];
+        }
+
+        const proyectos = await Proyecto.find(filtros).populate('creador_id', 'nombre email')
+        .populate('habilidades_requeridas', 'nombre');
+
+        res.json(proyectos);
+
+    }catch(error){
+        console.log(error);
+        res.status(500).json(serverError(error))
     }
 });
 
