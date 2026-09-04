@@ -8,10 +8,31 @@ import { httpStatus, badRequest, unauthorized, serverError, notFound } from "../
 
 const router = Router();
 
-//Listar todos los usuarios:
+//Listar todos los usuarios (con filtros)
+//GET /usuarios?buscar=josh&rol=mentor&nivel=intermedio
 router.get('/usuarios', async (req,res) => {
     try{
-        const usuarios = await Usuario.find();
+        const { buscar, rol, nivel } = req.query;
+        const filtros = {};
+
+        // Filtro por rol exacto
+        if (rol) filtros.rol = rol;
+
+        // El campo en BD se llama nivel_experiencia, mapeamos "nivel"
+        if (nivel) filtros.nivel_experiencia = nivel;
+
+        // Búsqueda de texto en nombre, apellidos o email
+        if (buscar) {
+            filtros.$or = [
+                { nombre: { $regex: buscar, $options: "i" } },
+                { apellido_paterno: { $regex: buscar, $options: "i" } },
+                { apellido_materno: { $regex: buscar, $options: "i" } },
+                { email: { $regex: buscar, $options: "i" } }
+            ];
+        }
+
+        // .select('-password') oculta el campo password de la respuesta
+        const usuarios = await Usuario.find(filtros).select('-password');
         res.json(usuarios);
     } catch (error){
         console.log(error);

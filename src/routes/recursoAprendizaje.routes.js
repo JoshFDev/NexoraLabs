@@ -7,10 +7,28 @@ import authorize from "../middleware/authorize";
 
 const router = Router();
 
-//Listar todos los recursos de aprendizaje
+//Listar todos los recursos de aprendizaje (con filtros)
+//GET /recursos-aprendizaje?buscar=javascript&tipo=video&nivel=intermedio
 router.get('/recursos-aprendizaje', async (req, res) => {
     try {
-        const recursos = await RecursoAprendizaje.find();
+        const { buscar, tipo, nivel } = req.query;
+        const filtros = {};
+
+        // Filtro por tipo exacto (curso/documentación/video/artículo/libro)
+        if (tipo) filtros.tipo = tipo;
+
+        // Filtro por nivel exacto
+        if (nivel) filtros.nivel = nivel;
+
+        // Búsqueda de texto en título o descripción
+        if (buscar) {
+            filtros.$or = [
+                { titulo: { $regex: buscar, $options: "i" } },
+                { descripcion: { $regex: buscar, $options: "i" } }
+            ];
+        }
+
+        const recursos = await RecursoAprendizaje.find(filtros);
         res.json(recursos);
     } catch (error) {
         console.log(error);

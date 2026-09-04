@@ -7,9 +7,23 @@ import authorize from "../middleware/authorize";
 
 const router = Router();
 
+//Listar equipos (con filtros)
+//GET /equipos?buscar=dev&estado=activo
 router.get('/equipos', async (req, res) => {
     try {
-        const equipos = await Equipo.find()
+        const { buscar, estado } = req.query;
+        const filtros = {};
+
+        if (estado) filtros.estado = estado;
+
+        if (buscar) {
+            filtros.$or = [
+                { nombre: { $regex: buscar, $options: "i" } },
+                { descripcion: { $regex: buscar, $options: "i" } }
+            ];
+        }
+
+        const equipos = await Equipo.find(filtros)
             .populate('proyecto_id', 'titulo');
         res.json(equipos);
     } catch (error) {

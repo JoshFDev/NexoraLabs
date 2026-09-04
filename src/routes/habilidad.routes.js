@@ -7,10 +7,31 @@ import authorize from "../middleware/authorize";
 
 const router = Router();
 
-//Listar todas las habilidades
+//Listar todas las habilidades (con filtros)
+//GET /habilidades?buscar=react&categoria=Web&nivel=intermedio
 router.get('/habilidades', async (req, res) => {
     try {
-        const habilidades = await Habilidad.find();
+        // req.query = { buscar, categoria, nivel } que el cliente manda en la URL
+        const { buscar, categoria, nivel } = req.query;
+
+        // Objeto de filtros acumulados
+        const filtros = {};
+
+        // Filtro por categoría exacta
+        if (categoria) filtros.categoria = categoria;
+
+        // El campo en BD se llama nivel_minimo, mapeamos "nivel" a ese campo
+        if (nivel) filtros.nivel_minimo = nivel;
+
+        // Búsqueda de texto en nombre o descripción (insensible a mayúsculas)
+        if (buscar) {
+            filtros.$or = [
+                { nombre: { $regex: buscar, $options: "i" } },
+                { descripcion: { $regex: buscar, $options: "i" } }
+            ];
+        }
+
+        const habilidades = await Habilidad.find(filtros);
         res.json(habilidades);
     } catch (error) {
         console.log(error);
