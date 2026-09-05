@@ -31,24 +31,27 @@ app.engine(
     }));
 
 //middleware
-app.use(morgan('dev'));
-
 //SEGURIDAD 1: helmet añade cabeceras HTTP seguras (X-Content-Type-Options, X-Frame-Options, etc.)
 app.use(helmet());
 
 //SEGURIDAD 2: cors permite que otros dominios (el futuro frontend) consuman la API
 app.use(cors());
 
-//SEGURIDAD 3: limitar las peticiones por IP para evitar abusos (ataques de fuerza bruta, spam)
-//300 peticiones cada 15 minutos por IP; al superarlas responde 429 Too Many Requests
-const limitadorGeneral = rateLimit({
-    windowMs: 15 * 60 * 1000, // ventana de tiempo: 15 minutos (en milisegundos)
-    limit: 300,               // máximo de peticiones permitidas en esa ventana
-    standardHeaders: true,    // expone las cabeceras estándar RateLimit-* en la respuesta
-    legacyHeaders: false,     // desactiva las cabeceras antiguas (X-RateLimit-*)
-    message: { error: "Demasiadas peticiones, inténtalo de nuevo más tarde" }
-});
-app.use(limitadorGeneral);
+//En modo test se desactivan morgan y el limitador general para no ensuciar ni bloquear las pruebas
+if (process.env.NODE_ENV !== "test") {
+    app.use(morgan('dev'));
+
+    //SEGURIDAD 3: limitar las peticiones por IP para evitar abusos (ataques de fuerza bruta, spam)
+    //300 peticiones cada 15 minutos por IP; al superarlas responde 429 Too Many Requests
+    const limitadorGeneral = rateLimit({
+        windowMs: 15 * 60 * 1000, // ventana de tiempo: 15 minutos (en milisegundos)
+        limit: 300,               // máximo de peticiones permitidas en esa ventana
+        standardHeaders: true,    // expone las cabeceras estándar RateLimit-* en la respuesta
+        legacyHeaders: false,     // desactiva las cabeceras antiguas (X-RateLimit-*)
+        message: { error: "Demasiadas peticiones, inténtalo de nuevo más tarde" }
+    });
+    app.use(limitadorGeneral);
+}
 
 app.use(express.urlencoded({extended: false}));
 app.use(express.json())

@@ -139,8 +139,13 @@ const limitadorLogin = rateLimit({
     message: { error: "Demasiados intentos de login, espera 15 minutos" }
 });
 
+//En modo test se salta el limitador para no bloquearse al repetir las pruebas
+const limitadorLoginActivo = process.env.NODE_ENV === "test"
+    ? (req, res, next) => next()
+    : limitadorLogin;
+
 //Login de usuario:
-router.post('/usuario/login', limitadorLogin, async (req, res) => {
+router.post('/usuario/login', limitadorLoginActivo, async (req, res) => {
     try{
         const { email, password } = req.body;
 
