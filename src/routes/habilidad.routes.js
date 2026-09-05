@@ -31,6 +31,16 @@ router.get('/habilidades', async (req, res) => {
             ];
         }
 
+        // ORDENAMIENTO: ?orden=recientes|antiguos|a-z|z-a
+        // a-z/z-a ordenan alfabéticamente por el nombre
+        const ordenamientos = {
+            recientes: { _id: -1 },
+            antiguos: { _id: 1 },
+            "a-z": { nombre: 1 },
+            "z-a": { nombre: -1 }
+        };
+        const sort = ordenamientos[req.query.orden] || {};
+
         // PAGINACIÓN
         const pagina = Number(req.query.pagina) || 1;
         const limite = Number(req.query.limite) || 10;
@@ -38,7 +48,7 @@ router.get('/habilidades', async (req, res) => {
 
         const total = await Habilidad.countDocuments(filtros);
 
-        const habilidades = await Habilidad.find(filtros).skip(salto).limit(limite);
+        const habilidades = await Habilidad.find(filtros).sort(sort).skip(salto).limit(limite);
 
         res.json({
             total,

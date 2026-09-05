@@ -5,7 +5,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import verifyToken from "../middleware/verifyToken";
 import authorize from "../middleware/authorize";
-import { httpStatus, badRequest, unauthorized, serverError, notFound } from "../shared/errors/errorHandler";
+import { httpStatus, badRequest, unauthorized, serverError, notFound, conflict } from "../shared/errors/errorHandler";
 
 const router = Router();
 
@@ -32,6 +32,17 @@ router.get('/usuarios', async (req,res) => {
             ];
         }
 
+        // ORDENAMIENTO: ?orden=recientes|antiguos|a-z|z-a
+        // recientes/antiguos usan _id (fecha de creación embebida en el ObjectId)
+        // a-z/z-a ordenan alfabéticamente por el nombre
+        const ordenamientos = {
+            recientes: { _id: -1 },
+            antiguos: { _id: 1 },
+            "a-z": { nombre: 1 },
+            "z-a": { nombre: -1 }
+        };
+        const sort = ordenamientos[req.query.orden] || {};
+
         // PAGINACIÓN
         const pagina = Number(req.query.pagina) || 1;
         const limite = Number(req.query.limite) || 10;
@@ -40,7 +51,7 @@ router.get('/usuarios', async (req,res) => {
         const total = await Usuario.countDocuments(filtros);
 
         // .select('-password') oculta el campo password de la respuesta
-        const usuarios = await Usuario.find(filtros).skip(salto).limit(limite).select('-password');
+        const usuarios = await Usuario.find(filtros).sort(sort).skip(salto).limit(limite).select('-password');
 
         res.json({
             total,
@@ -98,7 +109,7 @@ router.post('/usuario/registro', async (req,res) =>{
 
         const emailExiste = await Usuario.findOne({ email });
         if (emailExiste) {
-            return res.status(httpStatus.CONFLICT).json(badRequest("El email ya está registrado"));
+            return res.status(httpStatus.CONFLICT).json(conflict("El email ya está registrado"));
         }
 
         //Hashear el password con bcrypt

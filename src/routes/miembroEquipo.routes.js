@@ -1,7 +1,7 @@
 import { Router } from "express";
 import MiembroEquipo from "../models/MiembroEquipo";
 import Equipo from "../models/Equipo";
-import { serverError, notFound, badRequest } from "../shared/errors/errorHandler";
+import { serverError, notFound, badRequest, conflict } from "../shared/errors/errorHandler";
 import httpStatus from "../shared/errors/httpStatus";
 import verifyToken from "../middleware/verifyToken";
 import authorize from "../middleware/authorize";
@@ -81,7 +81,7 @@ router.post('/equipo/:id/unirse', verifyToken, async (req, res) => {
 
         const yaEsMiembro = await MiembroEquipo.findOne({ equipo_id: equipoId, usuario_id: usuarioId });
         if (yaEsMiembro) {
-            return res.status(httpStatus.CONFLICT).json(badRequest("Ya formas parte de este equipo"));
+            return res.status(httpStatus.CONFLICT).json(conflict("Ya formas parte de este equipo"));
         }
 
         const miembro = new MiembroEquipo({

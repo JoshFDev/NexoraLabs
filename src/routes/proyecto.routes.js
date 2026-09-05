@@ -102,10 +102,21 @@ router.delete('/proyecto/:id', verifyToken, authorize("admin", "mentor", "desarr
 });
 
 //Ruta para listar los proyectos con filtros y paginación:
-//GET /proyectos?categoria=web&buscar=react&pagina=1&limite=10
+//GET /proyectos?categoria=web&buscar=react&pagina=1&limite=10&orden=recientes
 router.get('/proyectos', async (req,res) => {
     try{
         const {categoria, estado, nivel, buscar} = req.query;
+
+        // ORDENAMIENTO: ?orden=recientes|antiguos|a-z|z-a
+        // recientes/antiguos ordenan por _id, porque el ObjectId de Mongo guarda la fecha de creación interna
+        // a-z/z-a ordenan alfabéticamente por el campo visible (titulo)
+        const ordenamientos = {
+            recientes: { _id: -1 }, // -1 = descendente -> los nuevos primero
+            antiguos: { _id: 1 },   // 1 = ascendente -> los viejos primero
+            "a-z": { titulo: 1 },
+            "z-a": { titulo: -1 }
+        };
+        const sort = ordenamientos[req.query.orden] || {}; // si el orden no es válido, no se ordena
 
         // PAGINACIÓN: leemos pagina y limite del query
         // Number() los convierte a número (vienen como texto desde la URL)
@@ -134,6 +145,7 @@ router.get('/proyectos', async (req,res) => {
 
         // .skip() se salta los de páginas anteriores, .limit() fija cuántos traer
         const proyectos = await Proyecto.find(filtros)
+            .sort(sort)
             .skip(salto)
             .limit(limite)
             .populate('creador_id', 'nombre email')

@@ -1,6 +1,6 @@
 import { Router } from "express";
 import RecursoAprendizaje from "../models/RecursoAprendizaje";
-import { serverError, notFound, badRequest } from "../shared/errors/errorHandler";
+import { serverError, notFound, badRequest, conflict } from "../shared/errors/errorHandler";
 import httpStatus from "../shared/errors/httpStatus";
 import verifyToken from "../middleware/verifyToken";
 import authorize from "../middleware/authorize";
@@ -28,6 +28,16 @@ router.get('/recursos-aprendizaje', async (req, res) => {
             ];
         }
 
+        // ORDENAMIENTO: ?orden=recientes|antiguos|a-z|z-a
+        // a-z/z-a ordenan alfabéticamente por el título
+        const ordenamientos = {
+            recientes: { _id: -1 },
+            antiguos: { _id: 1 },
+            "a-z": { titulo: 1 },
+            "z-a": { titulo: -1 }
+        };
+        const sort = ordenamientos[req.query.orden] || {};
+
         // PAGINACIÓN
         const pagina = Number(req.query.pagina) || 1;
         const limite = Number(req.query.limite) || 10;
@@ -35,7 +45,7 @@ router.get('/recursos-aprendizaje', async (req, res) => {
 
         const total = await RecursoAprendizaje.countDocuments(filtros);
 
-        const recursos = await RecursoAprendizaje.find(filtros).skip(salto).limit(limite);
+        const recursos = await RecursoAprendizaje.find(filtros).sort(sort).skip(salto).limit(limite);
 
         res.json({
             total,
@@ -118,7 +128,7 @@ router.post('/recurso-aprendizaje/:id/calificar', verifyToken, async (req, res) 
 
         const yaComento = recurso.comentarios.find(c => c.usuario_id && c.usuario_id.toString() === usuarioId);
         if (yaComento) {
-            return res.status(httpStatus.CONFLICT).json(badRequest("Ya has calificado este recurso"));
+            return res.status(httpStatus.CONFLICT).json(conflict("Ya has calificado este recurso"));
         }
 
         recurso.comentarios.push({

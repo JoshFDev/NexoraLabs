@@ -13,6 +13,7 @@ import postulacionRoutes from './routes/postulacion.routes';
 import usuarioHabilidadRoutes from './routes/usuarioHabilidad.routes';
 import proyectoHabilidadRoutes from './routes/proyectoHabilidad.routes';
 import miembroEquipoRoutes from './routes/miembroEquipo.routes';
+import statsRoutes from './routes/stats.routes';
 import exphbs from "express-handlebars";
 import path from "path";
 import notFound from './shared/errors/notFound';
@@ -64,6 +65,7 @@ app.use(postulacionRoutes);
 app.use(usuarioHabilidadRoutes);
 app.use(proyectoHabilidadRoutes);
 app.use(miembroEquipoRoutes);
+app.use(statsRoutes);
 
 //Manejo de errores (después de todas las rutas)
 app.use(notFound);

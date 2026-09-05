@@ -61,7 +61,9 @@ const rutas = [
 
     { metodo: "POST", ruta: "/proyecto/:id/postular", descripcion: "Postular a un proyecto (autenticado)" },
     { metodo: "POST", ruta: "/equipo/:id/unirse", descripcion: "Unirse a un equipo (autenticado)" },
-    { metodo: "POST", ruta: "/recurso-aprendizaje/:id/calificar", descripcion: "Calificar un recurso (autenticado)" }
+    { metodo: "POST", ruta: "/recurso-aprendizaje/:id/calificar", descripcion: "Calificar un recurso (autenticado)" },
+
+    { metodo: "GET", ruta: "/stats", descripcion: "Estadísticas generales de la plataforma" }
 ];
 
 router.get('/', (req, res) => {

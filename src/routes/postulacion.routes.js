@@ -1,7 +1,7 @@
 import { Router } from "express";
 import Postulacion from "../models/Postulacion";
 import Proyecto from "../models/Proyecto";
-import { serverError, notFound, badRequest } from "../shared/errors/errorHandler";
+import { serverError, notFound, badRequest, conflict } from "../shared/errors/errorHandler";
 import httpStatus from "../shared/errors/httpStatus";
 import verifyToken from "../middleware/verifyToken";
 import authorize from "../middleware/authorize";
@@ -84,7 +84,7 @@ router.post('/proyecto/:id/postular', verifyToken, async (req, res) => {
 
         const yaPostulo = await Postulacion.findOne({ proyecto_id: proyectoId, usuario_id: usuarioId });
         if (yaPostulo) {
-            return res.status(httpStatus.CONFLICT).json(badRequest("Ya te has postulado a este proyecto"));
+            return res.status(httpStatus.CONFLICT).json(conflict("Ya te has postulado a este proyecto"));
         }
 
         const postulacion = new Postulacion({
