@@ -13,9 +13,11 @@ function NavBar() {
   };
 
   return (
-    <Navbar bg="dark" variant="dark" expand="lg">
+    <Navbar variant="dark" expand="lg" className="navbar-nexora">
       <Container>
-        <Navbar.Brand as={Link} to="/">NexoraLabs</Navbar.Brand>
+        <Navbar.Brand as={Link} to="/" className="d-flex align-items-center">
+          <img src="/Logo.png" alt="NexoraLabs" height="30" className="brand-firma" />
+        </Navbar.Brand>
         <Navbar.Toggle aria-controls="navbar-nav" />
         <Navbar.Collapse id="navbar-nav">
           <Nav className="ms-auto">

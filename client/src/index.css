@@ -1,4 +1,27 @@
+:root {
+  --nx-morado: #A855F7;
+  --nx-morado-oscuro: #6D28D9;
+  --nx-fondo: #1A0B2E;
+  --nx-brillo: #EDE9FF;
+}
+
 body {
   min-height: 100vh;
   background-color: #f8f9fa;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.navbar-nexora {
+  background: linear-gradient(90deg, var(--nx-fondo) 0%, #241242 100%) !important;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
