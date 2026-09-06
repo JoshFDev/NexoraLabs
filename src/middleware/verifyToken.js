@@ -3,7 +3,9 @@ import { unauthorized } from "../shared/errors/errorHandler";
 import httpStatus from "../shared/errors/httpStatus";
 
 export default (req, res, next) => {
-    const token = req.header("Authorization");
+    const cabecera = req.header("Authorization") || "";
+    //El cliente envía "Bearer <token>"; quitamos el prefijo para verificarlo
+    const token = cabecera.startsWith("Bearer ") ? cabecera.slice(7) : cabecera;
 
     if (!token) {
         return res.status(httpStatus.UNAUTHORIZED).json(unauthorized("Acceso denegado, no hay token"));

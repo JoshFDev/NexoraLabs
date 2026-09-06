@@ -177,10 +177,10 @@
 }
 
 .login-firma {
-  width: 390px;
-  height: 140px;
+  width: 340px;
+  aspect-ratio: 423 / 286;
   margin: 0 auto 1.2rem;
-  background-image: url('../assets/Logo.png');
+  background-image: url('../assets/LogoOrden.png');
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;

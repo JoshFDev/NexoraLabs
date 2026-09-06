@@ -149,7 +149,7 @@ function RegistroPage() {
 
   return (
     <div className="login-pagina">
-      <div className="login-fondo">
+      <div className="login-fondo registro-fondo">
         <span className="login-blob blob-u"></span>
         <span className="login-blob blob-d"></span>
         <span className="login-blob blob-l"></span>
