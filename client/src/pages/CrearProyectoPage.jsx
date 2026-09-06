@@ -3,6 +3,7 @@ import { Container, Row, Col, Form, Button, Spinner, Alert } from 'react-bootstr
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../api';
 import Chispas from '../components/Chispas';
+import IconoHabilidad from '../components/IconoHabilidad';
 import { leerUsuario } from '../utils/perfil';
 import './ProyectosPage.css';
 
@@ -219,7 +220,9 @@ function CrearProyectoPage() {
                         key={h._id}
                         className={`proyecto-chip-habilidad ${seleccionadas.includes(h._id) ? 'seleccionada' : ''}`}
                         onClick={() => alternarHabilidad(h._id)}
+                        style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
                       >
+                        <IconoHabilidad nombre={h.nombre} />
                         {h.nombre}
                       </button>
                     ))}

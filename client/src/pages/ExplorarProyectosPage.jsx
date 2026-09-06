@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Container, Row, Col, Form, Spinner, Alert, Button } from 'react-bootstrap';
 import api from '../api';
+import IconoHabilidad from '../components/IconoHabilidad';
 import './ProyectosPage.css';
 
 const ETIQUETAS_ESTADO = {
@@ -31,8 +32,14 @@ function ExplorarProyectosPage() {
   const [pagina, setPagina] = useState(1);
   const [totalPaginas, setTotalPaginas] = useState(1);
   const [expandido, setExpandido] = useState(null);
+  const [misProyectos, setMisProyectos] = useState(null);
+  const [sugerencias, setSugerencias] = useState([]);
+  const [sugAbierta, setSugAbierta] = useState(false);
 
   const alternar = (id) => setExpandido((x) => (x === id ? null : id));
+
+  const usuario =
+    JSON.parse(localStorage.getItem('usuario') || sessionStorage.getItem('usuario') || 'null');
 
   useEffect(() => {
     api
@@ -40,6 +47,14 @@ function ExplorarProyectosPage() {
       .then((res) => setRecomendados(res.data))
       .catch(() => setRecomendados(null));
   }, []);
+
+  useEffect(() => {
+    if (!usuario?._id) return;
+    api
+      .get(`/proyectos?creador=${usuario._id}&limite=20&orden=recientes`)
+      .then((res) => setMisProyectos(res.data.proyectos || []))
+      .catch(() => setMisProyectos([]));
+  }, [usuario?._id]);
 
   useEffect(() => {
     setCargando(true);
@@ -62,8 +77,48 @@ function ExplorarProyectosPage() {
 
   const alBuscar = (e) => {
     e.preventDefault();
+    setSugAbierta(false);
     setPagina(1);
     setBuscar(textoBuscar.trim());
+  };
+
+  useEffect(() => {
+    const texto = textoBuscar.trim().toLowerCase();
+    if (texto.length < 2) {
+      setSugerencias([]);
+      setSugAbierta(false);
+      return;
+    }
+    const timer = setTimeout(() => {
+      api
+        .get(`/proyectos?buscar=${encodeURIComponent(texto)}&limite=20&orden=recientes`)
+        .then((res) => {
+          const coinciden = (res.data.proyectos || []).filter((p) =>
+            (p.titulo || '').toLowerCase().includes(texto)
+          );
+          coinciden.sort((a, b) => {
+            const aEmpieza = a.titulo.toLowerCase().startsWith(texto) ? 0 : 1;
+            const bEmpieza = b.titulo.toLowerCase().startsWith(texto) ? 0 : 1;
+            return aEmpieza - bEmpieza;
+          });
+          setSugerencias(coinciden.slice(0, 6));
+        })
+        .catch(() => setSugerencias([]));
+    }, 250);
+    return () => clearTimeout(timer);
+  }, [textoBuscar]);
+
+  const elegirSug = (p) => {
+    setTextoBuscar(p.titulo);
+    setBuscar(p.titulo);
+    setSugAbierta(false);
+    setPagina(1);
+  };
+
+  const cambiarBusqueda = (v) => {
+    setTextoBuscar(v);
+    if (v.trim().length >= 2) setSugAbierta(true);
+    else setSugAbierta(false);
   };
 
   const cambiarFiltro = (campo, valor) => {
@@ -80,6 +135,7 @@ function ExplorarProyectosPage() {
             {p.habilidades_requeridas?.length ? (
               p.habilidades_requeridas.map((h) => (
                 <span key={h._id} className="proyecto-detalle-chip">
+                  <IconoHabilidad nombre={h.nombre} />
                   {h.nombre}
                 </span>
               ))
@@ -141,7 +197,9 @@ function ExplorarProyectosPage() {
           Creado por {p.creador_id?.nombre || 'anon'} · {p.integrantes_maximos || 1} integrante(s)
           {p.coincidencias ? ` · ${p.coincidencias} coincidencia${p.coincidencias !== 1 ? 's' : ''}` : ''}
         </footer>
-        {expandido === p._id && rendDetalle(p)}
+        <div className={`proyecto-fila-contenido${expandido === p._id ? ' abierto' : ''}`}>
+          {rendDetalle(p)}
+        </div>
       </article>
     ),
     [expandido, rendDetalle]
@@ -156,12 +214,33 @@ function ExplorarProyectosPage() {
         {error && <Alert variant="danger">{error}</Alert>}
 
         <Form onSubmit={alBuscar} className="proyectos-toolbar mb-4">
-          <Form.Control
-            className="proyectos-buscar"
-            placeholder="Buscar por título o descripción…"
-            value={textoBuscar}
-            onChange={(e) => setTextoBuscar(e.target.value)}
-          />
+          <div className="proyectos-buscar-wrap">
+            <Form.Control
+              className="proyectos-buscar"
+              placeholder="Buscar por título o descripción…"
+              value={textoBuscar}
+              onChange={(e) => cambiarBusqueda(e.target.value)}
+              onFocus={() => { if (textoBuscar.trim().length >= 2) setSugAbierta(true); }}
+              onBlur={() => setTimeout(() => setSugAbierta(false), 150)}
+              onKeyDown={(e) => { if (e.key === 'Escape') setSugAbierta(false); }}
+            />
+            {sugAbierta && sugerencias.length > 0 && (
+              <div className="proyectos-sug">
+                {sugerencias.map((p) => (
+                  <button
+                    type="button"
+                    key={p._id}
+                    className="proyectos-sug-item"
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => elegirSug(p)}
+                  >
+                    <span className="proyectos-sug-titulo">{p.titulo}</span>
+                    <span className="proyecto-badge">{ETIQUETAS_ESTADO[p.estado] || p.estado}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
           <Form.Select value={filtros.categoria} onChange={(e) => cambiarFiltro('categoria', e.target.value)} style={{ width: 'auto' }}>
             <option value="">Categoría</option>
             {CATEGORIAS.map((c) => (
@@ -211,14 +290,16 @@ function ExplorarProyectosPage() {
                     <span className="proyecto-badge">
                       {p.coincidencias} coincidencia{p.coincidencias !== 1 ? 's' : ''}
                     </span>
-                    {expandido === p._id && rendDetalle(p)}
+                    <div className={`proyecto-fila-contenido${expandido === p._id ? ' abierto' : ''}`}>
+                      {rendDetalle(p)}
+                    </div>
                   </div>
                 ))
               )}
             </aside>
           </Col>
 
-          <Col xl={8} xxl={9}>
+          <Col xl={8} xxl={6}>
             <div className="d-flex align-items-center justify-content-between mb-3">
               <h3 className="proyectos-titulo mb-0" style={{ fontSize: '1.1rem' }}>
                 Todos los proyectos
@@ -264,6 +345,36 @@ function ExplorarProyectosPage() {
                 )}
               </>
             )}
+          </Col>
+
+          <Col xl={12} xxl={3}>
+            <aside className="proyectos-recomendados">
+              <strong className="d-block mb-3">Mis proyectos</strong>
+              {misProyectos === null ? (
+                <p className="proyectos-subtitulo" style={{ fontSize: '0.82rem', margin: 0 }}>
+                  Cargando…
+                </p>
+              ) : misProyectos.length === 0 ? (
+                <p className="proyectos-subtitulo" style={{ fontSize: '0.82rem', margin: 0 }}>
+                  Aún no has creado proyectos.
+                </p>
+              ) : (
+                misProyectos.slice(0, 6).map((p) => (
+                  <div
+                    className={`recomendado-mini${expandido === p._id ? ' abierto' : ''}`}
+                    key={p._id}
+                    onClick={() => alternar(p._id)}
+                  >
+                    <h6>{p.titulo}</h6>
+                    <span className="proyecto-badge">{ETIQUETAS_ESTADO[p.estado] || p.estado}</span>
+                    <p>{p.descripcion.length > 90 ? `${p.descripcion.slice(0, 90)}…` : p.descripcion}</p>
+                    <div className={`proyecto-fila-contenido${expandido === p._id ? ' abierto' : ''}`}>
+                      {rendDetalle(p)}
+                    </div>
+                  </div>
+                ))
+              )}
+            </aside>
           </Col>
         </Row>
       </Container>

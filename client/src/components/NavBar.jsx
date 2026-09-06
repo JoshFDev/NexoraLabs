@@ -21,8 +21,8 @@ function NavBar() {
 
   return (
     <Navbar variant="dark" expand="lg" className="navbar-nexora">
-      <Container>
-        <Navbar.Brand as={Link} to="/" className="d-flex align-items-center" style={{ marginLeft: '-24px', marginRight: 0, paddingLeft: 0 }}>
+      <Container fluid className="px-4">
+        <Navbar.Brand as={Link} to="/" className="d-flex align-items-center">
           <img
             src={logo}
             alt="NexoraLabs"

@@ -15,6 +15,22 @@ body {
   background: linear-gradient(90deg, var(--nx-fondo) 0%, #241242 100%) !important;
   border-bottom: 1px solid rgba(168, 85, 247, 0.5);
   box-shadow: 0 2px 14px rgba(0, 0, 0, 0.3);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.navbar-nexora .container,
+.navbar-nexora .container-fluid {
+  padding-left: 0;
+}
+
+.navbar-nexora .container {
+  max-width: 100%;
+}
+
+.navbar-nexora .navbar-brand {
+  margin: 0 !important;
 }
 
 .navbar-nexora .navbar-text {

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Container, Spinner, Alert, Button } from 'react-bootstrap';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import api from '../api';
+import IconoHabilidad from '../components/IconoHabilidad';
 import './ProyectosPage.css';
 
 const ETIQUETAS_ESTADO = {
@@ -75,7 +76,8 @@ function ProyectoDetallePage() {
               <div className="proyecto-habilidades-chips">
                 {proyecto.habilidades_requeridas?.length ? (
                   proyecto.habilidades_requeridas.map((h) => (
-                    <span key={String(h._id || h)} className="proyecto-chip-habilidad seleccionada" style={{ cursor: 'default' }}>
+                    <span key={String(h._id || h)} className="proyecto-chip-habilidad seleccionada" style={{ cursor: 'default', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+                      <IconoHabilidad nombre={h.nombre || h} />
                       {h.nombre || h}
                     </span>
                   ))
