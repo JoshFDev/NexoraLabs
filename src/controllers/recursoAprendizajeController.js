@@ -39,7 +39,7 @@ export const listarRecursos = async (req, res) => {
 
         const total = await RecursoAprendizaje.countDocuments(filtros);
 
-        const recursos = await RecursoAprendizaje.find(filtros).sort(sort).skip(salto).limit(limite);
+        const recursos = await RecursoAprendizaje.find(filtros).sort(sort).skip(salto).limit(limite).populate('habilidad_id', 'nombre');
 
         res.json({
             total,
@@ -57,7 +57,7 @@ export const listarRecursos = async (req, res) => {
 //GET /recurso-aprendizaje/:id → ver un recurso por id
 export const obtenerRecurso = async (req, res) => {
     try {
-        const recurso = await RecursoAprendizaje.findById(req.params.id);
+        const recurso = await RecursoAprendizaje.findById(req.params.id).populate('habilidad_id', 'nombre');
         if (!recurso) return res.status(httpStatus.NOT_FOUND).json(notFound("Recurso no encontrado"));
         res.json(recurso);
     } catch (error) {

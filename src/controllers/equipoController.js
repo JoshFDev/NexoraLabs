@@ -1,4 +1,5 @@
 import Equipo from "../models/Equipo";
+import MiembroEquipo from "../models/MiembroEquipo";
 import { serverError, notFound, badRequest } from "../shared/errors/errorHandler";
 import httpStatus from "../shared/errors/httpStatus";
 
@@ -40,12 +41,19 @@ export const listarEquipos = async (req, res) => {
             .limit(limite)
             .populate('proyecto_id', 'titulo');
 
+        const idsEquipos = equipos.map((e) => e._id);
+        const grupos = await MiembroEquipo.aggregate([
+            { $match: { equipo_id: { $in: idsEquipos } } },
+            { $group: { _id: "$equipo_id", n: { $sum: 1 } } }
+        ]);
+        const nPorEquipo = Object.fromEntries(grupos.map((g) => [String(g._id), g.n]));
+
         res.json({
             total,
             pagina,
             limite,
             total_paginas: Math.ceil(total / limite),
-            equipos
+            equipos: equipos.map((e) => ({ ...e.toObject(), n_miembros: nPorEquipo[String(e._id)] || 0 }))
         });
     } catch (error) {
         console.log(error);
@@ -59,7 +67,20 @@ export const obtenerEquipo = async (req, res) => {
         const equipo = await Equipo.findById(req.params.id)
             .populate('proyecto_id', 'titulo');
         if (!equipo) return res.status(httpStatus.NOT_FOUND).json(notFound("Equipo no encontrado"));
-        res.json(equipo);
+        const n_miembros = await MiembroEquipo.countDocuments({ equipo_id: equipo._id });
+        res.json({ ...equipo.toObject(), n_miembros });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json(serverError(error));
+    }
+};
+
+//GET /equipo/:id/miembros → integrantes de un equipo
+export const miembrosDeEquipo = async (req, res) => {
+    try {
+        const miembros = await MiembroEquipo.find({ equipo_id: req.params.id })
+            .populate('usuario_id', 'nombre apellido_paterno email rol');
+        res.json(miembros);
     } catch (error) {
         console.log(error);
         res.status(500).json(serverError(error));

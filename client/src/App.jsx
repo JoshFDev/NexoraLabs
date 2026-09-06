@@ -8,6 +8,8 @@ import ExplorarProyectosPage from './pages/ExplorarProyectosPage';
 import CrearProyectoPage from './pages/CrearProyectoPage';
 import ProyectoDetallePage from './pages/ProyectoDetallePage';
 import PostulacionesPage from './pages/PostulacionesPage';
+import EquiposPage from './pages/EquiposPage';
+import RecursosPage from './pages/RecursosPage';
 import RutaProtegida from './components/RutaProtegida';
 
 function App() {
@@ -57,6 +59,22 @@ function App() {
           element={
             <RutaProtegida>
               <PostulacionesPage />
+            </RutaProtegida>
+          }
+        />
+        <Route
+          path="/equipos"
+          element={
+            <RutaProtegida>
+              <EquiposPage />
+            </RutaProtegida>
+          }
+        />
+        <Route
+          path="/recursos"
+          element={
+            <RutaProtegida>
+              <RecursosPage />
             </RutaProtegida>
           }
         />

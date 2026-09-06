@@ -6,7 +6,8 @@ import {
     obtenerEquipo,
     crearEquipo,
     actualizarEquipo,
-    eliminarEquipo
+    eliminarEquipo,
+    miembrosDeEquipo
 } from "../controllers/equipoController";
 
 const router = Router();
@@ -21,6 +22,9 @@ router.post('/equipo/agregar', verifyToken, authorize("admin", "mentor"), crearE
 
 //Ver un equipo por id
 router.get('/equipo/:id', obtenerEquipo);
+
+//Integrantes de un equipo
+router.get('/equipo/:id/miembros', verifyToken, miembrosDeEquipo);
 
 //Actualizar equipo
 router.put('/equipo/:id', verifyToken, authorize("admin", "mentor"), actualizarEquipo);

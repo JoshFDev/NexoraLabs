@@ -7,7 +7,9 @@ import {
     crearMiembro,
     actualizarMiembro,
     eliminarMiembro,
-    unirseAEquipo
+    unirseAEquipo,
+    misEquipos,
+    salirDeEquipo
 } from "../controllers/miembroEquipoController";
 
 const router = Router();
@@ -29,5 +31,11 @@ router.delete('/miembro-equipo/:id', verifyToken, authorize("admin", "mentor"), 
 
 //Lógica de negocio: unirse a un equipo (autenticado)
 router.post('/equipo/:id/unirse', verifyToken, unirseAEquipo);
+
+//Equipos donde soy miembro
+router.get('/mis-equipos', verifyToken, misEquipos);
+
+//Salir de un equipo (autenticado)
+router.delete('/equipo/:id/salir', verifyToken, salirDeEquipo);
 
 export default router;

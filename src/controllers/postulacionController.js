@@ -36,7 +36,7 @@ export const postulacionesDeMisProyectos = async (req, res) => {
         const idsProyectos = proyectos.map((p) => p._id);
 
         const postulaciones = await Postulacion.find({ proyecto_id: { $in: idsProyectos } })
-            .populate('proyecto_id', 'titulo estado')
+            .populate('proyecto_id', 'titulo estado habilidades_requeridas')
             .populate('usuario_id', 'nombre apellido_paterno email rol')
             .populate('habilidades_ofrecidas', 'nombre')
             .sort({ fecha: -1 });

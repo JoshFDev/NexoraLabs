@@ -66,6 +66,35 @@ export const eliminarMiembro = async (req, res) => {
     }
 };
 
+//GET /mis-equipos → equipos donde soy miembro
+export const misEquipos = async (req, res) => {
+    try {
+        const misMiembros = await MiembroEquipo.find({ usuario_id: req.usuario.id });
+        const idsEquipos = misMiembros.map((m) => m.equipo_id);
+        const equipos = await Equipo.find({ _id: { $in: idsEquipos } })
+            .populate('proyecto_id', 'titulo');
+        res.json(equipos);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json(serverError(error));
+    }
+};
+
+//DELETE /equipo/:id/salir → el usuario deja un equipo
+export const salirDeEquipo = async (req, res) => {
+    try {
+        const eliminado = await MiembroEquipo.findOneAndDelete({
+            equipo_id: req.params.id,
+            usuario_id: req.usuario.id
+        });
+        if (!eliminado) return res.status(httpStatus.NOT_FOUND).json(notFound("No formas parte de este equipo"));
+        res.json({ message: "Saliste del equipo", miembro: eliminado });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json(serverError(error));
+    }
+};
+
 //POST /equipo/:id/unirse → lógica de negocio: un usuario se une a un equipo activo
 export const unirseAEquipo = async (req, res) => {
     try {
