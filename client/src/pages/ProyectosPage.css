@@ -296,6 +296,114 @@
   border: 1px solid #e2e0ea;
 }
 
+.proyecto-detalle-acciones {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  border-top: 1px solid #efeff5;
+  margin-top: 0.4rem;
+  padding-top: 0.8rem;
+}
+
+.proyecto-postulacion-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  width: 100%;
+}
+
+.proyecto-post-mensaje {
+  font-size: 0.85rem;
+  font-family: inherit;
+  border-color: #dcdbe6 !important;
+}
+
+.proyecto-post-mensaje:focus {
+  border-color: #bdb3e0 !important;
+  box-shadow: 0 0 0 0.18rem rgba(168, 85, 247, 0.15) !important;
+}
+
+.proyecto-postulado-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.28rem 0.7rem;
+  border-radius: 0.35rem;
+  border: 1px solid rgba(168, 85, 247, 0.45);
+  background: rgba(168, 85, 247, 0.12);
+  color: var(--nx-morado-oscuro);
+}
+
+.proyecto-postulado-badge::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--nx-morado);
+  flex-shrink: 0;
+}
+
+.postulacion-tarjeta {
+  background: #ffffff;
+  border: 1px solid #e4e3ec;
+  border-radius: 0.45rem;
+  padding: 1rem 1.2rem;
+  margin-bottom: 0.7rem;
+  box-shadow: 0 4px 14px rgba(70, 62, 105, 0.05);
+}
+
+.postulacion-cabeza {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1.2rem;
+  flex-wrap: wrap;
+}
+
+.postulacion-nombre {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #2b2840;
+}
+
+.postulacion-email {
+  font-size: 0.8rem;
+  color: #8b84a3;
+}
+
+.postulacion-mensaje {
+  font-size: 0.85rem;
+  color: #4f4a6d;
+  margin: 0.45rem 0 0;
+  white-space: pre-wrap;
+}
+
+.postulacion-acciones {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.55rem;
+  flex-shrink: 0;
+}
+
+.postulacion-estado {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.3rem 0.7rem;
+  border-radius: 0.35rem;
+  background: rgba(168, 85, 247, 0.12);
+  border: 1px solid rgba(168, 85, 247, 0.45);
+  color: var(--nx-morado-oscuro);
+}
+
+.postulacion-fecha {
+  font-size: 0.74rem;
+  color: #a5a1b8;
+}
+
 .proyecto-fila .proyecto-descripcion {
   margin-bottom: 0.6rem;
 }
@@ -494,6 +602,13 @@
   color: #4f4a6d;
 }
 
+.proyecto-form-ayuda {
+  display: block;
+  font-size: 0.74rem;
+  color: #9a96ab;
+  margin-top: 0.3rem;
+}
+
 .proyecto-form .form-control,
 .proyecto-form .form-select {
   background: #fff;
@@ -557,9 +672,19 @@
 }
 
 .proyecto-chip-habilidad.seleccionada {
-  background: linear-gradient(135deg, var(--nx-morado), var(--nx-morado-oscuro));
-  color: #fff;
-  border-color: transparent;
+  background: rgba(168, 85, 247, 0.1);
+  color: var(--nx-morado-oscuro);
+  border-color: var(--nx-morado);
+}
+
+.proyecto-chip-habilidad.seleccionada:hover {
+  background: rgba(168, 85, 247, 0.16);
+}
+
+.proyecto-chip-habilidad.seleccionada .skill-ico {
+  background: #fff !important;
+  color: var(--nx-morado) !important;
+  border: 1px solid var(--nx-morado);
 }
 
 .proyecto-detalle,
@@ -569,6 +694,76 @@
   border-radius: 0.45rem;
   padding: 1.6rem 1.7rem;
   box-shadow: 0 10px 24px rgba(70, 62, 105, 0.07);
+}
+
+.proyectos-panel-lateral {
+  position: sticky;
+  top: 88px;
+}
+
+.crear-proyecto-pagina {
+  min-height: calc(100vh - 92px);
+  display: flex;
+  flex-direction: column;
+}
+
+.crear-proyecto-pagina > .container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+}
+
+.crear-form {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.crear-form > .row {
+  flex: 1;
+  align-items: stretch;
+}
+
+.crear-form > .row > .col-lg-8,
+.crear-form > .row > .col-lg-4 {
+  height: 100%;
+}
+
+.crear-panel {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.crear-panel textarea {
+  flex: 1;
+  min-height: 10rem;
+}
+
+.proyecto-habilidades-buscar {
+  margin-bottom: 0.65rem;
+}
+
+.proyecto-habilidades-buscar .form-control {
+  background: #f7f7fa;
+  color: #2b2840;
+  border: 1px solid #dcdbe6;
+  border-radius: 0.35rem;
+  font-size: 0.86rem;
+  padding: 0.5rem 0.7rem;
+}
+
+.proyecto-habilidades-buscar .form-control:focus {
+  background: #fff;
+  border-color: #bdb3e0;
+  box-shadow: 0 0 0 0.18rem rgba(168, 85, 247, 0.15);
+  outline: 0;
+}
+
+.proyecto-habilidades-buscar .form-control::placeholder {
+  color: #a5a1b8;
 }
 
 .proyecto-detalle h3 {

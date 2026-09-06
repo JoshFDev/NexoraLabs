@@ -60,11 +60,12 @@ export const obtenerProyecto = async (req, res) => {
 //POST /proyecto/agregar → crear un proyecto
 export const crearProyecto = async (req, res) => {
     try {
-        const { creador_id, titulo, descripcion } = req.body;
+        const { titulo, descripcion } = req.body;
+        const creador_id = req.usuario.id || req.body.creador_id;
         if (!creador_id || !titulo || !descripcion) {
             return res.status(httpStatus.BAD_REQUEST).json(badRequest("Todos los campos obligatorios son requeridos (creador_id, titulo, descripcion)"));
         }
-        const proyecto = new Proyecto(req.body);
+        const proyecto = new Proyecto({ ...req.body, creador_id });
         const proyectoRegistrado = await proyecto.save();
         res.status(httpStatus.CREATED).json(proyectoRegistrado);
     } catch (error) {

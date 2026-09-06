@@ -41,6 +41,9 @@ function NavBar() {
                 {puedeCrear && (
                   <Nav.Link as={Link} to="/crear-proyecto" className="nav-link-nexora">Crear proyecto</Nav.Link>
                 )}
+                {puedeCrear && (
+                  <Nav.Link as={Link} to="/postulaciones" className="nav-link-nexora">Postulaciones</Nav.Link>
+                )}
                 <Nav.Link as={Link} to="/" className="nav-link-nexora">Panel</Nav.Link>
                 <Nav.Link as={Link} to="/perfil" className="nav-link-nexora">Mi perfil</Nav.Link>
                 <Navbar.Text className="me-3">

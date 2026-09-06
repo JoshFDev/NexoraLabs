@@ -11,6 +11,11 @@ const ROLES_CREADOR = ['admin', 'mentor', 'desarrollador', 'ingeniero'];
 
 const NIVELES = ['principiante', 'intermedio', 'avanzado', 'experto'];
 const ESTADOS = ['borrador', 'buscando_equipo', 'en_desarrollo'];
+const ETIQUETAS_ESTADO_CREAR = {
+  borrador: 'Borrador',
+  buscando_equipo: 'Buscando equipo',
+  en_desarrollo: 'En desarrollo',
+};
 const CATEGORIAS = ['web', 'movil', 'ia', 'backend', 'frontend', 'devops', 'big_data', 'diseno', 'otro'];
 
 function CrearProyectoPage() {
@@ -29,6 +34,7 @@ function CrearProyectoPage() {
   });
   const [habilidades, setHabilidades] = useState([]);
   const [seleccionadas, setSeleccionadas] = useState([]);
+  const [buscarHabilidad, setBuscarHabilidad] = useState('');
   const [errores, setErrores] = useState({});
   const [cargando, setCargando] = useState(false);
   const [cargandoHabilidades, setCargandoHabilidades] = useState(true);
@@ -72,7 +78,7 @@ function CrearProyectoPage() {
     try {
       await api.post('/proyecto/agregar', {
         ...form,
-        creador_id: usuario.id,
+        creador_id: usuario._id || usuario.id,
         fecha_limite: form.fecha_limite || undefined,
         habilidades_requeridas: seleccionadas,
         integrantes_maximos: Number(form.integrantes_maximos),
@@ -107,8 +113,8 @@ function CrearProyectoPage() {
   }
 
   return (
-    <div className="proyectos-pagina">
-      <Container className="pt-4" style={{ maxWidth: 780 }}>
+    <div className="proyectos-pagina crear-proyecto-pagina">
+      <Container fluid className="pt-4 px-lg-5">
         <h2 className="proyectos-titulo mb-1">Crear proyecto</h2>
         <p className="proyectos-subtitulo mb-4">Publica tu idea y encuentra con quién construirla.</p>
 
@@ -124,131 +130,161 @@ function CrearProyectoPage() {
         {exito && <Chispas />}
 
         {!exito && (
-          <div className="proyecto-panel">
-            <Form onSubmit={submit} className="proyecto-form" noValidate>
-              <Form.Group className="mb-3">
-                <Form.Label className="proyecto-form-label">Título del proyecto *</Form.Label>
-                <Form.Control
-                  value={form.titulo}
-                  onChange={(e) => cambiar('titulo', e.target.value)}
-                  className={errores.titulo ? 'error' : ''}
-                  placeholder="Ej. App de mentoría para estudiantes"
-                  isInvalid={!!errores.titulo}
-                />
-                {errores.titulo && <div className="proyecto-error-campo">{errores.titulo}</div>}
-              </Form.Group>
-
-              <Form.Group className="mb-3">
-                <Form.Label className="proyecto-form-label">Descripción *</Form.Label>
-                <Form.Control
-                  as="textarea"
-                  rows={4}
-                  value={form.descripcion}
-                  onChange={(e) => cambiar('descripcion', e.target.value)}
-                  className={errores.descripcion ? 'error' : ''}
-                  placeholder="¿Qué vas a construir, para quién y qué necesitas?"
-                  isInvalid={!!errores.descripcion}
-                />
-                {errores.descripcion && <div className="proyecto-error-campo">{errores.descripcion}</div>}
-              </Form.Group>
-
-              <Row>
-                <Col md={6}>
+          <Form onSubmit={submit} className="proyecto-form crear-form" noValidate>
+            <Row className="g-4 h-100">
+              <Col lg={8}>
+                <div className="proyecto-panel crear-panel">
                   <Form.Group className="mb-3">
-                    <Form.Label className="proyecto-form-label">Categoría</Form.Label>
-                    <Form.Select value={form.categoria} onChange={(e) => cambiar('categoria', e.target.value)}>
-                      <option value="">Sin categoría</option>
-                      {CATEGORIAS.map((c) => (
-                        <option key={c} value={c}>{c}</option>
-                      ))}
-                    </Form.Select>
-                  </Form.Group>
-                </Col>
-                <Col md={6}>
-                  <Form.Group className="mb-3">
-                    <Form.Label className="proyecto-form-label">Nivel de dificultad</Form.Label>
-                    <Form.Select value={form.nivel_dificultad} onChange={(e) => cambiar('nivel_dificultad', e.target.value)}>
-                      {NIVELES.map((n) => (
-                        <option key={n} value={n}>{n}</option>
-                      ))}
-                    </Form.Select>
-                  </Form.Group>
-                </Col>
-              </Row>
-
-              <Row>
-                <Col md={6}>
-                  <Form.Group className="mb-3">
-                    <Form.Label className="proyecto-form-label">Estado inicial</Form.Label>
-                    <Form.Select value={form.estado} onChange={(e) => cambiar('estado', e.target.value)}>
-                      {ESTADOS.map((s) => (
-                        <option key={s} value={s}>{s}</option>
-                      ))}
-                    </Form.Select>
-                  </Form.Group>
-                </Col>
-                <Col md={6}>
-                  <Form.Group className="mb-3">
-                    <Form.Label className="proyecto-form-label">Integrantes máximos</Form.Label>
+                    <Form.Label className="proyecto-form-label">Título del proyecto *</Form.Label>
                     <Form.Control
-                      type="number"
-                      min="1"
-                      max="20"
-                      value={form.integrantes_maximos}
-                      onChange={(e) => cambiar('integrantes_maximos', e.target.value)}
-                      className={errores.integrantes_maximos ? 'error' : ''}
-                      isInvalid={!!errores.integrantes_maximos}
+                      value={form.titulo}
+                      onChange={(e) => cambiar('titulo', e.target.value)}
+                      className={errores.titulo ? 'error' : ''}
+                      placeholder="Ej. App de mentoría para estudiantes"
+                      isInvalid={!!errores.titulo}
                     />
-                    {errores.integrantes_maximos && (
-                      <div className="proyecto-error-campo">{errores.integrantes_maximos}</div>
+                    {errores.titulo && <div className="proyecto-error-campo">{errores.titulo}</div>}
+                  </Form.Group>
+
+                  <Form.Group className="mb-3">
+                    <Form.Label className="proyecto-form-label">Descripción *</Form.Label>
+                    <Form.Control
+                      as="textarea"
+                      rows={5}
+                      value={form.descripcion}
+                      onChange={(e) => cambiar('descripcion', e.target.value)}
+                      className={errores.descripcion ? 'error' : ''}
+                      placeholder="¿Qué vas a construir, para quién y qué necesitas?"
+                      isInvalid={!!errores.descripcion}
+                    />
+                    {errores.descripcion && <div className="proyecto-error-campo">{errores.descripcion}</div>}
+                  </Form.Group>
+
+                  <Row>
+                    <Col md={6}>
+                      <Form.Group className="mb-3">
+                        <Form.Label className="proyecto-form-label">Categoría</Form.Label>
+                        <Form.Select value={form.categoria} onChange={(e) => cambiar('categoria', e.target.value)}>
+                          <option value="">Sin categoría</option>
+                          {CATEGORIAS.map((c) => (
+                            <option key={c} value={c}>{c}</option>
+                          ))}
+                        </Form.Select>
+                      </Form.Group>
+                    </Col>
+                    <Col md={6}>
+                      <Form.Group className="mb-3">
+                        <Form.Label className="proyecto-form-label">Nivel de dificultad</Form.Label>
+                        <Form.Select value={form.nivel_dificultad} onChange={(e) => cambiar('nivel_dificultad', e.target.value)}>
+                          {NIVELES.map((n) => (
+                            <option key={n} value={n}>{n}</option>
+                          ))}
+                        </Form.Select>
+                      </Form.Group>
+                    </Col>
+                  </Row>
+
+                  <Row>
+                    <Col md={6}>
+                      <Form.Group className="mb-3">
+                        <Form.Label className="proyecto-form-label">Estado inicial</Form.Label>
+<Form.Select value={form.estado} onChange={(e) => cambiar('estado', e.target.value)}>
+                        {ESTADOS.map((s) => (
+                          <option key={s} value={s}>{ETIQUETAS_ESTADO_CREAR[s] || s}</option>
+                        ))}
+                      </Form.Select>
+                      </Form.Group>
+                    </Col>
+                    <Col md={6}>
+                      <Form.Group className="mb-3">
+                        <Form.Label className="proyecto-form-label">Integrantes máximos</Form.Label>
+                        <Form.Control
+                          type="number"
+                          min="1"
+                          max="20"
+                          value={form.integrantes_maximos}
+                          onChange={(e) => cambiar('integrantes_maximos', e.target.value)}
+                          className={errores.integrantes_maximos ? 'error' : ''}
+                          isInvalid={!!errores.integrantes_maximos}
+                        />
+                        {errores.integrantes_maximos && (
+                          <div className="proyecto-error-campo">{errores.integrantes_maximos}</div>
+                        )}
+                      </Form.Group>
+                    </Col>
+                  </Row>
+                </div>
+              </Col>
+
+              <Col lg={4}>
+                <div className="proyecto-panel proyectos-panel-lateral crear-panel">
+                  <Form.Group className="mb-3">
+                    <Form.Label className="proyecto-form-label">Habilidades requeridas</Form.Label>
+                    {cargandoHabilidades ? (
+                      <Spinner animation="border" size="sm" variant="light" />
+                    ) : habilidades.length === 0 ? (
+                      <div className="proyecto-error-campo">No hay habilidades disponibles para elegir.</div>
+                    ) : (
+                      <>
+                        <div className="proyecto-habilidades-buscar">
+                          <Form.Control
+                            type="search"
+                            placeholder="Buscar habilidades…"
+                            value={buscarHabilidad}
+                            onChange={(e) => setBuscarHabilidad(e.target.value)}
+                          />
+                        </div>
+                        <div className="proyecto-habilidades-chips">
+                          {habilidades
+                            .filter((h) =>
+                              h.nombre.toLowerCase().includes(buscarHabilidad.trim().toLowerCase())
+                            )
+                            .map((h) => (
+                              <button
+                                type="button"
+                                key={h._id}
+                                className={`proyecto-chip-habilidad ${seleccionadas.includes(h._id) ? 'seleccionada' : ''}`}
+                                onClick={() => alternarHabilidad(h._id)}
+                                style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
+                              >
+                                <IconoHabilidad nombre={h.nombre} />
+                                {h.nombre}
+                              </button>
+                            ))}
+                          {habilidades.filter((h) =>
+                            h.nombre.toLowerCase().includes(buscarHabilidad.trim().toLowerCase())
+                          ).length === 0 && (
+                            <div className="proyecto-error-campo">Sin resultados para tu búsqueda.</div>
+                          )}
+                        </div>
+                      </>
                     )}
                   </Form.Group>
-                </Col>
-              </Row>
 
-              <Form.Group className="mb-3">
-                <Form.Label className="proyecto-form-label">Habilidades requeridas</Form.Label>
-                {cargandoHabilidades ? (
-                  <Spinner animation="border" size="sm" variant="light" />
-                ) : habilidades.length === 0 ? (
-                  <div className="proyecto-error-campo">No hay habilidades disponibles para elegir.</div>
-                ) : (
-                  <div className="proyecto-habilidades-chips">
-                    {habilidades.map((h) => (
-                      <button
-                        type="button"
-                        key={h._id}
-                        className={`proyecto-chip-habilidad ${seleccionadas.includes(h._id) ? 'seleccionada' : ''}`}
-                        onClick={() => alternarHabilidad(h._id)}
-                        style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
-                      >
-                        <IconoHabilidad nombre={h.nombre} />
-                        {h.nombre}
-                      </button>
-                    ))}
+                  <Form.Group className="mb-4">
+                    <Form.Label className="proyecto-form-label">Fecha límite de postulación</Form.Label>
+                    <Form.Control
+                      type="date"
+                      value={form.fecha_limite}
+                      onChange={(e) => cambiar('fecha_limite', e.target.value)}
+                    />
+                    <Form.Text className="proyecto-form-ayuda">
+                      Hasta cuándo podrán postularse los interesados. Si no pones fecha, no habrá límite.
+                    </Form.Text>
+                  </Form.Group>
+
+                  <div className="d-flex gap-3">
+                    <Button variant="primary" type="submit" className="proyectos-boton" disabled={cargando}>
+                      {cargando ? <Spinner animation="border" size="sm" /> : 'Publicar proyecto'}
+                    </Button>
+                    <Button variant="outline-light" className="proyectos-boton" as={Link} to="/explorar">
+                      Cancelar
+                    </Button>
                   </div>
-                )}
-              </Form.Group>
-
-              <Form.Group className="mb-4">
-                <Form.Label className="proyecto-form-label">Fecha límite</Form.Label>
-                <Form.Control
-                  type="date"
-                  value={form.fecha_limite}
-                  onChange={(e) => cambiar('fecha_limite', e.target.value)}
-                />
-              </Form.Group>
-
-              <div className="d-flex gap-3">
-                <Button variant="primary" type="submit" className="proyectos-boton" disabled={cargando}>
-                  {cargando ? <Spinner animation="border" size="sm" /> : 'Publicar proyecto'}
-                </Button>
-                <Button variant="outline-light" className="proyectos-boton" as={Link} to="/explorar">
-                  Cancelar
-                </Button>
-              </div>
-            </Form>
-          </div>
+                </div>
+              </Col>
+            </Row>
+          </Form>
         )}
       </Container>
     </div>

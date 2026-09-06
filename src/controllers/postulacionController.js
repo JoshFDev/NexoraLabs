@@ -1,7 +1,79 @@
 import Postulacion from "../models/Postulacion";
 import Proyecto from "../models/Proyecto";
-import { serverError, notFound, conflict } from "../shared/errors/errorHandler";
+import { serverError, notFound, conflict, badRequest, forbidden } from "../shared/errors/errorHandler";
 import httpStatus from "../shared/errors/httpStatus";
+
+//GET /mis-postulaciones → postulaciones del usuario autenticado
+export const misPostulaciones = async (req, res) => {
+    try {
+        const postulaciones = await Postulacion.find({ usuario_id: req.usuario.id })
+            .populate('proyecto_id', 'titulo estado')
+            .populate('habilidades_ofrecidas', 'nombre');
+        res.json(postulaciones);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json(serverError(error));
+    }
+};
+
+//DELETE /postulacion-own/:id → el usuario retira su propia postulación
+export const retirarMiPostulacion = async (req, res) => {
+    try {
+        const postulacion = await Postulacion.findOne({ _id: req.params.id, usuario_id: req.usuario.id });
+        if (!postulacion) return res.status(httpStatus.NOT_FOUND).json(notFound("Postulación no encontrada"));
+        await Postulacion.findByIdAndDelete(postulacion._id);
+        res.json({ message: "Postulación retirada", postulacion });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json(serverError(error));
+    }
+};
+
+//GET /mis-proyectos/postulaciones → postulaciones recibidas en mis proyectos (creador)
+export const postulacionesDeMisProyectos = async (req, res) => {
+    try {
+        const proyectos = await Proyecto.find({ creador_id: req.usuario.id }).select('_id titulo');
+        const idsProyectos = proyectos.map((p) => p._id);
+
+        const postulaciones = await Postulacion.find({ proyecto_id: { $in: idsProyectos } })
+            .populate('proyecto_id', 'titulo estado')
+            .populate('usuario_id', 'nombre apellido_paterno email rol')
+            .populate('habilidades_ofrecidas', 'nombre')
+            .sort({ fecha: -1 });
+
+        res.json(postulaciones);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json(serverError(error));
+    }
+};
+
+//PUT /postulacion/:id/estado → aceptar/rechazar (creador del proyecto o admin)
+export const cambiarEstadoPostulacion = async (req, res) => {
+    try {
+        const { estado } = req.body;
+        const estadosValidos = ["pendiente", "aceptada", "rechazada"];
+        if (!estadosValidos.includes(estado)) {
+            return res.status(httpStatus.BAD_REQUEST).json(badRequest("Estado no válido"));
+        }
+
+        const postulacion = await Postulacion.findById(req.params.id).populate('proyecto_id', 'creador_id titulo');
+        if (!postulacion) return res.status(httpStatus.NOT_FOUND).json(notFound("Postulación no encontrada"));
+
+        const esAdmin = req.usuario.rol === "admin";
+        const esCreador = postulacion.proyecto_id && String(postulacion.proyecto_id.creador_id) === String(req.usuario.id);
+        if (!esAdmin && !esCreador) {
+            return res.status(httpStatus.FORBIDDEN).json(forbidden());
+        }
+
+        postulacion.estado = estado;
+        await postulacion.save();
+        res.json(postulacion);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json(serverError(error));
+    }
+};
 
 //GET /postulaciones → listar todas las postulaciones
 export const listarPostulaciones = async (req, res) => {

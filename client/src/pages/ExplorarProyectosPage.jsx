@@ -19,6 +19,13 @@ const ETIQUETAS_NIVEL = {
   experto: 'Experto',
 };
 
+const ETIQUETAS_POSTULACION = {
+  pendiente: 'Postulado',
+  aceptada: 'Postulación aceptada',
+  rechazada: 'Postulación rechazada',
+  cancelada: 'Postulación cancelada',
+};
+
 const CATEGORIAS = ['web', 'movil', 'ia', 'backend', 'frontend', 'devops', 'big_data', 'diseno', 'otro'];
 
 function ExplorarProyectosPage() {
@@ -35,6 +42,9 @@ function ExplorarProyectosPage() {
   const [misProyectos, setMisProyectos] = useState(null);
   const [sugerencias, setSugerencias] = useState([]);
   const [sugAbierta, setSugAbierta] = useState(false);
+  const [misPostulaciones, setMisPostulaciones] = useState({});
+  const [formPostulacion, setFormPostulacion] = useState(null);
+  const [cargandoPost, setCargandoPost] = useState(false);
 
   const alternar = (id) => setExpandido((x) => (x === id ? null : id));
 
@@ -55,6 +65,66 @@ function ExplorarProyectosPage() {
       .then((res) => setMisProyectos(res.data.proyectos || []))
       .catch(() => setMisProyectos([]));
   }, [usuario?._id]);
+
+  useEffect(() => {
+    api
+      .get('/mis-postulaciones')
+      .then((res) => {
+        const mapa = {};
+        (res.data || []).forEach((po) => {
+          if (po.proyecto_id?._id) mapa[String(po.proyecto_id._id)] = po;
+        });
+        setMisPostulaciones(mapa);
+      })
+      .catch(() => setMisPostulaciones({}));
+  }, []);
+
+  const refrescarMisPostulaciones = () =>
+    api
+      .get('/mis-postulaciones')
+      .then((res) => {
+        const mapa = {};
+        (res.data || []).forEach((po) => {
+          if (po.proyecto_id?._id) mapa[String(po.proyecto_id._id)] = po;
+        });
+        setMisPostulaciones(mapa);
+      })
+      .catch(() => setMisPostulaciones({}));
+
+  const postular = async (p) => {
+    setCargandoPost(true);
+    try {
+      await api.post(`/proyecto/${p._id}/postular`, {
+        mensaje: formPostulacion?.id === p._id ? formPostulacion.mensaje : '',
+        habilidades_ofrecidas: [],
+      });
+      setFormPostulacion(null);
+      await refrescarMisPostulaciones();
+    } catch (err) {
+      if (err.response?.status === 409) await refrescarMisPostulaciones();
+      setError(err.response?.data?.error || 'No se pudo postular');
+    } finally {
+      setCargandoPost(false);
+    }
+  };
+
+  const retirarPostulacion = async (p) => {
+    const po = misPostulaciones[String(p._id)];
+    if (!po) return;
+    setCargandoPost(true);
+    try {
+      await api.delete(`/postulacion-own/${po._id}`);
+      setMisPostulaciones((prev) => {
+        const nuevo = { ...prev };
+        delete nuevo[String(p._id)];
+        return nuevo;
+      });
+    } catch (err) {
+      setError(err.response?.data?.error || 'No se pudo retirar la postulación');
+    } finally {
+      setCargandoPost(false);
+    }
+  };
 
   useEffect(() => {
     setCargando(true);
@@ -167,9 +237,60 @@ function ExplorarProyectosPage() {
             <span className="proyecto-detalle-texto">{new Date(p.fecha_limite).toLocaleDateString('es')}</span>
           </div>
         )}
+        <div className="proyecto-detalle-acciones">
+          {p.creador_id &&
+          usuario &&
+          String(p.creador_id._id || p.creador_id) === String(usuario._id || usuario.id) ? (
+            <span className="proyecto-postulado-badge">Eres el creador de este proyecto</span>
+          ) : misPostulaciones[String(p._id)] ? (
+            <div className="d-flex flex-wrap align-items-center gap-2">
+              <span className="proyecto-postulado-badge">
+                {ETIQUETAS_POSTULACION[misPostulaciones[String(p._id)].estado] ||
+                  misPostulaciones[String(p._id)].estado}
+              </span>
+              {misPostulaciones[String(p._id)].estado === 'pendiente' && (
+                <Button
+                  variant="outline-light"
+                  className="proyectos-boton"
+                  size="sm"
+                  disabled={cargandoPost}
+                  onClick={() => retirarPostulacion(p)}
+                >
+                  Retirar postulación
+                </Button>
+              )}
+            </div>
+          ) : (
+            <div className="proyecto-postulacion-form">
+              {formPostulacion?.id === p._id && (
+                <Form.Control
+                  as="textarea"
+                  rows={2}
+                  className="proyecto-post-mensaje"
+                  placeholder="Déjale un mensaje al creador (opcional)"
+                  value={formPostulacion.mensaje}
+                  onChange={(e) => setFormPostulacion({ id: p._id, mensaje: e.target.value })}
+                />
+              )}
+              <Button
+                variant="primary"
+                className="proyectos-boton"
+                size="sm"
+                disabled={cargandoPost}
+                onClick={() =>
+                  formPostulacion?.id === p._id
+                    ? postular(p)
+                    : setFormPostulacion({ id: p._id, mensaje: '' })
+                }
+              >
+                {formPostulacion?.id === p._id ? 'Confirmar postulación' : 'Postularme'}
+              </Button>
+            </div>
+          )}
+        </div>
       </section>
     ),
-    []
+    [misPostulaciones, formPostulacion, cargandoPost]
   );
 
   const rendTarjeta = useCallback(

@@ -7,6 +7,7 @@ import PerfilPage from './pages/PerfilPage';
 import ExplorarProyectosPage from './pages/ExplorarProyectosPage';
 import CrearProyectoPage from './pages/CrearProyectoPage';
 import ProyectoDetallePage from './pages/ProyectoDetallePage';
+import PostulacionesPage from './pages/PostulacionesPage';
 import RutaProtegida from './components/RutaProtegida';
 
 function App() {
@@ -48,6 +49,14 @@ function App() {
           element={
             <RutaProtegida>
               <ProyectoDetallePage />
+            </RutaProtegida>
+          }
+        />
+        <Route
+          path="/postulaciones"
+          element={
+            <RutaProtegida>
+              <PostulacionesPage />
             </RutaProtegida>
           }
         />
