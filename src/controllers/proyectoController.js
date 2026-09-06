@@ -5,7 +5,6 @@ import httpStatus from "../shared/errors/httpStatus";
 
 //Recibe (req, res) = misma firma que un callback de ruta de Express.
 //El controlador SÓLO tiene lógica: las rutas solo dirigen.
-
 //GET /proyecto/recomendados → recomienda proyectos según las habilidades del usuario logueado
 export const proyectosRecomendados = async (req, res) => {
     try {

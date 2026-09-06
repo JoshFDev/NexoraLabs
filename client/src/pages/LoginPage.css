@@ -104,7 +104,24 @@
   border-radius: 0.4rem;
   padding: 2.5rem 2.5rem 1.8rem;
   box-shadow: 0 30px 60px rgba(0, 0, 0, 0.55);
+  transform-origin: top;
   animation: entrar-panel 0.5s ease both;
+}
+
+.login-tarjeta-cerrar {
+  transform-origin: center;
+  animation: cerrar-panel 0.2s cubic-bezier(0.55, 0, 0.85, 0.36) forwards;
+}
+
+@keyframes cerrar-panel {
+  from {
+    transform: scaleY(1) scaleX(1);
+    opacity: 1;
+  }
+  to {
+    transform: scaleY(0.03) scaleX(0.97);
+    opacity: 0;
+  }
 }
 
 /* Entrada escalonada de las secciones del panel */
@@ -496,13 +513,23 @@
   color: rgba(237, 233, 255, 0.8);
 }
 
-.login-registro a {
+.login-registro a,
+.login-enlace-boton {
   font-weight: 600;
   color: #c4b5fd;
   text-decoration: none;
 }
 
-.login-registro a:hover {
+.login-enlace-boton {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+}
+
+.login-registro a:hover,
+.login-enlace-boton:hover {
   text-decoration: underline;
 }
 
@@ -552,4 +579,68 @@
   margin-top: 2rem;
   font-size: 0.8rem;
   color: rgba(237, 233, 255, 0.55);
+}
+
+/* ---------- Chispas al cerrar ---------- */
+.login-chispas {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-chispa {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 3px;
+  height: var(--largo);
+  border-radius: 3px;
+  background: linear-gradient(to bottom, var(--color), transparent);
+  box-shadow: 0 0 8px 1px var(--color);
+  transform: translate(-50%, -50%) rotate(0deg);
+  opacity: 0;
+  animation: chispa-explota 0.45s cubic-bezier(0.16, 0.84, 0.44, 1) both;
+  animation-delay: var(--retraso);
+}
+
+@keyframes chispa-explota {
+  0% {
+    transform: translate(-50%, -50%) rotate(var(--rot)) scaleY(0.2);
+    opacity: 0;
+  }
+  20% {
+    transform: translate(-50%, -50%) rotate(var(--rot)) scaleY(1.15);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) rotate(var(--rot)) scaleY(0.85);
+    opacity: 0;
+  }
+}
+
+/* ---------- Destello de impacto ---------- */
+.login-destello {
+  position: fixed;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.95) 0%, rgba(237, 233, 255, 0.75) 12%, transparent 42%);
+  opacity: 0;
+  animation: destello 0.3s ease-out both;
+}
+
+@keyframes destello {
+  0% {
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }

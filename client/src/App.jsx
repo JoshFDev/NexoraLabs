@@ -3,6 +3,7 @@ import NavBar from './components/NavBar';
 import LoginPage from './pages/LoginPage';
 import RegistroPage from './pages/RegistroPage';
 import DashboardPage from './pages/DashboardPage';
+import PerfilPage from './pages/PerfilPage';
 import RutaProtegida from './components/RutaProtegida';
 
 function App() {
@@ -15,6 +16,14 @@ function App() {
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/registro" element={<RegistroPage />} />
+        <Route
+          path="/perfil"
+          element={
+            <RutaProtegida>
+              <PerfilPage />
+            </RutaProtegida>
+          }
+        />
         <Route
           path="/"
           element={

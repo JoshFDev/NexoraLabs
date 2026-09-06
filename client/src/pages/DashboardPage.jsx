@@ -1,12 +1,16 @@
 import { useEffect, useState } from 'react';
-import { Container, Row, Col, Card, Table, Spinner, Alert } from 'react-bootstrap';
+import { Container, Row, Col, Card, Table, Spinner, Alert, Button } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 import api from '../api';
+import { leerUsuario, esPerfilCompleto } from '../utils/perfil';
 
 function DashboardPage() {
   const [stats, setStats] = useState(null);
   const [proyectos, setProyectos] = useState([]);
   const [error, setError] = useState('');
   const [cargando, setCargando] = useState(true);
+
+  const perfilCompleto = esPerfilCompleto(leerUsuario());
 
   useEffect(() => {
     const cargar = async () => {
@@ -30,6 +34,23 @@ function DashboardPage() {
     return (
       <Container className="mt-5 text-center">
         <Spinner animation="border" />
+      </Container>
+    );
+  }
+
+  if (!perfilCompleto) {
+    return (
+      <Container className="dash-bloqueo-wrap">
+        <div className="dash-bloqueo">
+          <span className="dash-bloqueo-icono">!</span>
+          <h2>Tu perfil está incompleto</h2>
+          <p>
+            Completa tu perfil para desbloquear el panel y poder crear proyectos, unirte a equipos y postularte.
+          </p>
+          <Button as={Link} to="/perfil" className="dash-bloqueo-btn">
+            Completar mi perfil
+          </Button>
+        </div>
       </Container>
     );
   }

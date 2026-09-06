@@ -1,0 +1,114 @@
+.login-tarjeta {
+  transform-origin: center;
+  animation: abrir-panel 0.3s cubic-bezier(0.2, 0.9, 0.25, 1.3) both;
+}
+
+@keyframes abrir-panel {
+  0% {
+    transform: scaleY(0.05) scaleX(0.94);
+    opacity: 0;
+  }
+  55% {
+    transform: scaleY(1.04) scaleX(1.005);
+    opacity: 1;
+  }
+  100% {
+    transform: scaleY(1) scaleX(1);
+    opacity: 1;
+  }
+}
+
+/* Header con la marca (LogoOrden) */
+.registro-firma {
+  width: 340px;
+  aspect-ratio: 423 / 286;
+  margin: 0 auto 1.2rem;
+  background-image: url('../assets/LogoOrden.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  user-select: none;
+  -webkit-user-drag: none;
+  user-drag: none;
+}
+
+.login-encabezado h1 {
+  font-size: 1.15rem;
+}
+
+.login-encabezado {
+  margin-bottom: 1rem;
+}
+
+.registro-fila {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.registro-fila > .form-group {
+  flex: 1;
+  min-width: 0;
+}
+
+.login-select {
+  background: #2b2538;
+  color: #fff;
+  border: 1px solid rgba(237, 233, 255, 0.18);
+  border-radius: 0 0.35rem 0.35rem 0 !important;
+  font-size: 0.92rem;
+  padding: 0.58rem 0.8rem;
+}
+
+.login-select:focus {
+  background: #342c48;
+  border-color: var(--nx-morado);
+  box-shadow: 0 0 0 0.22rem rgba(168, 85, 247, 0.22);
+  outline: 0;
+}
+
+.login-select option {
+  background: #241e35;
+  color: #fff;
+}
+
+.login-tarjeta-cerrar {
+  transform-origin: center;
+  animation: cerrar-panel 0.2s cubic-bezier(0.55, 0, 0.85, 0.36) forwards;
+}
+
+@keyframes cerrar-panel {
+  from {
+    transform: scaleY(1) scaleX(1);
+    opacity: 1;
+  }
+  to {
+    transform: scaleY(0.03) scaleX(0.97);
+    opacity: 0;
+  }
+}
+
+/* Sin barra de scroll en la vista de registro */
+.login-pagina {
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.login-pagina::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+@media (max-width: 420px) {
+  .registro-fila {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .registro-firma {
+    width: 250px;
+  }
+}

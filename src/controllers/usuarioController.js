@@ -158,6 +158,35 @@ export const iniciarSesion = async (req, res) => {
     }
 };
 
+//PUT /usuario/perfil → el usuario actualiza su propio perfil (solo campos de perfil)
+export const actualizarMiPerfil = async (req, res) => {
+    try {
+        const camposPermitidos = [
+            "apellido_materno",
+            "telefono",
+            "pais",
+            "provincia",
+            "acerca_de_mi",
+            "nivel_experiencia",
+            "especialidad_principal",
+            "disponibilidad",
+            "intereses",
+            "idiomas",
+            "educacion"
+        ];
+        const datos = {};
+        for (const campo of camposPermitidos) {
+            if (req.body[campo] !== undefined) datos[campo] = req.body[campo];
+        }
+        const actualizado = await Usuario.findByIdAndUpdate(req.usuario.id, { $set: datos }, { new: true }).select('-password');
+        if (!actualizado) return res.status(httpStatus.NOT_FOUND).json(notFound("Usuario no encontrado"));
+        res.json(actualizado);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json(serverError(error));
+    }
+};
+
 //PUT /usuario/:id → actualizar un usuario (solo admin)
 export const actualizarUsuario = async (req, res) => {
     try {

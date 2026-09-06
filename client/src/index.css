@@ -22,6 +22,65 @@ body {
   -webkit-user-select: none;
 }
 
+.dash-bloqueo-wrap {
+  min-height: calc(100vh - 72px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
+
+.dash-bloqueo {
+  max-width: 440px;
+  text-align: center;
+  background: linear-gradient(180deg, #241e35 0%, #1a1528 100%);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 0.4rem;
+  padding: 2.5rem 2rem;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.35);
+}
+
+.dash-bloqueo-icono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #c4b5fd;
+  background: rgba(168, 85, 247, 0.14);
+  border: 1px solid rgba(168, 85, 247, 0.5);
+  margin-bottom: 1rem;
+}
+
+.dash-bloqueo h2 {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--nx-brillo);
+  margin-bottom: 0.5rem;
+}
+
+.dash-bloqueo p {
+  font-size: 0.9rem;
+  color: rgba(237, 233, 255, 0.75);
+  margin-bottom: 1.4rem;
+}
+
+.dash-bloqueo-btn {
+  background: linear-gradient(135deg, var(--nx-morado), var(--nx-morado-oscuro));
+  border: none;
+  border-radius: 0.35rem;
+  font-weight: 600;
+  padding: 0.65rem 1.4rem;
+}
+
+.dash-bloqueo-btn:hover {
+  background: linear-gradient(135deg, var(--nx-morado-oscuro), var(--nx-morado));
+  transform: translateY(-1px);
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

@@ -8,6 +8,7 @@ import {
     obtenerUsuario,
     registrarUsuario,
     iniciarSesion,
+    actualizarMiPerfil,
     actualizarUsuario,
     eliminarUsuario
 } from "../controllers/usuarioController";
@@ -21,6 +22,9 @@ router.get('/usuarios', listarUsuarios);
 
 //Perfil del usuario autenticado (OJO: va ANTES de /usuario/:id)
 router.get('/usuario/perfil', verifyToken, verPerfil);
+
+//El usuario autenticado actualiza su propio perfil (va ANTES de /usuario/:id)
+router.put('/usuario/perfil', verifyToken, actualizarMiPerfil);
 
 //Ver un usuario por id
 router.get('/usuario/:id', obtenerUsuario);

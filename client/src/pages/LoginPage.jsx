@@ -1,7 +1,9 @@
 import { useRef, useState } from 'react';
 import { Form, Button, Alert, InputGroup, Spinner } from 'react-bootstrap';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import api from '../api';
+import Chispas from '../components/Chispas';
+import { guardarUsuario, esPerfilCompleto } from '../utils/perfil';
 import './LoginPage.css';
 
 const IconoCorreo = () => (
@@ -83,6 +85,7 @@ function LoginPage() {
   const [cargando, setCargando] = useState(false);
   const [listo, setListo] = useState(false);
   const [agitar, setAgitar] = useState(false);
+  const [cerrando, setCerrando] = useState(false);
   const [errores, setErrores] = useState({ email: '', password: '' });
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
@@ -120,9 +123,16 @@ function LoginPage() {
         new Promise((r) => setTimeout(r, 550)),
       ]).then(([resp]) => resp);
       guardarSesion({ ...res.data, recordarme });
+      let perfil = null;
+      try {
+        perfil = (await api.get('/usuario/perfil')).data;
+      } catch {
+        perfil = null;
+      }
+      if (perfil) guardarUsuario(perfil);
       setListo(true);
       setCargando(false);
-      setTimeout(() => navigate('/'), 650);
+      setTimeout(() => navigate(perfil && !esPerfilCompleto(perfil) ? '/perfil' : '/'), 650);
     } catch (err) {
       setError(
         err.response
@@ -137,9 +147,9 @@ function LoginPage() {
     }
   };
 
-  const autocompletar = (demoEmail) => {
+  const autocompletar = (demoEmail, demoPassword) => {
     setEmail(demoEmail);
-    setPassword('123456');
+    setPassword(demoPassword);
     setError('');
     setNota('');
     setErrores({ email: '', password: '' });
@@ -151,6 +161,12 @@ function LoginPage() {
 
   const olvidar = () => {
     setNota('La recuperación de contraseña estará disponible próximamente.');
+  };
+
+  const irARegistro = (e) => {
+    e.preventDefault();
+    setCerrando(true);
+    setTimeout(() => navigate('/registro'), 460);
   };
 
   const detectarCaps = (e) => {
@@ -167,7 +183,9 @@ function LoginPage() {
         <span className="login-vineta"></span>
       </div>
 
-      <main className="login-tarjeta">
+      {cerrando && <Chispas />}
+
+      <main className={cerrando ? 'login-tarjeta login-tarjeta-cerrar' : 'login-tarjeta'}>
         <div className="login-encabezado">
           <div
             className="login-firma"
@@ -196,7 +214,7 @@ function LoginPage() {
               </InputGroup.Text>
               <Form.Control
                 type="email"
-                placeholder="tucorreo@ejemplo.com"
+                placeholder="Ingresa tu correo"
                 value={email}
                 onChange={(e) => {
                   setEmail(e.target.value);
@@ -313,17 +331,20 @@ function LoginPage() {
         <div className="login-demo">
           <span className="login-demo-titulo">Cuentas de prueba</span>
           <div className="login-demo-opciones">
-            <button type="button" className="login-chipe" onClick={() => autocompletar('joshua@test.com')}>
+            <button type="button" className="login-chipe" onClick={() => autocompletar('joshua@test.com', '123456')}>
               Estudiante
             </button>
-            <button type="button" className="login-chipe" onClick={() => autocompletar('admin@test.com')}>
+            <button type="button" className="login-chipe" onClick={() => autocompletar('admin@test.com', '12345678')}>
               Admin
             </button>
           </div>
         </div>
 
         <p className="login-registro">
-          ¿No tienes cuenta? <Link to="/registro">Crea una</Link>
+          ¿No tienes cuenta?{' '}
+          <a href="/registro" className="login-enlace-boton" onClick={irARegistro}>
+            Crea una
+          </a>
         </p>
       </main>
 
