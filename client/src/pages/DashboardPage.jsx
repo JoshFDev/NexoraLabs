@@ -1,26 +1,37 @@
 import { useEffect, useState } from 'react';
-import { Container, Row, Col, Card, Table, Spinner, Alert, Button } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Container, Row, Col, Spinner, Alert, Button } from 'react-bootstrap';
+import { Link, useNavigate } from 'react-router-dom';
 import api from '../api';
 import { leerUsuario, esPerfilCompleto } from '../utils/perfil';
+import './ProyectosPage.css';
+
+const ETIQUETAS_ESTADO = {
+  borrador: 'Borrador',
+  buscando_equipo: 'Buscando equipo',
+  en_desarrollo: 'En desarrollo',
+  finalizado: 'Finalizado',
+  cancelado: 'Cancelado',
+};
 
 function DashboardPage() {
-  const [stats, setStats] = useState(null);
   const [proyectos, setProyectos] = useState([]);
+  const [recomendados, setRecomendados] = useState(null);
   const [error, setError] = useState('');
   const [cargando, setCargando] = useState(true);
+  const navigate = useNavigate();
 
-  const perfilCompleto = esPerfilCompleto(leerUsuario());
+  const usuario = leerUsuario();
+  const perfilCompleto = esPerfilCompleto(usuario);
 
   useEffect(() => {
     const cargar = async () => {
       try {
-        const [resStats, resProyectos] = await Promise.all([
-          api.get('/stats'),
-          api.get('/proyectos')
+        const [resProyectos, resRecomendados] = await Promise.all([
+          api.get('/proyectos?limite=6'),
+          api.get('/proyecto/recomendados').catch(() => null),
         ]);
-        setStats(resStats.data);
         setProyectos(resProyectos.data.proyectos || []);
+        setRecomendados(resRecomendados?.data || null);
       } catch (err) {
         setError(err.response?.data?.error || 'Error al cargar datos');
       } finally {
@@ -33,7 +44,7 @@ function DashboardPage() {
   if (cargando) {
     return (
       <Container className="mt-5 text-center">
-        <Spinner animation="border" />
+        <Spinner animation="border" variant="secondary" />
       </Container>
     );
   }
@@ -56,76 +67,82 @@ function DashboardPage() {
   }
 
   return (
-    <Container className="mt-4">
-      <h2 className="mb-4">Panel general</h2>
-      {error && <Alert variant="danger">{error}</Alert>}
-      {stats && (
-        <Row className="mb-4">
-          <Col md={3}>
-            <Card bg="primary" text="white">
-              <Card.Body>
-                <Card.Title>{stats.total_usuarios}</Card.Title>
-                <Card.Text>Usuarios</Card.Text>
-              </Card.Body>
-            </Card>
+    <div className="proyectos-pagina">
+      <Container className="pt-4">
+        <Row className="align-items-end mb-4">
+          <Col>
+            <h2 className="proyectos-titulo mb-0">Hola, {usuario?.nombre || 'compañero'}</h2>
+            <p className="proyectos-subtitulo mb-0">Aquí está lo nuevo de tus proyectos y recomendaciones.</p>
           </Col>
-          <Col md={3}>
-            <Card bg="success" text="white">
-              <Card.Body>
-                <Card.Title>{stats.total_proyectos}</Card.Title>
-                <Card.Text>Proyectos</Card.Text>
-              </Card.Body>
-            </Card>
-          </Col>
-          <Col md={3}>
-            <Card bg="info" text="white">
-              <Card.Body>
-                <Card.Title>{stats.total_equipos}</Card.Title>
-                <Card.Text>Equipos</Card.Text>
-              </Card.Body>
-            </Card>
-          </Col>
-          <Col md={3}>
-            <Card bg="warning" text="white">
-              <Card.Body>
-                <Card.Title>{stats.total_habilidades}</Card.Title>
-                <Card.Text>Habilidades</Card.Text>
-              </Card.Body>
-            </Card>
+          <Col xs="auto">
+            <Button className="proyectos-boton" as={Link} to="/explorar">
+              Explorar proyectos
+            </Button>
           </Col>
         </Row>
-      )}
-      <Card>
-        <Card.Header>Proyectos</Card.Header>
-        <Card.Body>
-          <Table striped hover responsive>
-            <thead>
-              <tr>
-                <th>Título</th>
-                <th>Descripción</th>
-                <th>Estado</th>
-              </tr>
-            </thead>
-            <tbody>
-              {proyectos.length === 0 && (
-                <tr>
-                  <td colSpan={3} className="text-center text-muted">
-                    No hay proyectos todavía
-                  </td>
-                </tr>
-              )}
-              {proyectos.map((p) => (
-                <tr key={p._id}>
-                  <td>{p.titulo}</td>
-                  <td>{p.descripcion}</td>
-                  <td>{p.estado}</td>
-                </tr>
+
+        {error && <Alert variant="danger">{error}</Alert>}
+
+        {recomendados && recomendados.proyectos?.length > 0 && (
+          <section className="mb-4">
+            <h3 className="proyectos-titulo mb-3" style={{ fontSize: '1.1rem' }}>
+              Recomendados para ti
+            </h3>
+            <Row>
+              {recomendados.proyectos.slice(0, 3).map((p) => (
+                <Col md={6} lg={4} key={p._id} className="mb-3">
+                  <article className="proyecto-tarjeta" onClick={() => navigate(`/proyecto/${p._id}`)}>
+                    <div className="proyecto-tarjeta-cabecera">
+                      <h4 className="proyecto-titulo-tarjeta">{p.titulo}</h4>
+                      <span className="proyecto-badge">
+                        {p.coincidencias} coincidencia{p.coincidencias !== 1 ? 's' : ''}
+                      </span>
+                    </div>
+                    <p className="proyecto-descripcion">
+                      {p.descripcion.length > 140 ? `${p.descripcion.slice(0, 140)}…` : p.descripcion}
+                    </p>
+                    <div className="proyecto-meta">
+                      <span className="proyecto-badge">{ETIQUETAS_ESTADO[p.estado] || p.estado}</span>
+                      {p.categoria && <span className="proyecto-badge">{p.categoria}</span>}
+                    </div>
+                    <footer className="proyecto-creador">Creado por {p.creador_id?.nombre || 'anon'}</footer>
+                  </article>
+                </Col>
               ))}
-            </tbody>
-          </Table>
-        </Card.Body>
-      </Card>
-    </Container>
+            </Row>
+          </section>
+        )}
+
+        <section>
+          <h3 className="proyectos-titulo mb-3" style={{ fontSize: '1.1rem' }}>
+            Proyectos recientes
+          </h3>
+          {proyectos.length === 0 ? (
+            <p className="proyectos-vacio">Todavía no hay proyectos publicados.</p>
+          ) : (
+            <Row>
+              {proyectos.map((p) => (
+                <Col md={6} lg={4} key={p._id} className="mb-3">
+                  <article className="proyecto-tarjeta" onClick={() => navigate(`/proyecto/${p._id}`)}>
+                    <div className="proyecto-tarjeta-cabecera">
+                      <h4 className="proyecto-titulo-tarjeta">{p.titulo}</h4>
+                    </div>
+                    <p className="proyecto-descripcion">
+                      {p.descripcion.length > 140 ? `${p.descripcion.slice(0, 140)}…` : p.descripcion}
+                    </p>
+                    <div className="proyecto-meta">
+                      <span className="proyecto-badge">{ETIQUETAS_ESTADO[p.estado] || p.estado}</span>
+                      {p.categoria && <span className="proyecto-badge">{p.categoria}</span>}
+                    </div>
+                    <footer className="proyecto-creador">Creado por {p.creador_id?.nombre || 'anon'}</footer>
+                  </article>
+                </Col>
+              ))}
+            </Row>
+          )}
+        </section>
+      </Container>
+    </div>
   );
 }
 

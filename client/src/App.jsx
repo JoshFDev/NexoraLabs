@@ -4,6 +4,9 @@ import LoginPage from './pages/LoginPage';
 import RegistroPage from './pages/RegistroPage';
 import DashboardPage from './pages/DashboardPage';
 import PerfilPage from './pages/PerfilPage';
+import ExplorarProyectosPage from './pages/ExplorarProyectosPage';
+import CrearProyectoPage from './pages/CrearProyectoPage';
+import ProyectoDetallePage from './pages/ProyectoDetallePage';
 import RutaProtegida from './components/RutaProtegida';
 
 function App() {
@@ -21,6 +24,30 @@ function App() {
           element={
             <RutaProtegida>
               <PerfilPage />
+            </RutaProtegida>
+          }
+        />
+        <Route
+          path="/explorar"
+          element={
+            <RutaProtegida>
+              <ExplorarProyectosPage />
+            </RutaProtegida>
+          }
+        />
+        <Route
+          path="/crear-proyecto"
+          element={
+            <RutaProtegida>
+              <CrearProyectoPage />
+            </RutaProtegida>
+          }
+        />
+        <Route
+          path="/proyecto/:id"
+          element={
+            <RutaProtegida>
+              <ProyectoDetallePage />
             </RutaProtegida>
           }
         />

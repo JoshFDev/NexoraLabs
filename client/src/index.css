@@ -13,13 +13,64 @@ body {
 
 .navbar-nexora {
   background: linear-gradient(90deg, var(--nx-fondo) 0%, #241242 100%) !important;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
+  border-bottom: 1px solid rgba(168, 85, 247, 0.5);
+  box-shadow: 0 2px 14px rgba(0, 0, 0, 0.3);
+}
+
+.navbar-nexora .navbar-text {
+  color: var(--nx-brillo) !important;
+}
+
+.navbar-nexora .navbar-toggler {
+  border-color: rgba(237, 233, 255, 0.4);
+}
+
+.navbar-nexora .navbar-toggler-icon {
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='%23EDE9FF' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
 }
 
 .brand-firma {
   -webkit-user-drag: none;
   user-select: none;
   -webkit-user-select: none;
+}
+
+.nav-link-nexora {
+  color: rgba(237, 233, 255, 0.9) !important;
+  font-weight: 600;
+  font-size: 0.92rem;
+  margin-right: 0.6rem;
+}
+
+.nav-link-nexora:hover {
+  color: #d8b4fe !important;
+}
+
+.btn-morado-outline {
+  border: 1px solid var(--nx-morado);
+  color: var(--nx-morado);
+  background: transparent;
+  border-radius: 0.35rem;
+  font-weight: 600;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.btn-morado-outline:hover {
+  background: var(--nx-morado);
+  color: #fff;
+  border-color: var(--nx-morado);
+}
+
+.btn-morado {
+  background: linear-gradient(135deg, var(--nx-morado), var(--nx-morado-oscuro));
+  border: none;
+  border-radius: 0.35rem;
+  font-weight: 600;
+}
+
+.btn-morado:hover {
+  background: linear-gradient(135deg, var(--nx-morado-oscuro), var(--nx-morado));
+  transform: translateY(-1px);
 }
 
 .dash-bloqueo-wrap {
@@ -33,11 +84,11 @@ body {
 .dash-bloqueo {
   max-width: 440px;
   text-align: center;
-  background: linear-gradient(180deg, #241e35 0%, #1a1528 100%);
-  border: 1px solid rgba(255, 255, 255, 0.09);
-  border-radius: 0.4rem;
+  background: #ffffff;
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  border-radius: 0.45rem;
   padding: 2.5rem 2rem;
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 24px 48px rgba(109, 40, 217, 0.14);
 }
 
 .dash-bloqueo-icono {
@@ -49,8 +100,8 @@ body {
   border-radius: 50%;
   font-size: 1.4rem;
   font-weight: 800;
-  color: #c4b5fd;
-  background: rgba(168, 85, 247, 0.14);
+  color: var(--nx-morado);
+  background: rgba(168, 85, 247, 0.12);
   border: 1px solid rgba(168, 85, 247, 0.5);
   margin-bottom: 1rem;
 }
@@ -58,13 +109,13 @@ body {
 .dash-bloqueo h2 {
   font-size: 1.3rem;
   font-weight: 800;
-  color: var(--nx-brillo);
+  color: #231d3d;
   margin-bottom: 0.5rem;
 }
 
 .dash-bloqueo p {
   font-size: 0.9rem;
-  color: rgba(237, 233, 255, 0.75);
+  color: #6b6486;
   margin-bottom: 1.4rem;
 }
 

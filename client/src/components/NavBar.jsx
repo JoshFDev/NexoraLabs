@@ -17,14 +17,16 @@ function NavBar() {
     navigate('/login');
   };
 
+  const puedeCrear = usuario && ['admin', 'mentor', 'desarrollador', 'ingeniero'].includes(usuario.rol);
+
   return (
     <Navbar variant="dark" expand="lg" className="navbar-nexora">
       <Container>
-        <Navbar.Brand as={Link} to="/" className="d-flex align-items-center">
+        <Navbar.Brand as={Link} to="/" className="d-flex align-items-center" style={{ marginLeft: '-24px', marginRight: 0, paddingLeft: 0 }}>
           <img
             src={logo}
             alt="NexoraLabs"
-            height="30"
+            height="68"
             className="brand-firma"
             onContextMenu={(e) => e.preventDefault()}
             onDragStart={(e) => e.preventDefault()}
@@ -35,6 +37,12 @@ function NavBar() {
           <Nav className="ms-auto">
             {usuario ? (
               <>
+                <Nav.Link as={Link} to="/explorar" className="nav-link-nexora">Explorar</Nav.Link>
+                {puedeCrear && (
+                  <Nav.Link as={Link} to="/crear-proyecto" className="nav-link-nexora">Crear proyecto</Nav.Link>
+                )}
+                <Nav.Link as={Link} to="/" className="nav-link-nexora">Panel</Nav.Link>
+                <Nav.Link as={Link} to="/perfil" className="nav-link-nexora">Mi perfil</Nav.Link>
                 <Navbar.Text className="me-3">
                   {usuario.nombre} ({usuario.rol})
                 </Navbar.Text>
