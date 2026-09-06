@@ -10,6 +10,7 @@ import ProyectoDetallePage from './pages/ProyectoDetallePage';
 import PostulacionesPage from './pages/PostulacionesPage';
 import EquiposPage from './pages/EquiposPage';
 import RecursosPage from './pages/RecursosPage';
+import HabilidadesPage from './pages/HabilidadesPage';
 import RutaProtegida from './components/RutaProtegida';
 
 function App() {
@@ -75,6 +76,14 @@ function App() {
           element={
             <RutaProtegida>
               <RecursosPage />
+            </RutaProtegida>
+          }
+        />
+        <Route
+          path="/habilidades"
+          element={
+            <RutaProtegida>
+              <HabilidadesPage />
             </RutaProtegida>
           }
         />

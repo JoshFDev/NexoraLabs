@@ -12,6 +12,8 @@ export const listarEquipos = async (req, res) => {
 
         if (estado) filtros.estado = estado;
 
+        if (req.query.proyecto) filtros.proyecto_id = req.query.proyecto;
+
         if (buscar) {
             filtros.$or = [
                 { nombre: { $regex: buscar, $options: "i" } },

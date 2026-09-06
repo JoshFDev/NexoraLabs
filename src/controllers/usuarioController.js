@@ -172,7 +172,8 @@ export const actualizarMiPerfil = async (req, res) => {
             "disponibilidad",
             "intereses",
             "idiomas",
-            "educacion"
+            "educacion",
+            "foto"
         ];
         const datos = {};
         for (const campo of camposPermitidos) {

@@ -14,8 +14,9 @@ import {
 } from '../utils/perfil';
 import './LoginPage.css';
 import './PerfilPage.css';
+import PerfilEditar from './PerfilEditar';
 
-const pasos = ['Datos', 'Sobre ti', 'Colaboración', 'Educación'];
+const pasos = ['Datos', 'Sobre ti', 'Colaboración', 'Educación', 'Habilidades'];
 
 function PerfilPage() {
   const almacenado = leerUsuario();
@@ -35,6 +36,7 @@ function PerfilPage() {
       titulo: almacenado?.educacion?.titulo || '',
       en_curso: almacenado?.educacion?.en_curso || false,
     },
+    habilidades: [],
   });
   const [paso, setPaso] = useState(0);
   const [erroresPaso, setErroresPaso] = useState({});
@@ -46,29 +48,42 @@ function PerfilPage() {
   const [error, setError] = useState('');
   const [nuevoInteres, setNuevoInteres] = useState('');
   const [nuevoIdioma, setNuevoIdioma] = useState('');
+  const [habilidadesCatalogo, setHabilidadesCatalogo] = useState([]);
+  const [cargandoCatalogo, setCargandoCatalogo] = useState(true);
+  const [misHabilidades, setMisHabilidades] = useState([]);
+  const [buscarHabilidad, setBuscarHabilidad] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
     const cargar = async () => {
       try {
-        const perfil = (await api.get('/usuario/perfil')).data;
-        guardarUsuario(perfil);
+        const [perfil, mis] = await Promise.all([
+          api.get('/usuario/perfil'),
+          api.get('/mis-habilidades'),
+        ]);
+        const p = perfil.data;
+        guardarUsuario(p);
+        setMisHabilidades(mis.data || []);
         setDatos({
-          apellido_materno: perfil.apellido_materno || '',
-          telefono: perfil.telefono || '',
-          pais: perfil.pais || '',
-          provincia: perfil.provincia || '',
-          acerca_de_mi: perfil.acerca_de_mi || '',
-          especialidad_principal: perfil.especialidad_principal || '',
-          nivel_experiencia: perfil.nivel_experiencia || 'principiante',
-          disponibilidad: perfil.disponibilidad || 'bajo_demanda',
-          intereses: perfil.intereses || [],
-          idiomas: perfil.idiomas || [],
+          apellido_materno: p.apellido_materno || '',
+          telefono: p.telefono || '',
+          pais: p.pais || '',
+          provincia: p.provincia || '',
+          acerca_de_mi: p.acerca_de_mi || '',
+          especialidad_principal: p.especialidad_principal || '',
+          nivel_experiencia: p.nivel_experiencia || 'principiante',
+          disponibilidad: p.disponibilidad || 'bajo_demanda',
+          intereses: p.intereses || [],
+          idiomas: p.idiomas || [],
           educacion: {
-            institucion: perfil.educacion?.institucion || '',
-            titulo: perfil.educacion?.titulo || '',
-            en_curso: perfil.educacion?.en_curso || false,
+            institucion: p.educacion?.institucion || '',
+            titulo: p.educacion?.titulo || '',
+            en_curso: p.educacion?.en_curso || false,
           },
+          habilidades: (mis.data || []).map((r) => ({
+            habilidad_id: String(r.habilidad_id?._id || r.habilidad_id),
+            nivel: r.nivel || 'principiante',
+          })),
         });
       } catch (err) {
         setError(err.response?.data?.error || 'No pudimos cargar tu perfil.');
@@ -77,6 +92,14 @@ function PerfilPage() {
       }
     };
     cargar();
+  }, []);
+
+  useEffect(() => {
+    api
+      .get('/habilidades?limite=500')
+      .then((res) => setHabilidadesCatalogo(res.data.habilidades || []))
+      .catch(() => setHabilidadesCatalogo([]))
+      .finally(() => setCargandoCatalogo(false));
   }, []);
 
   const set = (campo) => (e) => {
@@ -107,6 +130,29 @@ function PerfilPage() {
     setErroresPaso({});
   };
 
+  const alternarHabilidad = (h) => {
+    setDatos((p) => {
+      const yaExiste = p.habilidades.some((s) => String(s.habilidad_id) === String(h._id));
+      return {
+        ...p,
+        habilidades: yaExiste
+          ? p.habilidades.filter((s) => String(s.habilidad_id) !== String(h._id))
+          : [...p.habilidades, { habilidad_id: String(h._id), nivel: 'principiante' }],
+      };
+    });
+    setErroresPaso({});
+  };
+
+  const cambiarNivel = (id, nivel) => {
+    setDatos((p) => ({
+      ...p,
+      habilidades: p.habilidades.map((s) =>
+        String(s.habilidad_id) === String(id) ? { ...s, nivel } : s
+      ),
+    }));
+    setErroresPaso({});
+  };
+
   const validarPaso = (p) => {
     const falta = {};
     if (p === 0) {
@@ -125,6 +171,11 @@ function PerfilPage() {
     if (p === 3) {
       if (!datos.educacion.institucion.trim()) falta.institucion = 'Indica tu institución.';
       if (!datos.educacion.titulo.trim()) falta.titulo = 'Indica tu título o carrera.';
+    }
+    if (p === 4) {
+      if (datos.habilidades.length === 0 && habilidadesCatalogo.length > 0) {
+        falta.habilidades = 'Indica al menos una habilidad que domines.';
+      }
     }
     return falta;
   };
@@ -177,6 +228,22 @@ function PerfilPage() {
       };
       const perfil = (await api.put('/usuario/perfil', payload)).data;
       guardarUsuario(perfil);
+      const miId = String(perfil._id || perfil.id);
+      const idsDeseadas = datos.habilidades.map((s) => String(s.habilidad_id));
+      await Promise.all(
+        datos.habilidades.map((s) =>
+          api.post('/usuario-habilidad/agregar', {
+            usuario_id: miId,
+            habilidad_id: s.habilidad_id,
+            nivel: s.nivel,
+          })
+        )
+      );
+      await Promise.all(
+        misHabilidades
+          .filter((r) => !idsDeseadas.includes(String(r.habilidad_id?._id || r.habilidad_id)))
+          .map((r) => api.delete(`/usuario-habilidad/${r._id}`))
+      );
       setListo(true);
       setGuardando(false);
       setTimeout(() => {
@@ -195,6 +262,10 @@ function PerfilPage() {
         <Spinner animation="border" variant="primary" />
       </div>
     );
+  }
+
+  if (esPerfilCompleto(leerUsuario())) {
+    return <PerfilEditar />;
   }
 
   const faltaActual = erroresPaso;
@@ -427,6 +498,94 @@ function PerfilPage() {
                   />
                   Actualmente cursando
                 </label>
+              </div>
+            </>
+          )}
+
+          {paso === 4 && (
+            <>
+              <div className="perfil-campo">
+                <label className="login-label">Habilidades que dominas</label>
+                <input
+                  className="perfil-input"
+                  placeholder="Buscar en el catálogo..."
+                  value={buscarHabilidad}
+                  onChange={(e) => setBuscarHabilidad(e.target.value)}
+                />
+                {cargandoCatalogo ? (
+                  <div className="perfil-cargando mt-2 text-center">
+                    <Spinner animation="border" size="sm" />
+                  </div>
+                ) : habilidadesCatalogo.length === 0 ? (
+                  <small className="login-error-campo">El catálogo aún no tiene habilidades registradas.</small>
+                ) : (
+                  <div className="perfil-chips">
+                    {habilidadesCatalogo
+                      .filter((h) => !datos.habilidades.some((s) => String(s.habilidad_id) === String(h._id)))
+                      .filter((h) =>
+                        h.nombre.toLowerCase().includes(buscarHabilidad.trim().toLowerCase())
+                      )
+                      .map((h) => (
+                        <button
+                          type="button"
+                          key={String(h._id)}
+                          className="perfil-chip"
+                          onClick={() => alternarHabilidad(h)}
+                        >
+                          {h.nombre}
+                        </button>
+                      ))}
+                    {habilidadesCatalogo.filter(
+                      (h) =>
+                        !datos.habilidades.some((s) => String(s.habilidad_id) === String(h._id)) &&
+                        h.nombre.toLowerCase().includes(buscarHabilidad.trim().toLowerCase())
+                    ).length === 0 && (
+                      <small className="proyectos-subtitulo">No hay más habilidades con ese filtro.</small>
+                    )}
+                  </div>
+                )}
+                {faltaActual.habilidades && (
+                  <small className="login-error-campo">✕ {faltaActual.habilidades}</small>
+                )}
+              </div>
+
+              <div className="perfil-campo">
+                <label className="login-label">Tus habilidades declaradas</label>
+                {datos.habilidades.length === 0 ? (
+                  <small className="proyectos-subtitulo">
+                    Selecciona arriba las habilidades con las que cuentas.
+                  </small>
+                ) : (
+                  <div className="perfil-habilidades-lista">
+                    {datos.habilidades.map((s) => {
+                      const h = habilidadesCatalogo.find(
+                        (x) => String(x._id) === String(s.habilidad_id)
+                      );
+                      return (
+                        <div className="perfil-habilidad" key={s.habilidad_id}>
+                          <button
+                            type="button"
+                            className="perfil-chip perfil-chip-activo"
+                            onClick={() => alternarHabilidad(h || { _id: s.habilidad_id })}
+                          >
+                            {h?.nombre || 'Habilidad'} ✕
+                          </button>
+                          <select
+                            className="perfil-input perfil-select perfil-habilidad-nivel"
+                            value={s.nivel}
+                            onChange={(e) => cambiarNivel(s.habilidad_id, e.target.value)}
+                          >
+                            {niveles.map((n) => (
+                              <option key={n} value={n}>
+                                {n.charAt(0).toUpperCase() + n.slice(1)}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             </>
           )}

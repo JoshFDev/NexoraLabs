@@ -15,6 +15,18 @@ export const listarUsuarioHabilidades = async (req, res) => {
     }
 };
 
+//GET /mis-habilidades → las habilidades declaradas por el usuario autenticado
+export const misHabilidades = async (req, res) => {
+    try {
+        const registros = await UsuarioHabilidad.find({ usuario_id: req.usuario.id })
+            .populate('habilidad_id', 'nombre categoria');
+        res.json(registros);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json(serverError(error));
+    }
+};
+
 //GET /usuario-habilidad/:id → ver una relación por id
 export const obtenerUsuarioHabilidad = async (req, res) => {
     try {

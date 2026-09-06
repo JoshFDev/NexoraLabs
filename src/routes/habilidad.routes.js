@@ -17,13 +17,13 @@ router.get('/habilidades', listarHabilidades);
 //Ver una habilidad por id
 router.get('/habilidad/:id', obtenerHabilidad);
 
-//Crear habilidad
-router.post('/habilidad/agregar', verifyToken, authorize("admin", "mentor"), crearHabilidad);
+//Crear habilidad (solo el creador/admin del catálogo)
+router.post('/habilidad/agregar', verifyToken, authorize("admin"), crearHabilidad);
 
-//Actualizar habilidad
-router.put('/habilidad/:id', verifyToken, authorize("admin", "mentor"), actualizarHabilidad);
+//Actualizar habilidad (solo el creador/admin del catálogo)
+router.put('/habilidad/:id', verifyToken, authorize("admin"), actualizarHabilidad);
 
-//Eliminar habilidad
-router.delete('/habilidad/:id', verifyToken, authorize("admin", "mentor"), eliminarHabilidad);
+//Eliminar habilidad (solo el creador/admin del catálogo)
+router.delete('/habilidad/:id', verifyToken, authorize("admin"), eliminarHabilidad);
 
 export default router;

@@ -189,6 +189,10 @@
   flex-shrink: 0;
 }
 
+.habilidad-fila-cabecera {
+  margin-bottom: 0.8rem;
+}
+
 .proyecto-fila.abierto .proyecto-fila-flecha {
   transform: rotate(180deg);
   color: var(--nx-morado);
@@ -288,6 +292,18 @@
 .skill-ico svg {
   width: 0.78rem;
   height: 0.78rem;
+}
+
+.skill-ico-marca {
+  width: 1.35rem;
+  height: 1.35rem;
+  background: transparent;
+}
+
+.skill-ico-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .skill-ico-def {
@@ -767,6 +783,12 @@
   border: 1px solid var(--nx-morado);
 }
 
+.proyecto-chip-habilidad.seleccionada .skill-ico.skill-ico-marca {
+  background: transparent !important;
+  border: 0;
+  box-shadow: none;
+}
+
 .proyecto-detalle,
 .proyecto-panel {
   background: #ffffff;
@@ -989,4 +1011,39 @@
 .recurso-borrar:hover:not(:disabled) {
   background: rgba(239, 68, 68, 0.1) !important;
   color: #7f1d1d !important;
+}
+
+.confirmar-borrar-icono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.2rem;
+  height: 3.2rem;
+  border-radius: 50%;
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+  margin-bottom: 1rem;
+}
+
+.confirmar-borrar-icono svg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.confirmar-borrar-btn {
+  background: #dc2626 !important;
+  border-color: #dc2626 !important;
+  color: #fff !important;
+}
+
+.confirmar-borrar-btn:hover:not(:disabled) {
+  background: #b91c1c !important;
+  border-color: #b91c1c !important;
+  color: #fff !important;
+}
+
+.confirmar-borrar-btn:disabled {
+  background: #f0a3a3 !important;
+  border-color: #f0a3a3 !important;
+  color: #fff !important;
 }
