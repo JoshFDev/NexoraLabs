@@ -1,14 +1,19 @@
 import { Navbar, Nav, Container, Button } from 'react-bootstrap';
 import { useNavigate, Link } from 'react-router-dom';
 import { useState } from 'react';
+import logo from '../assets/Logo.png';
 
 function NavBar() {
-  const [usuario] = useState(() => JSON.parse(localStorage.getItem('usuario') || 'null'));
+  const [usuario] = useState(() =>
+    JSON.parse(localStorage.getItem('usuario') || sessionStorage.getItem('usuario') || 'null')
+  );
   const navigate = useNavigate();
 
   const cerrarSesion = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('usuario');
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('usuario');
     navigate('/login');
   };
 
@@ -16,7 +21,14 @@ function NavBar() {
     <Navbar variant="dark" expand="lg" className="navbar-nexora">
       <Container>
         <Navbar.Brand as={Link} to="/" className="d-flex align-items-center">
-          <img src="/Logo.png" alt="NexoraLabs" height="30" className="brand-firma" />
+          <img
+            src={logo}
+            alt="NexoraLabs"
+            height="30"
+            className="brand-firma"
+            onContextMenu={(e) => e.preventDefault()}
+            onDragStart={(e) => e.preventDefault()}
+          />
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="navbar-nav" />
         <Navbar.Collapse id="navbar-nav">

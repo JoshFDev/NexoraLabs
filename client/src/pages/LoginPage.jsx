@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Form, Button, Alert, InputGroup, Spinner } from 'react-bootstrap';
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../api';
@@ -35,6 +35,16 @@ const IconoOjo = ({ abierto }) => (
   </svg>
 );
 
+const IconoEstado = ({ valido }) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" width="16" height="16">
+    {valido ? (
+      <path d="M5 13l4 4 10-10" />
+    ) : (
+      <path d="M6 6l12 12M18 6L6 18" />
+    )}
+  </svg>
+);
+
 const IconoGoogle = () => (
   <svg viewBox="0 0 24 24" width="18" height="18">
     <path fill="#4285F4" d="M23.49 12.27c0-.79-.07-1.54-.19-2.27H12v4.51h6.47c-.29 1.48-1.14 2.73-2.4 3.58v3h3.86c2.26-2.09 3.56-5.17 3.56-8.82z" />
@@ -56,9 +66,16 @@ const IconoGitHub = () => (
   </svg>
 );
 
+function guardarSesion({ token, usuario, recordarme }) {
+  const almacen = recordarme ? localStorage : sessionStorage;
+  almacen.setItem('token', token);
+  almacen.setItem('usuario', JSON.stringify(usuario));
+}
+
 function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [recordarme, setRecordarme] = useState(true);
   const [mostrarPassword, setMostrarPassword] = useState(false);
   const [capsActivo, setCapsActivo] = useState(false);
   const [error, setError] = useState('');
@@ -66,27 +83,57 @@ function LoginPage() {
   const [cargando, setCargando] = useState(false);
   const [listo, setListo] = useState(false);
   const [agitar, setAgitar] = useState(false);
+  const [errores, setErrores] = useState({ email: '', password: '' });
+  const emailRef = useRef(null);
+  const passwordRef = useRef(null);
   const navigate = useNavigate();
+
+  const emailValido = email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+  const validarCampos = () => {
+    const campos = { email: '', password: '' };
+    if (!email.trim()) campos.email = 'Ingresa tu correo electrónico.';
+    else if (!emailValido) campos.email = 'Formato de correo no válido.';
+    if (!password) campos.password = 'Ingresa tu contraseña.';
+    else if (password.length < 6) campos.password = 'Debe tener al menos 6 caracteres.';
+    return campos;
+  };
 
   const submit = async (e) => {
     e.preventDefault();
     setError('');
     setNota('');
+    const campos = validarCampos();
+    if (campos.email || campos.password) {
+      setErrores(campos);
+      setAgitar(true);
+      setTimeout(() => setAgitar(false), 500);
+      if (campos.email) emailRef.current?.focus();
+      else passwordRef.current?.focus();
+      return;
+    }
+    setErrores({ email: '', password: '' });
     setCargando(true);
     try {
-      const res = await api.post('/usuario/login', { email, password });
-      const { token, usuario } = res.data;
-      localStorage.setItem('token', token);
-      localStorage.setItem('usuario', JSON.stringify(usuario));
+      const res = await Promise.all([
+        api.post('/usuario/login', { email, password }),
+        new Promise((r) => setTimeout(r, 550)),
+      ]).then(([resp]) => resp);
+      guardarSesion({ ...res.data, recordarme });
       setListo(true);
       setCargando(false);
       setTimeout(() => navigate('/'), 650);
     } catch (err) {
-      const msg = err.response?.data?.error;
-      setError(msg || 'Error al iniciar sesión');
+      setError(
+        err.response
+          ? 'Usuario o contraseña incorrectos.'
+          : 'No pudimos conectar con el servidor. Inténtalo de nuevo.'
+      );
+      setErrores({ email: '', password: '' });
       setAgitar(true);
       setTimeout(() => setAgitar(false), 500);
       setCargando(false);
+      emailRef.current?.focus();
     }
   };
 
@@ -95,10 +142,15 @@ function LoginPage() {
     setPassword('123456');
     setError('');
     setNota('');
+    setErrores({ email: '', password: '' });
   };
 
   const social = (proveedor) => {
     setNota(`La autenticación con ${proveedor} estará disponible próximamente.`);
+  };
+
+  const olvidar = () => {
+    setNota('La recuperación de contraseña estará disponible próximamente.');
   };
 
   const detectarCaps = (e) => {
@@ -112,11 +164,19 @@ function LoginPage() {
         <span className="login-blob blob-d"></span>
         <span className="login-blob blob-l"></span>
         <span className="login-granulado"></span>
+        <span className="login-vineta"></span>
       </div>
 
       <main className="login-tarjeta">
         <div className="login-encabezado">
-          <img src="/Logo.png" alt="NexoraLabs" className="login-firma" />
+          <div
+            className="login-firma"
+            role="img"
+            aria-label="NexoraLabs"
+            onContextMenu={(e) => e.preventDefault()}
+            onDragStart={(e) => e.preventDefault()}
+            onCopy={(e) => e.preventDefault()}
+          />
           <h1>Bienvenido</h1>
           <p>Inicia sesión para acceder a NexoraLabs</p>
         </div>
@@ -138,12 +198,29 @@ function LoginPage() {
                 type="email"
                 placeholder="tucorreo@ejemplo.com"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (errores.email) setErrores((p) => ({ ...p, email: '' }));
+                }}
                 autoComplete="email"
+                ref={emailRef}
                 autoFocus
+                disabled={cargando || listo}
+                className={errores.email ? 'login-control-invalido' : ''}
+                aria-invalid={!!errores.email}
                 required
               />
+              {email && (
+                <InputGroup.Text className={emailValido ? 'login-estado-valido' : 'login-estado-invalido'}>
+                  <IconoEstado valido={emailValido} />
+                </InputGroup.Text>
+              )}
             </InputGroup>
+            {errores.email && (
+              <Form.Text className="login-error-campo" role="alert">
+                <IconoEstado valido={false} /> {errores.email}
+              </Form.Text>
+            )}
           </Form.Group>
 
           <Form.Group className="mb-1" controlId="password">
@@ -156,30 +233,60 @@ function LoginPage() {
                 type={mostrarPassword ? 'text' : 'password'}
                 placeholder="Ingresa tu contraseña"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (errores.password) setErrores((p) => ({ ...p, password: '' }));
+                }}
                 onKeyUp={detectarCaps}
                 autoComplete="current-password"
+                ref={passwordRef}
+                disabled={cargando || listo}
+                className={errores.password ? 'login-control-invalido' : ''}
+                aria-invalid={!!errores.password}
                 required
               />
               <Button
                 variant="outline-light"
                 className="login-toggle-password"
                 onClick={() => setMostrarPassword(!mostrarPassword)}
+                disabled={cargando || listo}
                 aria-label={mostrarPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
               >
                 <IconoOjo abierto={mostrarPassword} />
               </Button>
             </InputGroup>
+            {errores.password && (
+              <Form.Text className="login-error-campo" role="alert">
+                <IconoEstado valido={false} /> {errores.password}
+              </Form.Text>
+            )}
           </Form.Group>
           {capsActivo && (
             <small className="login-aviso-caps">⚠ La tecla Bloq Mayús está activada</small>
           )}
+          {password && password.length < 6 && (
+            <small className="login-aviso-minimo">La contraseña debe tener al menos 6 caracteres</small>
+          )}
+
+          <div className="login-extras">
+            <Form.Check
+              type="checkbox"
+              id="recordarme"
+              label="Recordarme"
+              checked={recordarme}
+              onChange={(e) => setRecordarme(e.target.checked)}
+              className="login-recordarme"
+            />
+            <button type="button" className="login-olvidar" onClick={olvidar}>
+              ¿Olvidaste tu contraseña?
+            </button>
+          </div>
 
           <Button type="submit" className="login-boton w-100 mt-3" disabled={cargando || listo}>
             {listo
               ? (<><span className="login-exito-icono">✓</span>¡Bienvenido!</>)
               : cargando
-                ? (<><Spinner as="span" animation="border" size="sm" className="me-2" />Iniciando...</>)
+                ? (<><Spinner as="span" animation="border" size="sm" className="me-2" />Verificando...</>)
                 : 'Iniciar sesión'}
           </Button>
         </Form>
