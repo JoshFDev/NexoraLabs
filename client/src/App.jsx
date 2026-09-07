@@ -11,6 +11,7 @@ import PostulacionesPage from './pages/PostulacionesPage';
 import EquiposPage from './pages/EquiposPage';
 import RecursosPage from './pages/RecursosPage';
 import HabilidadesPage from './pages/HabilidadesPage';
+import PerfilPublicoPage from './pages/PerfilPublicoPage';
 import RutaProtegida from './components/RutaProtegida';
 
 function App() {
@@ -84,6 +85,14 @@ function App() {
           element={
             <RutaProtegida>
               <HabilidadesPage />
+            </RutaProtegida>
+          }
+        />
+        <Route
+          path="/usuario/:id"
+          element={
+            <RutaProtegida>
+              <PerfilPublicoPage />
             </RutaProtegida>
           }
         />

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Container, Row, Col, Form, Button, Spinner, Alert, Modal } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 import api from '../api';
 import './ProyectosPage.css';
 
@@ -241,8 +242,14 @@ function EquiposPage() {
                                   <div className="equipo-miembro" key={String(m._id)}>
                                     <div>
                                       <strong>
-                                        {m.usuario_id?.nombre || 'Anónimo'}{' '}
-                                        {m.usuario_id?.apellido_paterno || ''}
+                                        {m.usuario_id?._id ? (
+                                          <Link to={`/usuario/${m.usuario_id._id}`} className="perfil-publico-enlace">
+                                            {m.usuario_id?.nombre || 'Anónimo'}{' '}
+                                            {m.usuario_id?.apellido_paterno || ''}
+                                          </Link>
+                                        ) : (
+                                          <>{(m.usuario_id?.nombre || 'Anónimo')} {m.usuario_id?.apellido_paterno || ''}</>
+                                        )}
                                       </strong>
                                       <div className="proyecto-detalle-texto">{m.usuario_id?.email || ''}</div>
                                     </div>

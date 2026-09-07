@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Container, Spinner, Alert, Button, Form } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 import api from '../api';
 import IconoHabilidad from '../components/IconoHabilidad';
 import './ProyectosPage.css';
@@ -160,8 +161,14 @@ function PostulacionesPage() {
                         <div className="postulacion-cabeza">
                           <div>
                             <strong className="postulacion-nombre">
-                              {po.usuario_id?.nombre || 'Anónimo'}{' '}
-                              {po.usuario_id?.apellido_paterno || ''}
+                              {po.usuario_id?._id ? (
+                                <Link to={`/usuario/${po.usuario_id._id}`} className="perfil-publico-enlace">
+                                  {po.usuario_id?.nombre || 'Anónimo'}{' '}
+                                  {po.usuario_id?.apellido_paterno || ''}
+                                </Link>
+                              ) : (
+                                <>{(po.usuario_id?.nombre || 'Anónimo')} {po.usuario_id?.apellido_paterno || ''}</>
+                              )}
                             </strong>
                             <div className="postulacion-email">
                               {po.usuario_id?.email || ''}

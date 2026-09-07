@@ -1,5 +1,7 @@
 import Postulacion from "../models/Postulacion";
 import Proyecto from "../models/Proyecto";
+import Usuario from "../models/Usuario";
+import { registrarNotificacion } from "../shared/notificaciones";
 import { serverError, notFound, conflict, badRequest, forbidden } from "../shared/errors/errorHandler";
 import httpStatus from "../shared/errors/httpStatus";
 
@@ -68,6 +70,20 @@ export const cambiarEstadoPostulacion = async (req, res) => {
 
         postulacion.estado = estado;
         await postulacion.save();
+
+        const tituloProyecto = postulacion.proyecto_id?.titulo || 'tu proyecto';
+        if (estado === "aceptada" || estado === "rechazada") {
+            await registrarNotificacion({
+                usuario_id: postulacion.usuario_id,
+                tipo: "postulacion",
+                titulo: estado === "aceptada" ? "Postulación aceptada" : "Postulación rechazada",
+                mensaje: estado === "aceptada"
+                    ? `Tu postulación para "${tituloProyecto}" fue aceptada.`
+                    : `Tu postulación para "${tituloProyecto}" no fue seleccionada.`,
+                enlace: `/postulaciones`
+            });
+        }
+
         res.json(postulacion);
     } catch (error) {
         console.log(error);
@@ -164,6 +180,21 @@ export const postularAProyecto = async (req, res) => {
         });
 
         const postulacionRegistrada = await postulacion.save();
+
+        //Notificar al creador del proyecto que recibió una nueva postulación
+        const postulante = await Usuario.findById(usuarioId).select('nombre apellido_paterno');
+        const nombrePostulante = postulante
+            ? `${postulante.nombre}${postulante.apellido_paterno ? ' ' + postulante.apellido_paterno : ''}`
+            : 'Un usuario';
+
+        await registrarNotificacion({
+            usuario_id: proyecto.creador_id,
+            tipo: "postulacion",
+            titulo: "Nueva postulación",
+            mensaje: `${nombrePostulante} se postuló a tu proyecto "${proyecto.titulo}".`,
+            enlace: `/proyecto/${proyectoId}`
+        });
+
         res.status(httpStatus.CREATED).json(postulacionRegistrada);
     } catch (error) {
         console.log(error);

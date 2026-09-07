@@ -204,7 +204,18 @@ function ProyectoDetallePage() {
 
                 <div className="mt-4 pt-3" style={{ borderTop: '1px solid #efeff5' }}>
                   <div className="proyecto-detalle-fila">
-                    <strong>Creador</strong> {proyecto.creador_id?.nombre || 'Anónimo'} · {proyecto.creador_id?.email || ''}
+                    <strong>Creador</strong>{' '}
+                    {proyecto.creador_id?._id || proyecto.creador_id ? (
+                      <Link
+                        to={`/usuario/${proyecto.creador_id?._id || proyecto.creador_id}`}
+                        className="perfil-publico-enlace"
+                      >
+                        {proyecto.creador_id?.nombre || 'Anónimo'}
+                      </Link>
+                    ) : (
+                      'Anónimo'
+                    )}{' '}
+                    · {proyecto.creador_id?.email || ''}
                   </div>
                   <div className="proyecto-detalle-fila">
                     <strong>Integrantes</strong> {miembros.length}/{proyecto.integrantes_maximos || 1}
@@ -260,7 +271,13 @@ function ProyectoDetallePage() {
                             <div className="equipo-miembro" key={String(m._id)}>
                               <div>
                                 <strong>
-                                  {m.usuario_id?.nombre || 'Anónimo'} {m.usuario_id?.apellido_paterno || ''}
+                                  {m.usuario_id?._id ? (
+                                    <Link to={`/usuario/${m.usuario_id._id}`} className="perfil-publico-enlace">
+                                      {m.usuario_id?.nombre || 'Anónimo'} {m.usuario_id?.apellido_paterno || ''}
+                                    </Link>
+                                  ) : (
+                                    <>{m.usuario_id?.nombre || 'Anónimo'} {m.usuario_id?.apellido_paterno || ''}</>
+                                  )}
                                 </strong>
                                 <div className="proyecto-detalle-texto">{m.usuario_id?.email || ''}</div>
                               </div>

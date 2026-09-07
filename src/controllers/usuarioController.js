@@ -72,10 +72,10 @@ export const verPerfil = async (req, res) => {
     }
 };
 
-//GET /usuario/:id → ver un usuario por id
+//GET /usuario/:id → ver un usuario por id (perfil público, oculta el password)
 export const obtenerUsuario = async (req, res) => {
     try {
-        const usuario = await Usuario.findById(req.params.id);
+        const usuario = await Usuario.findById(req.params.id).select('-password');
         if (!usuario) return res.status(httpStatus.NOT_FOUND).json(notFound("Usuario no encontrado"));
         res.json(usuario);
     } catch (error) {

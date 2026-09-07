@@ -2,6 +2,7 @@ import { Navbar, Nav, Container, Button } from 'react-bootstrap';
 import { useNavigate, Link } from 'react-router-dom';
 import { useState } from 'react';
 import logo from '../assets/Logo.png';
+import CampanaNotificaciones from './CampanaNotificaciones';
 
 function NavBar() {
   const [usuario] = useState(() =>
@@ -49,6 +50,7 @@ function NavBar() {
                 <Nav.Link as={Link} to="/habilidades" className="nav-link-nexora">Habilidades</Nav.Link>
                 <Nav.Link as={Link} to="/" className="nav-link-nexora">Panel</Nav.Link>
                 <Nav.Link as={Link} to="/perfil" className="nav-link-nexora">Mi perfil</Nav.Link>
+                <CampanaNotificaciones />
                 <Navbar.Text className="me-3">
                   {usuario.nombre} ({usuario.rol})
                 </Navbar.Text>

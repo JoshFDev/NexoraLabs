@@ -513,3 +513,100 @@
   color: var(--nx-morado-oscuro);
   margin-bottom: 1rem;
 }
+
+/* Perfil público */
+.perfil-publico-linea {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: #4c4770;
+  margin-bottom: 0.55rem;
+  overflow-wrap: anywhere;
+}
+
+.perfil-publico-icono {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(168, 85, 247, 0.12);
+  color: var(--nx-morado-oscuro);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.perfil-publico-icono svg {
+  width: 12px;
+  height: 12px;
+}
+
+.perfil-publico-redes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.perfil-publico-redes a {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--nx-morado-oscuro);
+  border: 1.5px solid rgba(109, 40, 217, 0.35);
+  border-radius: 999px;
+  padding: 0.28rem 0.8rem;
+  background: #fbf8ff;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.perfil-publico-redes a:hover {
+  background: rgba(168, 85, 247, 0.15);
+  border-color: var(--nx-morado);
+}
+
+.perfil-publico-texto {
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: #3a3458;
+  white-space: pre-wrap;
+}
+
+.perfil-publico-habilidades {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.perfil-publico-nivel {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: #6d28d9;
+  background: rgba(168, 85, 247, 0.12);
+  border: 1px solid rgba(168, 85, 247, 0.35);
+  border-radius: 999px;
+  padding: 0.15rem 0.55rem;
+}
+
+.perfil-publico-educacion {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+  color: #3a3458;
+}
+
+.perfil-publico-enlace {
+  color: var(--nx-morado-oscuro);
+  text-decoration: none;
+  font-weight: 700;
+  border-bottom: 1px dashed rgba(109, 40, 217, 0.4);
+  transition: all 0.15s ease;
+}
+
+.perfil-publico-enlace:hover {
+  color: var(--nx-morado);
+  border-bottom-style: solid;
+}

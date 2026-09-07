@@ -1,7 +1,17 @@
 import MiembroEquipo from "../models/MiembroEquipo";
 import Equipo from "../models/Equipo";
+import Proyecto from "../models/Proyecto";
+import Usuario from "../models/Usuario";
+import { registrarNotificacion } from "../shared/notificaciones";
 import { serverError, notFound, badRequest, conflict } from "../shared/errors/errorHandler";
 import httpStatus from "../shared/errors/httpStatus";
+
+//Devuelve el id del creador del proyecto vinculado al equipo (null si no aplica)
+const creadorDelEquipo = async (equipo) => {
+    if (!equipo.proyecto_id) return null;
+    const proyecto = await Proyecto.findById(equipo.proyecto_id).select('creador_id titulo');
+    return proyecto ? { creador: proyecto.creador_id, titulo: proyecto.titulo } : null;
+};
 
 //GET /miembros-equipo → listar todos los miembros de equipos
 export const listarMiembros = async (req, res) => {
@@ -88,6 +98,22 @@ export const salirDeEquipo = async (req, res) => {
             usuario_id: req.usuario.id
         });
         if (!eliminado) return res.status(httpStatus.NOT_FOUND).json(notFound("No formas parte de este equipo"));
+
+        const datosProyecto = await creadorDelEquipo(equipo);
+        if (datosProyecto) {
+            const usuario = await Usuario.findById(req.usuario.id).select('nombre apellido_paterno');
+            const nombreUsuario = usuario
+                ? `${usuario.nombre}${usuario.apellido_paterno ? ' ' + usuario.apellido_paterno : ''}`
+                : 'Un usuario';
+            await registrarNotificacion({
+                usuario_id: datosProyecto.creador,
+                tipo: "equipo",
+                titulo: "Un integrante salió del equipo",
+                mensaje: `${nombreUsuario} salió del equipo del proyecto "${datosProyecto.titulo}".`,
+                enlace: `/equipos`
+            });
+        }
+
         res.json({ message: "Saliste del equipo", miembro: eliminado });
     } catch (error) {
         console.log(error);
@@ -123,6 +149,22 @@ export const unirseAEquipo = async (req, res) => {
         });
 
         const miembroRegistrado = await miembro.save();
+
+        const datosProyecto = await creadorDelEquipo(equipo);
+        if (datosProyecto) {
+            const usuario = await Usuario.findById(usuarioId).select('nombre apellido_paterno');
+            const nombreUsuario = usuario
+                ? `${usuario.nombre}${usuario.apellido_paterno ? ' ' + usuario.apellido_paterno : ''}`
+                : 'Un usuario';
+            await registrarNotificacion({
+                usuario_id: datosProyecto.creador,
+                tipo: "equipo",
+                titulo: "Nuevo integrante en el equipo",
+                mensaje: `${nombreUsuario} se unió al equipo del proyecto "${datosProyecto.titulo}".`,
+                enlace: `/equipos`
+            });
+        }
+
         res.status(httpStatus.CREATED).json(miembroRegistrado);
     } catch (error) {
         console.log(error);

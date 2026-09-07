@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Container, Row, Col, Form, Spinner, Alert, Button } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 import api from '../api';
 import IconoHabilidad from '../components/IconoHabilidad';
 import './ProyectosPage.css';
@@ -223,7 +224,13 @@ function ExplorarProyectosPage() {
         <div className="proyecto-detalle-bloque">
           <span className="proyecto-detalle-etiqueta">Creador</span>
           <span className="proyecto-detalle-texto">
-            {p.creador_id?.nombre || 'Anónimo'}
+            {p.creador_id?._id || p.creador_id ? (
+              <Link to={`/usuario/${p.creador_id?._id || p.creador_id}`} className="perfil-publico-enlace">
+                {p.creador_id?.nombre || 'Anónimo'}
+              </Link>
+            ) : (
+              'Anónimo'
+            )}
             {p.creador_id?.email ? ` · ${p.creador_id.email}` : ''}
           </span>
         </div>
@@ -315,7 +322,15 @@ function ExplorarProyectosPage() {
         </div>
         <p className="proyecto-descripcion">{p.descripcion}</p>
         <footer className="proyecto-creador">
-          Creado por {p.creador_id?.nombre || 'anon'} · {p.integrantes_maximos || 1} integrante(s)
+          Creado por{' '}
+          {p.creador_id?._id || p.creador_id ? (
+            <Link to={`/usuario/${p.creador_id?._id || p.creador_id}`} className="perfil-publico-enlace">
+              {p.creador_id?.nombre || 'anon'}
+            </Link>
+          ) : (
+            'anon'
+          )}{' '}
+          · {p.integrantes_maximos || 1} integrante(s)
           {p.coincidencias ? ` · ${p.coincidencias} coincidencia${p.coincidencias !== 1 ? 's' : ''}` : ''}
         </footer>
         <div className={`proyecto-fila-contenido${expandido === p._id ? ' abierto' : ''}`}>

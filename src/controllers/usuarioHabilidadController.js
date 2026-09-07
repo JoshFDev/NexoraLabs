@@ -27,6 +27,18 @@ export const misHabilidades = async (req, res) => {
     }
 };
 
+//GET /usuario/:id/habilidades → las habilidades públicas de un usuario (perfil público)
+export const habilidadesPublicas = async (req, res) => {
+    try {
+        const registros = await UsuarioHabilidad.find({ usuario_id: req.params.id })
+            .populate('habilidad_id', 'nombre categoria');
+        res.json(registros);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json(serverError(error));
+    }
+};
+
 //GET /usuario-habilidad/:id → ver una relación por id
 export const obtenerUsuarioHabilidad = async (req, res) => {
     try {

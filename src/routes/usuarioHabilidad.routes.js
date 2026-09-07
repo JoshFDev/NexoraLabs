@@ -7,7 +7,8 @@ import {
     crearUsuarioHabilidad,
     actualizarUsuarioHabilidad,
     eliminarUsuarioHabilidad,
-    misHabilidades
+    misHabilidades,
+    habilidadesPublicas
 } from "../controllers/usuarioHabilidadController";
 
 const router = Router();
@@ -20,6 +21,9 @@ router.get('/usuario-habilidad/:id', obtenerUsuarioHabilidad);
 
 //Habilidades declaradas por el usuario autenticado
 router.get('/mis-habilidades', verifyToken, misHabilidades);
+
+//Habilidades públicas de un usuario (perfil público)
+router.get('/usuario/:id/habilidades', habilidadesPublicas);
 
 //Crear o actualizar relación usuario-habilidad (upsert)
 router.post('/usuario-habilidad/agregar', verifyToken, crearUsuarioHabilidad);
