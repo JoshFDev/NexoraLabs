@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Container, Row, Col, Form, Button, Spinner, Alert, Modal } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 import api from '../api';
 import IconoHabilidad from '../components/IconoHabilidad';
 import './ProyectosPage.css';
@@ -37,6 +38,8 @@ function RecursosPage() {
   const [filtroNivel, setFiltroNivel] = useState('');
   const [expandido, setExpandido] = useState(null);
   const [califId, setCalifId] = useState(null);
+  const [formResena, setFormResena] = useState(null);
+  const [quitarId, setQuitarId] = useState(null);
   const [borrando, setBorrando] = useState(null);
 
   const [modalAbierto, setModalAbierto] = useState(false);
@@ -65,12 +68,12 @@ function RecursosPage() {
     api
       .get(`/recursos-aprendizaje?${params}`)
       .then((res) => {
-        const conRating = (res.data.recursos || []).map((r) => ({
-          ...r,
-          _calificado: (r.comentarios || []).some(
-            (c) => c.usuario_id && String(c.usuario_id) === String(idUsuario)
-          ),
-        }));
+        const conRating = (res.data.recursos || []).map((r) => {
+          const miResena = (r.comentarios || []).find(
+            (c) => c.usuario_id && String(c.usuario_id?._id || c.usuario_id) === String(idUsuario)
+          );
+          return { ...r, _miResena: miResena || null };
+        });
         setLista(conRating);
         setTotalPaginas(res.data.total_paginas || 1);
         setError('');
@@ -95,31 +98,63 @@ function RecursosPage() {
     }
   };
 
-  const calificar = async (r, estrellas) => {
+  const calificar = async (r) => {
+    if (!formResena?.estrellas) return;
     setCalifId(String(r._id));
     setError('');
     try {
       const res = await api.post(`/recurso-aprendizaje/${r._id}/calificar`, {
-        calificacion: estrellas,
-        texto: '',
+        calificacion: formResena.estrellas,
+        texto: formResena.texto || '',
       });
+      setFormResena(null);
       setLista((prev) =>
-        prev.map((x) =>
-          String(x._id) === String(r._id)
-            ? {
-                ...x,
-                valoracion_promedio: res.data.valoracion_promedio,
-                num_valoraciones: res.data.num_valoraciones,
-                comentarios: res.data.comentarios,
-                _calificado: true,
-              }
-            : x
-        )
+        prev.map((x) => {
+          if (String(x._id) !== String(r._id)) return x;
+          const d = res.data;
+          const miResena = (d.comentarios || []).find(
+            (c) => c.usuario_id && String(c.usuario_id?._id || c.usuario_id) === String(idUsuario)
+          );
+          return {
+            ...x,
+            valoracion_promedio: d.valoracion_promedio,
+            num_valoraciones: d.num_valoraciones,
+            comentarios: d.comentarios,
+            _miResena: miResena || null,
+          };
+        })
       );
     } catch (err) {
-      setError(err.response?.data?.error || 'No se pudo calificar el recurso');
+      setError(err.response?.data?.error || 'No se pudo guardar la reseña');
     } finally {
       setCalifId(null);
+    }
+  };
+
+  const quitarResena = async (r) => {
+    if (!window.confirm('¿Eliminar tu reseña de este recurso?')) return;
+    setQuitarId(String(r._id));
+    setError('');
+    try {
+      const res = await api.delete(`/recurso-aprendizaje/own/${r._id}/calificacion`);
+      setFormResena(null);
+      setLista((prev) =>
+        prev.map((x) => {
+          if (String(x._id) !== String(r._id)) return x;
+          const d = res.data;
+          return {
+            ...x,
+            valoracion_promedio: d.valoracion_promedio,
+            num_valoraciones: d.num_valoraciones,
+            comentarios: d.comentarios,
+            _miResena: null,
+          };
+        })
+      );
+    } catch (err) {
+      setError(err.response?.data?.error || 'No se pudo eliminar la reseña');
+    } finally {
+      setQuitarId(null);
     }
   };
 
@@ -310,23 +345,137 @@ function RecursosPage() {
                         <div className="proyecto-detalle-bloque">
                           <span className="proyecto-detalle-etiqueta">Valoración</span>
                           {estrellas(r)}
-                          <div className="d-flex align-items-center gap-2 mt-1">
-                            {r._calificado ? (
-                              <span className="proyecto-detalle-texto">Ya calificaste este recurso.</span>
-                            ) : (
+                          <div className="d-flex align-items-center gap-2 mt-1 mb-2">
+                            <span className="proyecto-detalle-texto">
+                              {r.valoracion_promedio > 0
+                                ? `${r.valoracion_promedio.toFixed(1)}/5 de ${r.num_valoraciones} valoración(es)`
+                                : 'Todavía sin valorar'}
+                            </span>
+                          </div>
+                          {formResena?.id === String(r._id) && (
+                            <div className="proyecto-postulacion-form mt-2">
+                              <div className="d-flex gap-1 mb-1">
+                                {[1, 2, 3, 4, 5].map((n) => (
+                                  <button
+                                    key={n}
+                                    type="button"
+                                    className={`recurso-estrella${n <= formResena.estrellas ? ' llena' : ''}`}
+                                    style={{ background: 'none', border: 'none', fontSize: '1.15rem', cursor: 'pointer' }}
+                                    onClick={() => setFormResena((f) => ({ ...f, estrellas: n }))}
+                                  >
+                                    ★
+                                  </button>
+                                ))}
+                                <span className="proyecto-detalle-texto ms-2" style={{ fontSize: '0.8rem' }}>
+                                  {formResena.estrellas || 0}/5
+                                </span>
+                              </div>
+                              <Form.Control
+                                as="textarea"
+                                rows={2}
+                                className="proyecto-post-mensaje"
+                                placeholder="¿Qué te pareció? (opcional)"
+                                value={formResena.texto}
+                                onChange={(e) => setFormResena((f) => ({ ...f, texto: e.target.value }))}
+                              />
+                              <div className="d-flex gap-2 mt-2">
+                                <Button
+                                  size="sm"
+                                  className="proyectos-boton"
+                                  disabled={califId === String(r._id) || !formResena.estrellas}
+                                  onClick={() => calificar(r)}
+                                >
+                                  {califId === String(r._id)
+                                    ? 'Guardando…'
+                                    : r._miResena
+                                    ? 'Actualizar reseña'
+                                    : 'Publicar reseña'}
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline-light"
+                                  className="proyectos-boton"
+                                  disabled={califId === String(r._id)}
+                                  onClick={() => setFormResena(null)}
+                                >
+                                  Cancelar
+                                </Button>
+                              </div>
+                            </div>
+                          )}
+                          {!formResena || formResena.id !== String(r._id) ? (
+                            <div className="d-flex flex-wrap gap-2">
                               <Button
                                 size="sm"
                                 className="proyectos-boton"
                                 disabled={califId === String(r._id)}
                                 onClick={(ev) => {
                                   ev.stopPropagation();
-                                  calificar(r, 5);
+                                  setFormResena({
+                                    id: String(r._id),
+                                    estrellas: r._miResena?.calificacion || 0,
+                                    texto: r._miResena?.texto || '',
+                                  });
                                 }}
                               >
-                                {califId === String(r._id) ? 'Calificando…' : 'Calificar 5 estrellas'}
+                                {r._miResena ? 'Editar mi reseña' : 'Calificar'}
                               </Button>
-                            )}
-                          </div>
+                              {r._miResena && (
+                                <Button
+                                  size="sm"
+                                  variant="outline-light"
+                                  className="proyectos-boton"
+                                  disabled={quitarId === String(r._id)}
+                                  onClick={(ev) => {
+                                    ev.stopPropagation();
+                                    quitarResena(r);
+                                  }}
+                                >
+                                  {quitarId === String(r._id) ? 'Eliminando…' : 'Eliminar mi reseña'}
+                                </Button>
+                              )}
+                            </div>
+                          ) : null}
+                        </div>
+                      </section>
+                      <section className="proyecto-fila-detalle">
+                        <div className="proyecto-detalle-bloque">
+                          <span className="proyecto-detalle-etiqueta">
+                            Reseñas ({r.comentarios?.length || 0})
+                          </span>
+                          {r.comentarios?.length ? (
+                            <div className="equipo-miembros">
+                              {r.comentarios.map((c, i) => {
+                                const autor = c.usuario_id;
+                                return (
+                                  <div className="equipo-miembro" key={i}>
+                                    <div>
+                                      <strong>
+                                        {autor?._id ? (
+                                          <Link to={`/usuario/${autor._id}`} className="perfil-publico-enlace">
+                                            {autor.nombre || 'Anónimo'} {autor.apellido_paterno || ''}
+                                          </Link>
+                                        ) : (
+                                          <>{(autor?.nombre || 'Usuario')} {autor?.apellido_paterno || ''}</>
+                                        )}
+                                      </strong>
+                                      <div className="recurso-estrellas">
+                                        {[1, 2, 3, 4, 5].map((n) => (
+                                          <span key={n} className={`recurso-estrella${n <= c.calificacion ? ' llena' : ''}`}>★</span>
+                                        ))}
+                                      </div>
+                                      {c.texto && <p className="proyecto-detalle-texto mb-0">{c.texto}</p>}
+                                      <span className="proyecto-creador" style={{ fontSize: '0.7rem' }}>
+                                        {new Date(c.fecha).toLocaleDateString('es')}
+                                      </span>
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          ) : (
+                            <p className="proyecto-detalle-texto">Sin reseñas todavía. ¡Sé el primero!</p>
+                          )}
                         </div>
                       </section>
                     </div>

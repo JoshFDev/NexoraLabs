@@ -7,7 +7,8 @@ import {
     crearRecurso,
     actualizarRecurso,
     eliminarRecurso,
-    calificarRecurso
+    calificarRecurso,
+    eliminarMiCalificacion
 } from "../controllers/recursoAprendizajeController";
 
 const router = Router();
@@ -27,7 +28,10 @@ router.put('/recurso-aprendizaje/:id', verifyToken, authorize("admin", "mentor")
 //Eliminar recurso
 router.delete('/recurso-aprendizaje/:id', verifyToken, authorize("admin", "mentor"), eliminarRecurso);
 
-//Lógica de negocio: calificar un recurso (autenticado)
+//Lógica de negocio: crear/actualizar mi reseña de un recurso (autenticado)
 router.post('/recurso-aprendizaje/:id/calificar', verifyToken, calificarRecurso);
+
+//Eliminar mi reseña de un recurso (autenticado)
+router.delete('/recurso-aprendizaje/own/:id/calificacion', verifyToken, eliminarMiCalificacion);
 
 export default router;

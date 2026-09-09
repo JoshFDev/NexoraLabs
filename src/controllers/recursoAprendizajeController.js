@@ -1,5 +1,5 @@
 import RecursoAprendizaje from "../models/RecursoAprendizaje";
-import { serverError, notFound, badRequest, conflict } from "../shared/errors/errorHandler";
+import { serverError, notFound, badRequest } from "../shared/errors/errorHandler";
 import httpStatus from "../shared/errors/httpStatus";
 
 //GET /recursos-aprendizaje → listar con filtros, paginación y ordenamiento
@@ -39,7 +39,9 @@ export const listarRecursos = async (req, res) => {
 
         const total = await RecursoAprendizaje.countDocuments(filtros);
 
-        const recursos = await RecursoAprendizaje.find(filtros).sort(sort).skip(salto).limit(limite).populate('habilidad_id', 'nombre');
+        const recursos = await RecursoAprendizaje.find(filtros).sort(sort).skip(salto).limit(limite)
+            .populate('habilidad_id', 'nombre')
+            .populate('comentarios.usuario_id', 'nombre apellido_paterno rol');
 
         res.json({
             total,
@@ -57,7 +59,9 @@ export const listarRecursos = async (req, res) => {
 //GET /recurso-aprendizaje/:id → ver un recurso por id
 export const obtenerRecurso = async (req, res) => {
     try {
-        const recurso = await RecursoAprendizaje.findById(req.params.id).populate('habilidad_id', 'nombre');
+        const recurso = await RecursoAprendizaje.findById(req.params.id)
+            .populate('habilidad_id', 'nombre')
+            .populate('comentarios.usuario_id', 'nombre apellido_paterno rol');
         if (!recurso) return res.status(httpStatus.NOT_FOUND).json(notFound("Recurso no encontrado"));
         res.json(recurso);
     } catch (error) {
@@ -106,7 +110,7 @@ export const eliminarRecurso = async (req, res) => {
     }
 };
 
-//POST /recurso-aprendizaje/:id/calificar → lógica de negocio: calificar un recurso (1-5)
+//POST /recurso-aprendizaje/:id/calificar → crear o actualizar mi reseña (1-5 + comentario opcional)
 export const calificarRecurso = async (req, res) => {
     try {
         const recursoId = req.params.id;
@@ -120,24 +124,64 @@ export const calificarRecurso = async (req, res) => {
         const recurso = await RecursoAprendizaje.findById(recursoId);
         if (!recurso) return res.status(httpStatus.NOT_FOUND).json(notFound("Recurso no encontrado"));
 
-        // Un usuario solo puede calificar una vez el mismo recurso
-        const yaComento = recurso.comentarios.find(c => c.usuario_id && c.usuario_id.toString() === usuarioId);
-        if (yaComento) {
-            return res.status(httpStatus.CONFLICT).json(conflict("Ya has calificado este recurso"));
+        const indice = recurso.comentarios.findIndex(
+            (c) => c.usuario_id && String(c.usuario_id) === String(usuarioId)
+        );
+
+        if (indice === -1) {
+            recurso.comentarios.push({
+                usuario_id: usuarioId,
+                texto: texto || "",
+                calificacion
+            });
+        } else {
+            recurso.comentarios[indice].calificacion = calificacion;
+            recurso.comentarios[indice].texto = texto || "";
+            recurso.comentarios[indice].fecha = Date.now();
         }
 
-        recurso.comentarios.push({
-            usuario_id: usuarioId,
-            texto: texto || "",
-            calificacion
-        });
-
-        recurso.num_valoraciones += 1;
+        recurso.num_valoraciones = recurso.comentarios.length;
         const total = recurso.comentarios.reduce((acc, c) => acc + c.calificacion, 0);
         recurso.valoracion_promedio = total / recurso.comentarios.length;
 
-        const recursoActualizado = await recurso.save();
-        res.status(httpStatus.CREATED).json(recursoActualizado);
+        await recurso.save();
+
+        const conDatos = await RecursoAprendizaje.findById(recursoId)
+            .populate('comentarios.usuario_id', 'nombre apellido_paterno rol');
+        res.json(conDatos);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json(serverError(error));
+    }
+};
+
+//DELETE /recurso-aprendizaje/own/:id/calificacion → elimina mi reseña del recurso
+export const eliminarMiCalificacion = async (req, res) => {
+    try {
+        const recursoId = req.params.id;
+        const usuarioId = req.usuario.id;
+
+        const recurso = await RecursoAprendizaje.findById(recursoId);
+        if (!recurso) return res.status(httpStatus.NOT_FOUND).json(notFound("Recurso no encontrado"));
+
+        const antes = recurso.comentarios.length;
+        recurso.comentarios = recurso.comentarios.filter(
+            (c) => !(c.usuario_id && String(c.usuario_id) === String(usuarioId))
+        );
+        if (recurso.comentarios.length === antes) {
+            return res.status(httpStatus.NOT_FOUND).json(notFound("No tienes una reseña en este recurso"));
+        }
+
+        recurso.num_valoraciones = recurso.comentarios.length;
+        recurso.valoracion_promedio = recurso.comentarios.length
+            ? recurso.comentarios.reduce((acc, c) => acc + c.calificacion, 0) / recurso.comentarios.length
+            : 0;
+
+        await recurso.save();
+
+        const conDatos = await RecursoAprendizaje.findById(recursoId)
+            .populate('comentarios.usuario_id', 'nombre apellido_paterno rol');
+        res.json(conDatos);
     } catch (error) {
         console.log(error);
         res.status(500).json(serverError(error));
