@@ -106,11 +106,11 @@ function LogrosPage() {
               <div key={idx} className={`honeycomb-fila${idx % 2 ? ' desplazada' : ''}`}>
                 {fila.map((l, j) => {
                   const meta = ICONOS_TIPO[l.tipo] || { icono: 'workspace_premium', etiqueta: l.tipo };
-                  const retraso = Math.min((idx * 4 + j) * 0.05, 0.7);
+                  const retraso = Math.min((idx * 4 + j) * 0.03, 0.5);
                   return (
                     <div
                       key={l._id}
-                      className="honeycomb-celda"
+                      className={`honeycomb-celda${l.obtenido ? ' obtenido' : ''}`}
                       style={{ animationDelay: `${retraso}s` }}
                     >
                       <div className={`honeycomb-hex ${l.obtenido ? 'obtenido' : 'bloqueado'}`}>
