@@ -13,6 +13,7 @@ import RecursosPage from './pages/RecursosPage';
 import HabilidadesPage from './pages/HabilidadesPage';
 import PerfilPublicoPage from './pages/PerfilPublicoPage';
 import AdminPanelPage from './pages/AdminPanelPage';
+import LogrosPage from './pages/LogrosPage';
 import RutaProtegida from './components/RutaProtegida';
 
 function App() {
@@ -102,6 +103,14 @@ function App() {
           element={
             <RutaProtegida>
               <AdminPanelPage />
+            </RutaProtegida>
+          }
+        />
+        <Route
+          path="/logros"
+          element={
+            <RutaProtegida>
+              <LogrosPage />
             </RutaProtegida>
           }
         />

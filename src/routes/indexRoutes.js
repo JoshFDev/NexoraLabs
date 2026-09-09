@@ -76,7 +76,11 @@ const rutas = [
     { metodo: "DELETE", ruta: "/comentario/:id", descripcion: "Eliminar comentario (autor/creador/admin)" },
 
     { metodo: "GET", ruta: "/stats", descripcion: "Estadísticas generales de la plataforma" },
-    { metodo: "GET", ruta: "/admin/stats", descripcion: "Métricas ampliadas del administrador" }
+    { metodo: "GET", ruta: "/admin/stats", descripcion: "Métricas ampliadas del administrador" },
+
+    { metodo: "GET", ruta: "/logros", descripcion: "Catálogo de logros (público)" },
+    { metodo: "GET", ruta: "/mis-logros", descripcion: "Verificar y listar mis logros (autenticado)" },
+    { metodo: "GET", ruta: "/logros/usuario/:id", descripcion: "Logros obtenidos por un usuario (público)" }
 ];
 
 router.get('/', (req, res) => {

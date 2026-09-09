@@ -17,6 +17,7 @@ import miembroEquipoRoutes from './routes/miembroEquipo.routes';
 import solicitudEquipoRoutes from './routes/solicitudEquipo.routes';
 import notificacionRoutes from './routes/notificacion.routes';
 import statsRoutes from './routes/stats.routes';
+import logroRoutes from './routes/logro.routes';
 import exphbs from "express-handlebars";
 import path from "path";
 import notFound from './shared/errors/notFound';
@@ -75,6 +76,7 @@ app.use(miembroEquipoRoutes);
 app.use(solicitudEquipoRoutes);
 app.use(notificacionRoutes);
 app.use(statsRoutes);
+app.use(logroRoutes);
 
 //Manejo de errores (después de todas las rutas)
 app.use(notFound);

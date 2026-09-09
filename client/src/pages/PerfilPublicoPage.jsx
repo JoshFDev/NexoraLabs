@@ -43,6 +43,7 @@ function PerfilPublicoPage() {
 
   const [perfil, setPerfil] = useState(null);
   const [habilidades, setHabilidades] = useState([]);
+  const [logros, setLogros] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState('');
 
@@ -54,10 +55,12 @@ function PerfilPublicoPage() {
     Promise.all([
       api.get(`/usuario/${id}`),
       api.get(`/usuario/${id}/habilidades`).catch(() => ({ data: [] })),
+      api.get(`/logros/usuario/${id}`).catch(() => ({ data: { logros: [] } })),
     ])
-      .then(([resPerfil, resHabilidades]) => {
+      .then(([resPerfil, resHabilidades, resLogros]) => {
         setPerfil(resPerfil.data);
         setHabilidades(resHabilidades.data || []);
+        setLogros(resLogros.data?.logros || []);
       })
       .catch((err) => setError(err.response?.data?.error || 'No se encontró el usuario'))
       .finally(() => setCargando(false));
@@ -189,6 +192,36 @@ function PerfilPublicoPage() {
                       <p className="perfil-publico-texto">{perfil.acerca_de_mi}</p>
                     ) : (
                       <small className="proyectos-subtitulo">El usuario aún no añadió una descripción.</small>
+                    )}
+                  </section>
+                </Col>
+
+                <Col xs={12}>
+                  <section className="proyecto-panel perfil-panel">
+                    <h2 className="perfil-card-titulo">
+                      Logros {logros.length > 0 && <span className="proyectos-subtitulo">· {logros.length}</span>}
+                    </h2>
+                    {logros.length === 0 ? (
+                      <small className="proyectos-subtitulo">Aún no ha desbloqueado logros.</small>
+                    ) : (
+                      <div className="perfil-chips">
+                        {logros.map((l) => (
+                          <span
+                            key={l.clave}
+                            className="perfil-chip"
+                            style={{ cursor: 'default', fontSize: '0.85rem', gap: '0.35rem', display: 'inline-flex', alignItems: 'center' }}
+                            title={l.descripcion}
+                          >
+                            <span style={{ fontSize: '1rem' }}>{l.icono}</span>
+                            {l.nombre}
+                            {l.fecha_obtencion && (
+                              <span className="perfil-publico-nivel">
+                                {new Date(l.fecha_obtencion).toLocaleDateString('es')}
+                              </span>
+                            )}
+                          </span>
+                        ))}
+                      </div>
                     )}
                   </section>
                 </Col>
