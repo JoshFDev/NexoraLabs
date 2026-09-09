@@ -1434,7 +1434,11 @@
   display: flex;
   justify-content: center;
   gap: var(--gap);
-  margin-bottom: var(--gap);
+  margin-bottom: calc(var(--hex-alto) * -0.22);
+}
+
+.honeycomb-fila:last-child {
+  margin-bottom: 0;
 }
 
 .honeycomb-fila.desplazada {
@@ -1446,16 +1450,25 @@
   width: var(--hex);
   height: var(--hex-alto);
   clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  transition: filter 0.18s ease;
 }
 
 .honeycomb-hex.obtenido {
-  background: rgba(124, 58, 237, 0.4);
-  filter: drop-shadow(0 3px 8px rgba(109, 40, 217, 0.25));
+  background: rgba(124, 58, 237, 0.55);
+  filter: drop-shadow(0 4px 10px rgba(109, 40, 217, 0.25));
 }
 
 .honeycomb-hex.bloqueado {
   background: #dcdae4;
-  filter: drop-shadow(0 2px 5px rgba(43, 40, 64, 0.08));
+  filter: drop-shadow(0 2px 6px rgba(43, 40, 64, 0.08));
+}
+
+.honeycomb-hex.obtenido:hover {
+  filter: drop-shadow(0 10px 20px rgba(109, 40, 217, 0.35));
+}
+
+.honeycomb-hex.bloqueado:hover {
+  filter: drop-shadow(0 6px 14px rgba(43, 40, 64, 0.18));
 }
 
 .honeycomb-hex-cuerpo {
@@ -1523,9 +1536,20 @@
   overflow: hidden;
 }
 
-.honeycomb-hex-pie {
+.honeycomb-hex-linea {
+  display: block;
+  width: calc(var(--hex) * 0.55);
+  height: 1px;
   margin-top: auto;
-  padding-top: calc(var(--hex) * 0.03);
+  background: linear-gradient(90deg, transparent, rgba(109, 40, 217, 0.35), transparent);
+}
+
+.honeycomb-hex.bloqueado .honeycomb-hex-linea {
+  background: linear-gradient(90deg, transparent, rgba(90, 86, 110, 0.35), transparent);
+}
+
+.honeycomb-hex-pie {
+  margin-top: calc(var(--hex) * 0.03);
   font-size: 0.72rem;
   color: #6D28D9;
   font-weight: 600;
@@ -1533,4 +1557,51 @@
 
 .honeycomb-hex.bloqueado .honeycomb-hex-pie {
   color: #9a96ab;
+}
+
+/* Progreso y leyenda */
+.honeycomb-etiqueta {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #9c97b0;
+}
+
+.honeycomb-barra {
+  height: 8px;
+  border-radius: 999px;
+  background: #e7e4ee;
+  overflow: hidden;
+}
+
+.honeycomb-barra > div {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #A855F7, #6D28D9);
+  transition: width 0.6s ease;
+}
+
+.honeycomb-leyenda {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.77rem;
+  font-weight: 600;
+  color: #7c7790;
+}
+
+.honeycomb-leyenda-dot {
+  display: inline-block;
+  width: 11px;
+  height: 12px;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+
+.honeycomb-leyenda-dot.obtenido {
+  background: linear-gradient(135deg, #A855F7, #6D28D9);
+}
+
+.honeycomb-leyenda-dot.bloqueado {
+  background: #cfccd9;
 }

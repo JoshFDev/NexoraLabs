@@ -90,43 +90,72 @@ function LogrosPage() {
         )}
 
         {datos && (
-          <div className="honeycomb">
-            {filas.map((fila, idx) => (
-              <div key={idx} className={`honeycomb-fila${idx % 2 ? ' desplazada' : ''}`}>
-                {fila.map((l) => {
-                  const meta = ICONOS_TIPO[l.tipo] || { icono: 'workspace_premium', etiqueta: l.tipo };
-                  return (
-                    <div
-                      key={l._id}
-                      className={`honeycomb-hex ${l.obtenido ? 'obtenido' : 'bloqueado'}`}
-                      title={l.descripcion}
-                    >
-                      <div className="honeycomb-hex-cuerpo">
-                        <span className="honeycomb-hex-ico">
-                          <span className="material-symbols-outlined">{meta.icono}</span>
-                        </span>
-                        <span className="honeycomb-hex-tipo">{meta.etiqueta}</span>
-                        <h4 className="honeycomb-hex-titulo">{l.nombre}</h4>
-                        <p className="honeycomb-hex-desc">{l.descripcion}</p>
-                        <div className="honeycomb-hex-pie">
-                          {l.obtenido ? (
-                            `Obtenido · ${new Date(l.fecha_obtencion).toLocaleDateString('es')}`
-                          ) : (
-                            <>
-                              <span className="material-symbols-outlined" style={{ fontSize: '12px', verticalAlign: '-2px' }}>
-                                lock
-                              </span>
-                              &nbsp;Bloqueado
-                            </>
-                          )}
+          <>
+            <div style={{ maxWidth: '720px', margin: '0 auto 1.4rem' }}>
+              <div className="d-flex align-items-center justify-content-between mb-1">
+                <span className="honeycomb-etiqueta">Progreso general</span>
+                <span className="honeycomb-etiqueta">
+                  {Math.round((datos.total_obtenidos / datos.total_logros) * 100)}%
+                </span>
+              </div>
+              <div className="honeycomb-barra">
+                <div
+                  style={{
+                    width: `${(datos.total_obtenidos / datos.total_logros) * 100}%`,
+                  }}
+                />
+              </div>
+              <div className="d-flex align-items-center justify-content-center gap-4 mt-3">
+                <span className="honeycomb-leyenda">
+                  <span className="honeycomb-leyenda-dot obtenido" />
+                  Obtenido · {datos.total_obtenidos}
+                </span>
+                <span className="honeycomb-leyenda">
+                  <span className="honeycomb-leyenda-dot bloqueado" />
+                  Bloqueado · {datos.total_logros - datos.total_obtenidos}
+                </span>
+              </div>
+            </div>
+
+            <div className="honeycomb">
+              {filas.map((fila, idx) => (
+                <div key={idx} className={`honeycomb-fila${idx % 2 ? ' desplazada' : ''}`}>
+                  {fila.map((l) => {
+                    const meta = ICONOS_TIPO[l.tipo] || { icono: 'workspace_premium', etiqueta: l.tipo };
+                    return (
+                      <div
+                        key={l._id}
+                        className={`honeycomb-hex ${l.obtenido ? 'obtenido' : 'bloqueado'}`}
+                        title={l.descripcion}
+                      >
+                        <div className="honeycomb-hex-cuerpo">
+                          <span className="honeycomb-hex-ico">
+                            <span className="material-symbols-outlined">{meta.icono}</span>
+                          </span>
+                          <span className="honeycomb-hex-tipo">{meta.etiqueta}</span>
+                          <h4 className="honeycomb-hex-titulo">{l.nombre}</h4>
+                          <p className="honeycomb-hex-desc">{l.descripcion}</p>
+                          <span className="honeycomb-hex-linea" />
+                          <div className="honeycomb-hex-pie">
+                            {l.obtenido ? (
+                              `Obtenido · ${new Date(l.fecha_obtencion).toLocaleDateString('es')}`
+                            ) : (
+                              <>
+                                <span className="material-symbols-outlined" style={{ fontSize: '12px', verticalAlign: '-2px' }}>
+                                  lock
+                                </span>
+                                &nbsp;Bloqueado
+                              </>
+                            )}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  );
-                })}
-              </div>
-            ))}
-          </div>
+                    );
+                  })}
+                </div>
+              ))}
+            </div>
+          </>
         )}
       </Container>
     </div>
