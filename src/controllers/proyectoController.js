@@ -99,10 +99,10 @@ export const eliminarProyecto = async (req, res) => {
 };
 
 //GET /proyectos → listar con filtros, paginación y ordenamiento
-//ej: /proyectos?categoria=web&buscar=react&pagina=1&limite=10&orden=recientes
+//ej: /proyectos?categoria=web&buscar=react&habilidad=id&pagina=1&limite=10&orden=recientes
 export const listarProyectos = async (req, res) => {
     try {
-        const { categoria, estado, nivel, buscar, creador } = req.query;
+        const { categoria, estado, nivel, buscar, creador, habilidad } = req.query;
 
         // ORDENAMIENTO: ?orden=recientes|antiguos|a-z|z-a
         // recientes/antiguos ordenan por _id, porque el ObjectId de Mongo guarda la fecha de creación interna
@@ -138,6 +138,8 @@ export const listarProyectos = async (req, res) => {
         }
 
         if (creador) filtros.creador_id = creador;
+
+        if (habilidad) filtros.habilidades_requeridas = habilidad;
 
         // countDocuments cuenta cuántos cumplen los filtros (para el total)
         const total = await Proyecto.countDocuments(filtros);

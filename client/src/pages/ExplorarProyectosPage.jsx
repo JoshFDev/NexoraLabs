@@ -36,13 +36,14 @@ function ExplorarProyectosPage() {
   const [error, setError] = useState('');
   const [textoBuscar, setTextoBuscar] = useState('');
   const [buscar, setBuscar] = useState('');
-  const [filtros, setFiltros] = useState({ categoria: '', estado: '', nivel: '', orden: 'recientes' });
+  const [filtros, setFiltros] = useState({ categoria: '', estado: '', nivel: '', habilidad: '', orden: 'recientes' });
   const [pagina, setPagina] = useState(1);
   const [totalPaginas, setTotalPaginas] = useState(1);
   const [expandido, setExpandido] = useState(null);
   const [misProyectos, setMisProyectos] = useState(null);
   const [sugerencias, setSugerencias] = useState([]);
   const [sugAbierta, setSugAbierta] = useState(false);
+  const [habilidades, setHabilidades] = useState([]);
   const [misPostulaciones, setMisPostulaciones] = useState({});
   const [formPostulacion, setFormPostulacion] = useState(null);
   const [editForm, setEditForm] = useState(null);
@@ -58,6 +59,10 @@ function ExplorarProyectosPage() {
       .get('/proyecto/recomendados')
       .then((res) => setRecomendados(res.data))
       .catch(() => setRecomendados(null));
+    api
+      .get('/habilidades?limite=500')
+      .then((res) => setHabilidades(res.data.habilidades || []))
+      .catch(() => setHabilidades([]));
   }, []);
 
   useEffect(() => {
@@ -150,6 +155,7 @@ function ExplorarProyectosPage() {
     if (filtros.categoria) params.set('categoria', filtros.categoria);
     if (filtros.estado) params.set('estado', filtros.estado);
     if (filtros.nivel) params.set('nivel', filtros.nivel);
+    if (filtros.habilidad) params.set('habilidad', filtros.habilidad);
 
     api
       .get(`/proyectos?${params}`)
@@ -448,6 +454,12 @@ function ExplorarProyectosPage() {
             <option value="">Categoría</option>
             {CATEGORIAS.map((c) => (
               <option key={c} value={c}>{c}</option>
+            ))}
+          </Form.Select>
+          <Form.Select value={filtros.habilidad} onChange={(e) => cambiarFiltro('habilidad', e.target.value)} style={{ width: 'auto' }}>
+            <option value="">Habilidad</option>
+            {habilidades.map((h) => (
+              <option key={String(h._id)} value={h._id}>{h.nombre}</option>
             ))}
           </Form.Select>
           <Form.Select value={filtros.estado} onChange={(e) => cambiarFiltro('estado', e.target.value)} style={{ width: 'auto' }}>

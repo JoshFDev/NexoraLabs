@@ -1,18 +1,25 @@
 import Equipo from "../models/Equipo";
 import MiembroEquipo from "../models/MiembroEquipo";
+import Proyecto from "../models/Proyecto";
 import { serverError, notFound, badRequest } from "../shared/errors/errorHandler";
 import httpStatus from "../shared/errors/httpStatus";
 
 //GET /equipos → listar con filtros, paginación y ordenamiento
-//ej: /equipos?buscar=dev&estado=activo&orden=recientes
+//ej: /equipos?buscar=dev&estado=activo&habilidad=id&orden=recientes
 export const listarEquipos = async (req, res) => {
     try {
-        const { buscar, estado } = req.query;
+        const { buscar, estado, habilidad } = req.query;
         const filtros = {};
 
         if (estado) filtros.estado = estado;
 
         if (req.query.proyecto) filtros.proyecto_id = req.query.proyecto;
+
+        // Filtrar equipos cuyo proyecto requiera cierta habilidad
+        if (habilidad) {
+            const proyectosConHabilidad = await Proyecto.find({ habilidades_requeridas: habilidad }).select('_id');
+            filtros.proyecto_id = { $in: proyectosConHabilidad.map((p) => p._id) };
+        }
 
         if (buscar) {
             filtros.$or = [

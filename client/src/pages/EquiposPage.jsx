@@ -24,6 +24,8 @@ function EquiposPage() {
   const [textoBuscar, setTextoBuscar] = useState('');
   const [buscar, setBuscar] = useState('');
   const [filtroEstado, setFiltroEstado] = useState('');
+  const [filtroHabilidad, setFiltroHabilidad] = useState('');
+  const [habilidades, setHabilidades] = useState([]);
   const [expandido, setExpandido] = useState(null);
   const [miembrosMap, setMiembrosMap] = useState({});
   const [misEquipos, setMisEquipos] = useState(null);
@@ -81,10 +83,18 @@ function EquiposPage() {
   }, [cargarSolicitudesEquipo]);
 
   useEffect(() => {
+    api
+      .get('/habilidades?limite=500')
+      .then((res) => setHabilidades(res.data.habilidades || []))
+      .catch(() => setHabilidades([]));
+  }, []);
+
+  useEffect(() => {
     setCargando(true);
     const params = new URLSearchParams({ pagina, limite: '8', orden: 'recientes' });
     if (buscar) params.set('buscar', buscar);
     if (filtroEstado) params.set('estado', filtroEstado);
+    if (filtroHabilidad) params.set('habilidad', filtroHabilidad);
     api
       .get(`/equipos?${params}`)
       .then((res) => {
@@ -94,7 +104,7 @@ function EquiposPage() {
       })
       .catch((err) => setError(err.response?.data?.error || 'Error al cargar equipos'))
       .finally(() => setCargando(false));
-  }, [buscar, filtroEstado, pagina]);
+  }, [buscar, filtroEstado, filtroHabilidad, pagina]);
 
   const alternar = async (id) => {
     if (expandido === id) {
@@ -228,6 +238,7 @@ function EquiposPage() {
       setPagina(1);
       setBuscar('');
       setFiltroEstado('');
+      setFiltroHabilidad('');
       setTimeout(() => {
         setModalAbierto(false);
         setFormCrear({ proyecto_id: '', nombre: '', descripcion: '' });
@@ -345,6 +356,19 @@ function EquiposPage() {
               <option value="">Estado</option>
               {Object.entries(ETIQUETAS_ESTADO_EQUIPO).map(([v, l]) => (
                 <option key={v} value={v}>{l}</option>
+              ))}
+            </Form.Select>
+            <Form.Select
+              value={filtroHabilidad}
+              onChange={(e) => {
+                setPagina(1);
+                setFiltroHabilidad(e.target.value);
+              }}
+              style={{ width: 'auto' }}
+            >
+              <option value="">Habilidad</option>
+              {habilidades.map((h) => (
+                <option key={String(h._id)} value={h._id}>{h.nombre}</option>
               ))}
             </Form.Select>
             <Button type="submit" variant="primary" className="proyectos-boton">
