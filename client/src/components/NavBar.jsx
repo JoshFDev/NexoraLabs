@@ -1,6 +1,6 @@
 import { Navbar, Nav, Container } from 'react-bootstrap';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import logo from '../assets/Logo.png';
 import api from '../api';
 import CampanaNotificaciones from './CampanaNotificaciones';
@@ -71,10 +71,13 @@ function NavBar() {
         <Navbar.Collapse id="navbar-nav">
           {usuario && (
             <Nav className="navbar-enlaces ms-lg-5">
-              {RUTAS.filter((r) => r.para === 'todos' || puedeCrear).map((r) => (
-                <Nav.Link key={r.to} as={Link} to={r.to} className={ClaseEnlace(r.to)}>
-                  {r.etiqueta}
-                </Nav.Link>
+              {RUTAS.filter((r) => r.para === 'todos' || puedeCrear).map((r, i) => (
+                <Fragment key={r.to}>
+                  {i > 0 && <span className="nav-sep">/</span>}
+                  <Nav.Link as={Link} to={r.to} className={ClaseEnlace(r.to)}>
+                    {r.etiqueta}
+                  </Nav.Link>
+                </Fragment>
               ))}
             </Nav>
           )}
