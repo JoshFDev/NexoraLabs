@@ -70,6 +70,9 @@ const rutas = [
     { metodo: "PUT", ruta: "/equipo/:id/miembros/:miembroId/rol", descripcion: "Cambiar rol de integrante (creador/admin/mentor)" },
     { metodo: "DELETE", ruta: "/equipo/:id/miembros/:miembroId", descripcion: "Quitar integrante del equipo (creador/admin/mentor)" },
     { metodo: "POST", ruta: "/recurso-aprendizaje/:id/calificar", descripcion: "Calificar un recurso (autenticado)" },
+    { metodo: "GET", ruta: "/proyecto/:id/comentarios", descripcion: "Comentarios de un proyecto" },
+    { metodo: "POST", ruta: "/proyecto/:id/comentar", descripcion: "Comentar un proyecto (autenticado)" },
+    { metodo: "DELETE", ruta: "/comentario/:id", descripcion: "Eliminar comentario (autor/creador/admin)" },
 
     { metodo: "GET", ruta: "/stats", descripcion: "Estadísticas generales de la plataforma" }
 ];

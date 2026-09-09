@@ -51,6 +51,9 @@ function ProyectoDetallePage() {
   const [cargandoEquipo, setCargandoEquipo] = useState(true);
   const [accion, setAccion] = useState(null);
   const [error, setError] = useState('');
+  const [comentarios, setComentarios] = useState(null);
+  const [nuevoComentario, setNuevoComentario] = useState('');
+  const [enviandoComentario, setEnviandoComentario] = useState(false);
 
   const esCreador = proyecto && idUsuario && String(proyecto.creador_id?._id || proyecto.creador_id) === String(idUsuario);
 
@@ -100,6 +103,10 @@ function ProyectoDetallePage() {
       .catch((err) => setError(err.response?.data?.error || 'No se encontró el proyecto'))
       .finally(() => setCargando(false));
     cargarDatos();
+    api
+      .get(`/proyecto/${id}/comentarios`)
+      .then((res) => setComentarios(res.data || []))
+      .catch(() => setComentarios([]));
   }, [id, cargarDatos]);
 
   useEffect(() => {
@@ -140,6 +147,33 @@ function ProyectoDetallePage() {
       setError(err.response?.data?.error || 'No se pudo salir del equipo');
     } finally {
       setAccion(null);
+    }
+  };
+
+  const enviarComentario = async () => {
+    const texto = nuevoComentario.trim();
+    if (!texto || !usuario) return;
+    setEnviandoComentario(true);
+    setError('');
+    try {
+      const res = await api.post(`/proyecto/${id}/comentar`, { contenido: texto });
+      setComentarios((prev) => [...(prev || []), res.data]);
+      setNuevoComentario('');
+    } catch (err) {
+      setError(err.response?.data?.error || 'No se pudo publicar el comentario');
+    } finally {
+      setEnviandoComentario(false);
+    }
+  };
+
+  const borrarComentario = async (c) => {
+    if (!window.confirm('¿Eliminar este comentario?')) return;
+    setError('');
+    try {
+      await api.delete(`/comentario/${c._id}`);
+      setComentarios((prev) => (prev || []).filter((x) => String(x._id) !== String(c._id)));
+    } catch (err) {
+      setError(err.response?.data?.error || 'No se pudo eliminar el comentario');
     }
   };
 
@@ -326,6 +360,85 @@ function ProyectoDetallePage() {
                 </div>
               </Col>
             </Row>
+
+            <section className="mt-5 pt-4" style={{ borderTop: '1px solid #efeff5' }}>
+              <h4 className="proyectos-titulo mb-3" style={{ fontSize: '1.15rem' }}>
+                Comentarios ({comentarios ? comentarios.length : '…'})
+              </h4>
+
+              {usuario && (
+                <div className="proyecto-postulacion-form mb-4" style={{ maxWidth: 640 }}>
+                  <Form.Control
+                    as="textarea"
+                    rows={2}
+                    className="proyecto-post-mensaje"
+                    placeholder="Deja tu retroalimentación…"
+                    value={nuevoComentario}
+                    onChange={(e) => setNuevoComentario(e.target.value)}
+                  />
+                  <Button
+                    size="sm"
+                    className="proyectos-boton mt-2"
+                    disabled={enviandoComentario || nuevoComentario.trim().length === 0}
+                    onClick={enviarComentario}
+                  >
+                    {enviandoComentario ? <Spinner animation="border" size="sm" /> : 'Publicar comentario'}
+                  </Button>
+                </div>
+              )}
+
+              {comentarios === null ? (
+                <div className="text-center py-4">
+                  <Spinner animation="border" size="sm" variant="secondary" />
+                </div>
+              ) : comentarios.length === 0 ? (
+                <p className="proyecto-detalle-texto">
+                  Aún no hay comentarios{usuario ? '. ¡Sé el primero!' : '.'}
+                </p>
+              ) : (
+                <div className="equipo-miembros" style={{ maxWidth: 760 }}>
+                  {comentarios.map((c) => {
+                    const autor = c.usuario_id;
+                    const puedeBorrar =
+                      (autor && String(autor._id || autor) === String(idUsuario)) ||
+                      esCreador ||
+                      usuario?.rol === 'admin';
+                    return (
+                      <div className="equipo-miembro" key={String(c._id)}>
+                        <div>
+                          <strong>
+                            {autor?._id ? (
+                              <Link to={`/usuario/${autor._id}`} className="perfil-publico-enlace">
+                                {autor.nombre || 'Anónimo'} {autor.apellido_paterno || ''}
+                              </Link>
+                            ) : (
+                              <>{(autor?.nombre || 'Usuario')} {autor?.apellido_paterno || ''}</>
+                            )}
+                            {' · '}
+                            <span className="proyecto-creador" style={{ fontSize: '0.72rem', display: 'inline' }}>
+                              {new Date(c.fecha).toLocaleString('es')}
+                            </span>
+                          </strong>
+                          <div className="proyecto-detalle-texto" style={{ whiteSpace: 'pre-wrap' }}>
+                            {c.contenido}
+                          </div>
+                        </div>
+                        {puedeBorrar && (
+                          <Button
+                            size="sm"
+                            variant="outline-light"
+                            className="proyectos-boton"
+                            onClick={() => borrarComentario(c)}
+                          >
+                            Eliminar
+                          </Button>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </section>
           </div>
         )}
       </Container>
