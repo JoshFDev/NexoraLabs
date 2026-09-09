@@ -1083,3 +1083,255 @@
   border-color: #f0a3a3 !important;
   color: #fff !important;
 }
+/* ---------- Dashboard UX/UI ---------- */
+.dash-cargando {
+  padding: 5rem 0;
+  text-align: center;
+  color: #7c7790;
+}
+
+.dash-cargando p {
+  margin-top: 0.8rem;
+  font-size: 0.9rem;
+}
+
+.dash-hero {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+  padding: 1.4rem 1.5rem;
+  border-radius: 1rem;
+  background:
+    radial-gradient(1100px 300px at 15% -40%, rgba(168, 85, 247, 0.4), transparent 55%),
+    radial-gradient(900px 260px at 85% 140%, rgba(76, 29, 149, 0.55), transparent 60%),
+    linear-gradient(135deg, #241242 0%, #17092b 100%);
+  border: 1px solid rgba(168, 85, 247, 0.35);
+  box-shadow: 0 14px 34px rgba(30, 10, 60, 0.35);
+  color: var(--nx-brillo);
+}
+
+.dash-hero-avatar {
+  width: 62px;
+  height: 62px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #fff;
+  background: linear-gradient(135deg, #A855F7, #7C3AED);
+  box-shadow: 0 0 0 3px rgba(237, 233, 255, 0.18), 0 10px 24px rgba(168, 85, 247, 0.4);
+  overflow: hidden;
+}
+
+.dash-hero-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.dash-hero-datos {
+  min-width: 0;
+}
+
+.dash-hero-saludo {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #d8b4fe;
+  margin-bottom: 0.15rem;
+}
+
+.dash-hero-titulo {
+  font-size: 1.55rem;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1.2;
+}
+
+.dash-hero-subtitulo {
+  font-size: 0.9rem;
+  color: rgba(237, 233, 255, 0.78);
+}
+
+.dash-hero-acciones {
+  margin-left: auto;
+  display: flex;
+  gap: 0.6rem;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+.dash-hero-btn {
+  border-radius: 0.6rem;
+  font-weight: 600;
+  font-size: 0.88rem;
+  padding: 0.55rem 1.15rem;
+}
+
+.dash-hero-btn-primario {
+  background: linear-gradient(135deg, #A855F7, #7C3AED);
+  border: none;
+  box-shadow: 0 8px 20px rgba(168, 85, 247, 0.4);
+}
+
+.dash-hero-btn-primario:hover:not(:disabled) {
+  background: linear-gradient(135deg, #b966f8, #8b5cf6);
+}
+
+/* Tarjetas KPI */
+.dash-stat {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  height: 100%;
+  padding: 1.05rem 1.15rem;
+  border-radius: 0.85rem;
+  border: 1px solid #e4e3ec;
+  background: #ffffff;
+  box-shadow: 0 6px 18px rgba(70, 62, 105, 0.07);
+  text-decoration: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.dash-stat:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 26px rgba(70, 62, 105, 0.14);
+  border-color: rgba(168, 85, 247, 0.5);
+}
+
+.dash-stat-icono {
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.75rem;
+  color: #ffffff;
+}
+
+.dash-stat-dato {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.dash-stat-dato strong {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #2b2840;
+  line-height: 1.1;
+}
+
+.dash-stat-dato small {
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: #8b84a3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dash-stat-dalton .dash-stat-icono { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
+.dash-stat-rosa .dash-stat-icono { background: linear-gradient(135deg, #f472b6, #db2777); }
+.dash-stat-verde .dash-stat-icono { background: linear-gradient(135deg, #34d399, #059669); }
+.dash-stat-oro .dash-stat-icono { background: linear-gradient(135deg, #fbbf24, #d97706); }
+
+/* Secciones */
+.dash-seccion {
+  border: 1px solid #e4e3ec;
+  background: rgba(255, 255, 255, 0.55);
+  border-radius: 0.9rem;
+  padding: 1.15rem 1.2rem;
+  height: 100%;
+}
+
+.dash-seccion-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.dash-ver-todo {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--nx-morado-oscuro);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.dash-ver-todo:hover {
+  text-decoration: underline;
+  color: var(--nx-morado);
+}
+
+/* Vacíos */
+.dash-vacio {
+  text-align: center;
+  padding: 2.2rem 1rem;
+  color: #9a96ab;
+}
+
+.dash-vacio p {
+  margin-bottom: 0.9rem;
+  font-size: 0.9rem;
+}
+
+.dash-vacio-icono {
+  display: block;
+  font-size: 2rem;
+  margin-bottom: 0.4rem;
+}
+
+.dash-vacio-chico {
+  padding: 1.4rem 0.6rem;
+}
+
+/* Mini tarjetas en rejilla */
+.dash-seccion .recomendado-mini {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.recomendado-mini-cabecera {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.recomendado-mini-posicion {
+  color: #c9c4de;
+  display: inline-flex;
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+}
+
+.proyecto-fila-creador-meta {
+  font-size: 0.76rem;
+  color: #9a96ab;
+}
+
+@media (max-width: 575.98px) {
+  .dash-hero {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .dash-hero-acciones {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .dash-hero-acciones .dash-hero-btn {
+    flex: 1;
+  }
+}
