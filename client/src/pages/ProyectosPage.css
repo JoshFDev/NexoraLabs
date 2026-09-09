@@ -1404,3 +1404,133 @@
     flex: 1;
   }
 }
+
+/* ---------- Panal de logros (honeycomb) ---------- */
+.honeycomb {
+  --hex: 322px;
+  --hex-alto: calc(var(--hex) * 1.12);
+  --gap: 20px;
+  max-width: 1420px;
+  margin: 0 auto;
+}
+
+@media (max-width: 1199.98px) {
+  .honeycomb { --hex: 308px; }
+}
+
+@media (max-width: 991.98px) {
+  .honeycomb { --hex: 300px; }
+}
+
+@media (max-width: 639.98px) {
+  .honeycomb { --hex: 268px; }
+}
+
+@media (max-width: 479.98px) {
+  .honeycomb { --hex: 236px; }
+}
+
+.honeycomb-fila {
+  display: flex;
+  justify-content: center;
+  gap: var(--gap);
+  margin-bottom: var(--gap);
+}
+
+.honeycomb-fila.desplazada {
+  transform: translateX(calc(var(--hex) / 2 + var(--gap) / 2));
+}
+
+.honeycomb-hex {
+  position: relative;
+  width: var(--hex);
+  height: var(--hex-alto);
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+
+.honeycomb-hex.obtenido {
+  background: rgba(124, 58, 237, 0.4);
+  filter: drop-shadow(0 3px 8px rgba(109, 40, 217, 0.25));
+}
+
+.honeycomb-hex.bloqueado {
+  background: #dcdae4;
+  filter: drop-shadow(0 2px 5px rgba(43, 40, 64, 0.08));
+}
+
+.honeycomb-hex-cuerpo {
+  position: absolute;
+  inset: 3px;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  background: #ffffff;
+  padding: calc(var(--hex-alto) * 0.15) calc(var(--hex) * 0.1) calc(var(--hex-alto) * 0.16);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  overflow: hidden;
+}
+
+.honeycomb-hex.bloqueado .honeycomb-hex-cuerpo {
+  background: #f6f6f9;
+}
+
+.honeycomb-hex-ico {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: calc(var(--hex) * 0.22);
+  height: calc(var(--hex) * 0.245);
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  background: linear-gradient(135deg, #A855F7, #6D28D9);
+  color: #ffffff;
+  margin-bottom: calc(var(--hex) * 0.03);
+}
+
+.honeycomb-hex-ico .material-symbols-outlined {
+  font-size: calc(var(--hex) * 0.12);
+}
+
+.honeycomb-hex-tipo {
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #9c97b0;
+  margin-bottom: calc(var(--hex) * 0.025);
+}
+
+.honeycomb-hex-titulo {
+  font-weight: 800;
+  color: #2b2840;
+  font-size: 1.08rem;
+  line-height: 1.2;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.honeycomb-hex-desc {
+  color: #7c7790;
+  font-size: 0.82rem;
+  line-height: 1.35;
+  margin: calc(var(--hex) * 0.025) 0 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.honeycomb-hex-pie {
+  margin-top: auto;
+  padding-top: calc(var(--hex) * 0.03);
+  font-size: 0.72rem;
+  color: #6D28D9;
+  font-weight: 600;
+}
+
+.honeycomb-hex.bloqueado .honeycomb-hex-pie {
+  color: #9a96ab;
+}

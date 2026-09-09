@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Container, Row, Col, Spinner, Alert } from 'react-bootstrap';
+import { Container, Spinner, Alert } from 'react-bootstrap';
 import api from '../api';
 import './ProyectosPage.css';
 
@@ -12,86 +12,30 @@ const ICONOS_TIPO = {
   calificar_recurso: { icono: 'school', etiqueta: 'Aprendizaje' },
 };
 
-const estilos = {
-  tarjeta: {
-    position: 'relative',
-    borderRadius: '0.6rem',
-    border: '1px solid #e4e3ec',
-    background: '#ffffff',
-    padding: '1.15rem 1rem 1rem',
-    height: '100%',
-    display: 'flex',
-    flexDirection: 'column',
-    boxShadow: '0 1px 3px rgba(43, 40, 64, 0.06)',
-    transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
-  },
-  obtenido: {
-    borderColor: 'rgba(124, 58, 237, 0.45)',
-    boxShadow: '0 0 0 1px rgba(124, 58, 237, 0.12)',
-  },
-  bloqueado: {
-    background: '#f8f8fa',
-    opacity: 0.72,
-  },
-  cinta: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    width: 0,
-    height: 0,
-    borderTop: '34px solid #6D28D9',
-    borderLeft: '34px solid transparent',
-    borderTopRightRadius: '0.35rem',
-  },
-  cintaBloqueada: {
-    borderTopColor: '#c9c6d4',
-  },
-  medalla: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '44px',
-    height: '50px',
-    flexShrink: 0,
-    clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
-    background: 'linear-gradient(135deg, #A855F7, #6D28D9)',
-    color: '#ffffff',
-  },
-  medallaBloqueada: {
-    background: 'linear-gradient(135deg, #cfccd9, #aeabbd)',
-  },
-  pildora: {
-    fontSize: '0.72rem',
-    fontWeight: 700,
-    letterSpacing: '0.06em',
-    textTransform: 'uppercase',
-    color: '#6D28D9',
-    border: '1px solid rgba(109, 40, 217, 0.4)',
-    background: '#f7f2fe',
-    padding: '0.2rem 0.65rem',
-    borderRadius: '999px',
-    whiteSpace: 'nowrap',
-  },
-  pildoraBloqueada: {
-    color: '#9a96ab',
-    border: '1px solid #d8d5e2',
-    background: '#f3f2f6',
-  },
-  divisor: {
-    height: '1px',
-    background: 'linear-gradient(90deg, rgba(109, 40, 217, 0.4), transparent)',
-    margin: '0.55rem 0',
-  },
-  fecha: {
-    fontSize: '0.72rem',
-    color: '#6D28D9',
-    fontWeight: 600,
-  },
-};
+function useColumnas() {
+  const [cols, setCols] = useState(4);
+  useEffect(() => {
+    const puntos = [
+      { m: '(min-width: 1200px)', n: 4 },
+      { m: '(min-width: 992px)', n: 3 },
+      { m: '(min-width: 640px)', n: 2 },
+    ];
+    const mqs = puntos.map((p) => ({ ...p, q: window.matchMedia(p.m) }));
+    const calcular = () => {
+      const match = mqs.find((x) => x.q.matches);
+      setCols(match ? match.n : 1);
+    };
+    calcular();
+    mqs.forEach((x) => x.q.addEventListener('change', calcular));
+    return () => mqs.forEach((x) => x.q.removeEventListener('change', calcular));
+  }, []);
+  return cols;
+}
 
 function LogrosPage() {
   const [datos, setDatos] = useState(null);
   const [error, setError] = useState('');
+  const columnas = useColumnas();
 
   useEffect(() => {
     api
@@ -99,6 +43,13 @@ function LogrosPage() {
       .then((res) => setDatos(res.data))
       .catch((err) => setError(err.response?.data?.error || 'No pudimos cargar tus logros.'));
   }, []);
+
+  const filas = [];
+  if (datos) {
+    for (let i = 0; i < datos.logros.length; i += columnas) {
+      filas.push(datos.logros.slice(i, i + columnas));
+    }
+  }
 
   return (
     <div className="proyectos-pagina">
@@ -139,71 +90,43 @@ function LogrosPage() {
         )}
 
         {datos && (
-          <Row className="g-3">
-            {datos.logros.map((l) => {
-              const meta = ICONOS_TIPO[l.tipo] || { icono: 'workspace_premium', etiqueta: l.tipo };
-              return (
-                <Col key={l._id} xs={12} sm={6} lg={4} xl={3} className="d-flex">
-                  <div
-                    style={{
-                      ...estilos.tarjeta,
-                      ...(l.obtenido ? estilos.obtenido : estilos.bloqueado),
-                    }}
-                  >
-                    {l.obtenido && <span style={{ ...estilos.cinta, ...(!l.obtenido && estilos.cintaBloqueada) }} />}
-                    <div className="d-flex align-items-center justify-content-between mb-2">
-                      <span style={{ ...estilos.medalla, ...(!l.obtenido && estilos.medallaBloqueada) }}>
-                        <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
-                          {meta.icono}
-                        </span>
-                      </span>
-                      <span style={{ ...estilos.pildora, ...(!l.obtenido && estilos.pildoraBloqueada) }}>
-                        {l.obtenido ? 'Obtenido' : 'Bloqueado'}
-                      </span>
-                    </div>
-                    <h4
-                      className="proyectos-titulo mb-0"
-                      style={{ fontSize: '0.98rem', lineHeight: 1.25 }}
+          <div className="honeycomb">
+            {filas.map((fila, idx) => (
+              <div key={idx} className={`honeycomb-fila${idx % 2 ? ' desplazada' : ''}`}>
+                {fila.map((l) => {
+                  const meta = ICONOS_TIPO[l.tipo] || { icono: 'workspace_premium', etiqueta: l.tipo };
+                  return (
+                    <div
+                      key={l._id}
+                      className={`honeycomb-hex ${l.obtenido ? 'obtenido' : 'bloqueado'}`}
+                      title={l.descripcion}
                     >
-                      {l.nombre}
-                    </h4>
-                    <div style={estilos.divisor} />
-                    <p
-                      className="proyectos-subtitulo"
-                      style={{ fontSize: '0.8rem', flexGrow: 1, marginBottom: '0.75rem' }}
-                    >
-                      {l.descripcion}
-                    </p>
-                    <div className="d-flex align-items-center justify-content-between">
-                      <span
-                        style={{
-                          fontSize: '0.68rem',
-                          fontWeight: 700,
-                          letterSpacing: '0.05em',
-                          textTransform: 'uppercase',
-                          color: '#9a96ab',
-                        }}
-                      >
-                        {meta.etiqueta}
-                      </span>
-                      {l.obtenido ? (
-                        <span style={estilos.fecha}>
-                          {new Date(l.fecha_obtencion).toLocaleDateString('es')}
+                      <div className="honeycomb-hex-cuerpo">
+                        <span className="honeycomb-hex-ico">
+                          <span className="material-symbols-outlined">{meta.icono}</span>
                         </span>
-                      ) : (
-                        <span
-                          className="material-symbols-outlined"
-                          style={{ fontSize: '16px', color: '#9a96ab' }}
-                        >
-                          lock
-                        </span>
-                      )}
+                        <span className="honeycomb-hex-tipo">{meta.etiqueta}</span>
+                        <h4 className="honeycomb-hex-titulo">{l.nombre}</h4>
+                        <p className="honeycomb-hex-desc">{l.descripcion}</p>
+                        <div className="honeycomb-hex-pie">
+                          {l.obtenido ? (
+                            `Obtenido · ${new Date(l.fecha_obtencion).toLocaleDateString('es')}`
+                          ) : (
+                            <>
+                              <span className="material-symbols-outlined" style={{ fontSize: '12px', verticalAlign: '-2px' }}>
+                                lock
+                              </span>
+                              &nbsp;Bloqueado
+                            </>
+                          )}
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </Col>
-              );
-            })}
-          </Row>
+                  );
+                })}
+              </div>
+            ))}
+          </div>
         )}
       </Container>
     </div>
