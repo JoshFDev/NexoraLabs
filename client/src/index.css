@@ -14,12 +14,12 @@ body {
 .navbar-nexora {
   background: linear-gradient(135deg, #17092b 0%, #261043 55%, #2a1247 100%) !important;
   border-bottom: 1px solid rgba(168, 85, 247, 0.35);
-  box-shadow: 0 4px 14px rgba(20, 4, 40, 0.45);
+  box-shadow: 0 4px 14px rgba(20, 4, 40, 0.45), inset 0 1px 0 rgba(237, 233, 255, 0.05);
   position: sticky;
   top: 0;
   z-index: 1000;
-  padding-top: 0.75rem;
-  padding-bottom: 0.75rem;
+  padding-top: 0.9rem;
+  padding-bottom: 0.9rem;
 }
 
 .navbar-nexora .container,
@@ -63,6 +63,13 @@ body {
   display: flex;
   align-items: center;
   gap: 0;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.navbar-enlaces::-webkit-scrollbar {
+  display: none;
 }
 
 .navbar-utilidades {
@@ -77,10 +84,11 @@ body {
 .nav-link-nexora {
   position: relative;
   color: rgba(237, 233, 255, 0.8) !important;
-  font-weight: 600;
-  font-size: 1.06rem;
-  letter-spacing: 0.02em;
-  padding: 0.6rem 0.95rem !important;
+  font-weight: 700;
+  font-size: 0.92rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  padding: 0.5rem 0.85rem !important;
   transition: color 0.15s ease;
 }
 
@@ -90,15 +98,14 @@ body {
 
 .nav-link-nexora.activo {
   color: #ffffff !important;
-  font-weight: 700;
 }
 
 .nav-link-nexora.activo::after {
   content: '';
   position: absolute;
-  left: 0.75rem;
-  right: 0.75rem;
-  bottom: 6px;
+  left: 0.6rem;
+  right: 0.6rem;
+  bottom: 5px;
   height: 3px;
   background: linear-gradient(90deg, #A855F7, #7C3AED);
   transform: skewX(-22deg);
@@ -106,11 +113,28 @@ body {
 }
 
 .nav-sep {
-  color: rgba(237, 233, 255, 0.35);
-  font-weight: 400;
-  font-size: 1.05rem;
-  padding-left: 0.1rem;
+  color: #b388ff;
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding-left: 0.05rem;
   user-select: none;
+}
+
+@media (max-width: 1399.98px) {
+  .nav-link-nexora {
+    font-size: 0.85rem;
+    padding: 0.45rem 0.7rem !important;
+    letter-spacing: 0.05em;
+  }
+
+  .nav-sep {
+    font-size: 0.78rem;
+  }
+
+  .navbar-utilidades {
+    gap: 0.4rem;
+    padding-left: 0.9rem;
+  }
 }
 
 .nav-link-nexora.nav-cta {
@@ -131,6 +155,12 @@ body {
     gap: 0.3rem;
     margin-top: 0.75rem;
     margin-bottom: 0.5rem;
+    overflow-x: visible;
+  }
+
+  .nav-link-nexora {
+    font-size: 1rem;
+    padding: 0.5rem 0.4rem !important;
   }
 
   .nav-sep {
@@ -138,6 +168,7 @@ body {
   }
 
   .navbar-utilidades {
+    gap: 0.4rem;
     border-left: none;
     padding-left: 0;
     margin-left: 0;
