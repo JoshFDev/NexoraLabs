@@ -92,3 +92,18 @@ export const eliminarUsuarioHabilidad = async (req, res) => {
         res.status(500).json(serverError(error));
     }
 };
+
+//DELETE /usuario-habilidad/own/:id → el usuario elimina su propia relación (autenticado)
+export const eliminarMiUsuarioHabilidad = async (req, res) => {
+    try {
+        const eliminada = await UsuarioHabilidad.findOneAndDelete({
+            _id: req.params.id,
+            usuario_id: req.usuario.id
+        });
+        if (!eliminada) return res.status(httpStatus.NOT_FOUND).json(notFound("Relación usuario-habilidad no encontrada"));
+        res.json({ message: "Relación eliminada", usuarioHabilidad: eliminada });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json(serverError(error));
+    }
+};

@@ -1,14 +1,33 @@
-import { Navbar, Nav, Container, Button } from 'react-bootstrap';
+import { Navbar, Nav, Container } from 'react-bootstrap';
 import { useNavigate, Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import logo from '../assets/Logo.png';
+import api from '../api';
 import CampanaNotificaciones from './CampanaNotificaciones';
+import MenuUsuario from './MenuUsuario';
 
 function NavBar() {
-  const [usuario] = useState(() =>
+  const [usuario, setUsuario] = useState(() =>
     JSON.parse(localStorage.getItem('usuario') || sessionStorage.getItem('usuario') || 'null')
   );
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!usuario) return;
+    api
+      .get('/usuario/perfil')
+      .then((res) => {
+        const perfil = res.data;
+        if (localStorage.getItem('token')) {
+          localStorage.setItem('usuario', JSON.stringify(perfil));
+        } else {
+          sessionStorage.setItem('usuario', JSON.stringify(perfil));
+        }
+        setUsuario(perfil);
+      })
+      .catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const cerrarSesion = () => {
     localStorage.removeItem('token');
@@ -49,14 +68,8 @@ function NavBar() {
                 <Nav.Link as={Link} to="/recursos" className="nav-link-nexora">Recursos</Nav.Link>
                 <Nav.Link as={Link} to="/habilidades" className="nav-link-nexora">Habilidades</Nav.Link>
                 <Nav.Link as={Link} to="/" className="nav-link-nexora">Panel</Nav.Link>
-                <Nav.Link as={Link} to="/perfil" className="nav-link-nexora">Mi perfil</Nav.Link>
                 <CampanaNotificaciones />
-                <Navbar.Text className="me-3">
-                  {usuario.nombre} ({usuario.rol})
-                </Navbar.Text>
-                <Button variant="outline-light" size="sm" onClick={cerrarSesion}>
-                  Cerrar sesión
-                </Button>
+                <MenuUsuario usuario={usuario} onCerrarSesion={cerrarSesion} />
               </>
             ) : (
               <>

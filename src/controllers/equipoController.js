@@ -41,7 +41,7 @@ export const listarEquipos = async (req, res) => {
             .sort(sort)
             .skip(salto)
             .limit(limite)
-            .populate('proyecto_id', 'titulo');
+            .populate('proyecto_id', 'titulo creador_id');
 
         const idsEquipos = equipos.map((e) => e._id);
         const grupos = await MiembroEquipo.aggregate([
@@ -67,7 +67,7 @@ export const listarEquipos = async (req, res) => {
 export const obtenerEquipo = async (req, res) => {
     try {
         const equipo = await Equipo.findById(req.params.id)
-            .populate('proyecto_id', 'titulo');
+            .populate('proyecto_id', 'titulo creador_id');
         if (!equipo) return res.status(httpStatus.NOT_FOUND).json(notFound("Equipo no encontrado"));
         const n_miembros = await MiembroEquipo.countDocuments({ equipo_id: equipo._id });
         res.json({ ...equipo.toObject(), n_miembros });

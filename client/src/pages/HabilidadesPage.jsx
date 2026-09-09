@@ -58,6 +58,8 @@ function HabilidadesPage() {
   const [borrando, setBorrando] = useState(null);
   const [confirmarBorrar, setConfirmarBorrar] = useState(null);
   const [version, setVersion] = useState(0);
+  const [misHabilidades, setMisHabilidades] = useState([]);
+  const [accionHabilidad, setAccionHabilidad] = useState('');
 
   const [modalAbierto, setModalAbierto] = useState(false);
   const [editando, setEditando] = useState(null);
@@ -86,6 +88,44 @@ function HabilidadesPage() {
   }, [buscar, filtroCategoria, filtroNivel, orden, pagina, version]);
 
   const alternar = (id) => setExpandido((prev) => (prev === id ? null : id));
+
+  useEffect(() => {
+    if (puedeGestionar) return;
+    api
+      .get('/mis-habilidades')
+      .then((res) => setMisHabilidades(res.data || []))
+      .catch(() => setMisHabilidades([]));
+  }, [puedeGestionar]);
+
+  const enMiPerfil = (h) =>
+    misHabilidades.some((r) => String(r.habilidad_id?._id || r.habilidad_id) === String(h._id));
+
+  const alternarSeleccion = async (h, ev) => {
+    ev.stopPropagation();
+    const yaTengo = enMiPerfil(h);
+    setAccionHabilidad(String(h._id));
+    setError('');
+    try {
+      if (yaTengo) {
+        const reg = misHabilidades.find(
+          (r) => String(r.habilidad_id?._id || r.habilidad_id) === String(h._id)
+        );
+        await api.delete(`/usuario-habilidad/own/${reg._id}`);
+        setMisHabilidades((prev) => prev.filter((r) => String(r._id) !== String(reg._id)));
+      } else {
+        const res = await api.post('/usuario-habilidad/agregar', {
+          usuario_id: usuario?._id || usuario?.id,
+          habilidad_id: h._id,
+          nivel: 'principiante',
+        });
+        setMisHabilidades((prev) => [...prev, res.data]);
+      }
+    } catch (err) {
+      setError(err.response?.data?.error || 'No se pudo actualizar tu perfil');
+    } finally {
+      setAccionHabilidad('');
+    }
+  };
 
   const confirmarBorrarAhora = async () => {
     const h = confirmarBorrar;
@@ -185,7 +225,7 @@ function HabilidadesPage() {
         <p className="proyectos-subtitulo mb-4">
           {puedeGestionar
             ? 'Catálogo de habilidades de la plataforma. Tú eres quien las administra.'
-            : 'Catálogo de habilidades de la plataforma. Indica cuáles dominas en tu perfil.'}
+            : 'Catálogo de habilidades de la plataforma. Toca una para agregarla a tu perfil y que te encuentren.'}
         </p>
 
         {error && <Alert variant="danger">{error}</Alert>}
@@ -285,6 +325,9 @@ function HabilidadesPage() {
                       <span className="proyecto-badge">{h.categoria}</span>
                       <span className="proyecto-badge">{ETIQUETAS_NIVEL[h.nivel_minimo] || h.nivel_minimo}</span>
                       {h.tiempo_estimado && <span className="proyecto-badge">{h.tiempo_estimado}</span>}
+                      {!puedeGestionar && enMiPerfil(h) && (
+                        <span className="proyecto-badge habilidad-en-perfil">✓ En tu perfil</span>
+                      )}
                     </div>
                     {h.descripcion && <p className="proyecto-descripcion recurso-recorte">{h.descripcion}</p>}
                     <div className={`proyecto-fila-contenido${expandido === String(h._id) ? ' abierto' : ''}`}>
@@ -322,6 +365,25 @@ function HabilidadesPage() {
                         </span>
                       </div>
                     </footer>
+                    {!puedeGestionar && (
+                      <div className="equipo-acciones">
+                        <Button
+                          size="sm"
+                          variant={enMiPerfil(h) ? 'primary' : 'outline-light'}
+                          className={`proyectos-boton${enMiPerfil(h) ? ' habilidad-seleccionada' : ''}`}
+                          disabled={accionHabilidad === String(h._id)}
+                          onClick={(ev) => alternarSeleccion(h, ev)}
+                        >
+                          {accionHabilidad === String(h._id) ? (
+                            <Spinner animation="border" size="sm" />
+                          ) : enMiPerfil(h) ? (
+                            'Quitar de mi perfil'
+                          ) : (
+                            'Agregar a mi perfil'
+                          )}
+                        </Button>
+                      </div>
+                    )}
                     {puedeGestionar && (
                       <div className="equipo-acciones">
                         <Button

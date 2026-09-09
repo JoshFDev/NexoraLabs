@@ -27,6 +27,8 @@ function EquiposPage() {
   const [expandido, setExpandido] = useState(null);
   const [miembrosMap, setMiembrosMap] = useState({});
   const [misEquipos, setMisEquipos] = useState(null);
+  const [misSolicitudesEnviadas, setMisSolicitudesEnviadas] = useState([]);
+  const [solicitudesEquipo, setSolicitudesEquipo] = useState([]);
   const [cargandoAccion, setCargandoAccion] = useState(null);
 
   const [modalAbierto, setModalAbierto] = useState(false);
@@ -45,9 +47,38 @@ function EquiposPage() {
       .catch(() => setMisEquipos(new Set()));
   }, []);
 
+  const cargarMisSolicitudesEnviadas = useCallback(() => {
+    api
+      .get('/mis-solicitudes-enviadas')
+      .then((res) => {
+        const pendientes = (res.data || []).filter((s) => s.estado === 'pendiente');
+        const pendientesMap = {};
+        pendientes.forEach((p) => {
+          pendientesMap[String(p.equipo_id?._id || p.equipo_id)] = String(p._id);
+        });
+        setMisSolicitudesEnviadas(pendientesMap);
+      })
+      .catch(() => setMisSolicitudesEnviadas({}));
+  }, []);
+
+  const cargarSolicitudesEquipo = useCallback(() => {
+    api
+      .get('/mis-solicitudes-equipo')
+      .then((res) => setSolicitudesEquipo(res.data || []))
+      .catch(() => setSolicitudesEquipo([]));
+  }, []);
+
   useEffect(() => {
     cargarMisEquipos();
   }, [cargarMisEquipos]);
+
+  useEffect(() => {
+    cargarMisSolicitudesEnviadas();
+  }, [cargarMisSolicitudesEnviadas]);
+
+  useEffect(() => {
+    cargarSolicitudesEquipo();
+  }, [cargarSolicitudesEquipo]);
 
   useEffect(() => {
     setCargando(true);
@@ -79,17 +110,42 @@ function EquiposPage() {
     }
   };
 
-  const unirse = async (e) => {
+  const solicitar = async (e) => {
     setCargandoAccion(String(e._id));
     setError('');
     try {
-      await api.post(`/equipo/${e._id}/unirse`, {});
-      await cargarMisEquipos();
-      api
-        .get(`/equipo/${e._id}/miembros`)
-        .then((res) => setMiembrosMap((m) => ({ ...m, [e._id]: res.data || [] })));
+      await api.post(`/equipo/${e._id}/solicitar`, {});
+      await cargarMisSolicitudesEnviadas();
     } catch (err) {
-      setError(err.response?.data?.error || 'No se pudo unir al equipo');
+      setError(err.response?.data?.error || 'No se pudo enviar la solicitud');
+    } finally {
+      setCargandoAccion(null);
+    }
+  };
+
+  const cancelarSolicitud = async (e) => {
+    const solicitudId = misSolicitudesEnviadas[String(e._id)];
+    if (!solicitudId) return;
+    setCargandoAccion(String(e._id));
+    setError('');
+    try {
+      await api.delete(`/solicitud-equipo/own/${solicitudId}`);
+      await cargarMisSolicitudesEnviadas();
+    } catch (err) {
+      setError(err.response?.data?.error || 'No se pudo cancelar la solicitud');
+    } finally {
+      setCargandoAccion(null);
+    }
+  };
+
+  const resolverSolicitud = async (solicitud, estado) => {
+    setCargandoAccion(`sol-${String(solicitud._id)}`);
+    setError('');
+    try {
+      await api.put(`/solicitud-equipo/${solicitud._id}/estado`, { estado });
+      await Promise.all([cargarSolicitudesEquipo(), cargarMisEquipos()]);
+    } catch (err) {
+      setError(err.response?.data?.error || 'No se pudo procesar la solicitud');
     } finally {
       setCargandoAccion(null);
     }
@@ -151,6 +207,12 @@ function EquiposPage() {
 
   const soyMiembro = (id) => misEquipos?.has(String(id));
 
+  const soyCreadorDelEquipo = (e) =>
+    !!usuario?._id && !!e.proyecto_id?.creador_id &&
+    String(e.proyecto_id.creador_id) === String(usuario._id);
+
+  const solicitudPendienteDe = (id) => misSolicitudesEnviadas[String(id)] || null;
+
   return (
     <div className="proyectos-pagina">
       <Container fluid className="pt-4 px-lg-5">
@@ -165,6 +227,61 @@ function EquiposPage() {
         <p className="proyectos-subtitulo mb-4">Forma parte de un equipo y construye en conjunto.</p>
 
         {error && <Alert variant="danger">{error}</Alert>}
+
+        {solicitudesEquipo.length > 0 && (
+          <section className="mb-4">
+            <h4 className="proyectos-titulo" style={{ fontSize: '1.1rem', marginBottom: '0.75rem' }}>
+              Solicitudes por aprobar
+            </h4>
+            <div className="equipo-miembros">
+              {solicitudesEquipo.map((s) => (
+                <div className="equipo-miembro" key={String(s._id)}>
+                  <div>
+                    <strong>
+                      {s.usuario_id?._id ? (
+                        <Link to={`/usuario/${s.usuario_id._id}`} className="perfil-publico-enlace">
+                          {s.usuario_id?.nombre || 'Anónimo'}{' '}
+                          {s.usuario_id?.apellido_paterno || ''}
+                        </Link>
+                      ) : (
+                        <>{(s.usuario_id?.nombre || 'Usuario')} {s.usuario_id?.apellido_paterno || ''}</>
+                      )}
+                    </strong>
+                    <div className="proyecto-detalle-texto">
+                      Solicitó entrar a <strong>{s.equipo_id?.nombre || 'un equipo'}</strong>
+                    </div>
+                  </div>
+                  <div className="d-flex gap-2">
+                    <Button
+                      size="sm"
+                      className="proyectos-boton"
+                      style={{ background: '#34d399', borderColor: '#34d399', color: '#0b0a14' }}
+                      disabled={cargandoAccion === `sol-${String(s._id)}`}
+                      onClick={(ev) => {
+                        ev.stopPropagation();
+                        resolverSolicitud(s, 'aprobada');
+                      }}
+                    >
+                      Aprobar
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline-light"
+                      className="proyectos-boton"
+                      disabled={cargandoAccion === `sol-${String(s._id)}`}
+                      onClick={(ev) => {
+                        ev.stopPropagation();
+                        resolverSolicitud(s, 'rechazada');
+                      }}
+                    >
+                      Rechazar
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
         <div className="proyectos-toolbar mb-4">
           <Form
@@ -284,6 +401,24 @@ function EquiposPage() {
                           >
                             Salir del equipo
                           </Button>
+                        ) : solicitudPendienteDe(String(e._id)) ? (
+                          <div className="d-flex align-items-center gap-2">
+                            <span className="proyecto-badge" style={{ background: '#2a2740', color: '#c9c4de' }}>
+                              Solicitud enviada
+                            </span>
+                            <Button
+                              size="sm"
+                              variant="outline-light"
+                              className="proyectos-boton"
+                              disabled={cargandoAccion === String(e._id)}
+                              onClick={(ev) => {
+                                ev.stopPropagation();
+                                cancelarSolicitud(e);
+                              }}
+                            >
+                              Cancelar
+                            </Button>
+                          </div>
                         ) : (
                           <Button
                             size="sm"
@@ -291,10 +426,10 @@ function EquiposPage() {
                             disabled={cargandoAccion === String(e._id)}
                             onClick={(ev) => {
                               ev.stopPropagation();
-                              unirse(e);
+                              solicitar(e);
                             }}
                           >
-                            Unirse
+                            Solicitar unirme
                           </Button>
                         ))}
                     </div>

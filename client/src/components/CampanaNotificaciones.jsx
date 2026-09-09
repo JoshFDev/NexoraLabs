@@ -22,14 +22,34 @@ function CampanaNotificaciones() {
   const [noLeidas, setNoLeidas] = useState(0);
   const [abierta, setAbierta] = useState(false);
   const [cargando, setCargando] = useState(false);
+  const [vibrando, setVibrando] = useState(false);
   const temporizadorRef = useRef(null);
+  const prevNoLeidas = useRef(0);
+  const abiertaRef = useRef(false);
+
+  useEffect(() => {
+    abiertaRef.current = abierta;
+  }, [abierta]);
+
+  useEffect(() => {
+    if (vibrando) {
+      const t = setTimeout(() => setVibrando(false), 1500);
+      return () => clearTimeout(t);
+    }
+  }, [vibrando]);
 
   const cargar = useCallback(async (silencioso = true) => {
     if (!silencioso) setCargando(true);
     try {
       const res = await api.get('/notificaciones?limite=25');
-      setNotificaciones(res.data.notificaciones || []);
-      setNoLeidas(res.data.no_leidas || 0);
+      const lista = res.data.notificaciones || [];
+      const conteo = res.data.no_leidas || 0;
+      setNotificaciones(lista);
+      setNoLeidas(conteo);
+      if (!abiertaRef.current && conteo > prevNoLeidas.current) {
+        setVibrando(true);
+      }
+      prevNoLeidas.current = conteo;
     } catch {
       if (!silencioso) setNoLeidas(0);
     } finally {
@@ -77,7 +97,7 @@ function CampanaNotificaciones() {
 
   return (
     <Dropdown align="end" show={abierta} onToggle={alAbrir} autoClose="outside">
-      <Dropdown.Toggle as="span" className="notif-campana" aria-label="Notificaciones">
+      <Dropdown.Toggle as="span" className={`notif-campana${vibrando ? ' vibrando' : ''}`} aria-label="Notificaciones">
         <svg
           viewBox="0 0 24 24"
           fill="none"

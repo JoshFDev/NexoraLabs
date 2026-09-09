@@ -91,6 +91,10 @@ body {
   height: 19px;
 }
 
+.notif-campana.dropdown-toggle::after {
+  display: none;
+}
+
 .notif-badge {
   position: absolute;
   top: -4px;
@@ -215,6 +219,187 @@ body {
   font-size: 0.68rem;
   color: #9aa1b5;
   margin-top: 0.2rem;
+}
+
+/* Animaciones de notificaciones */
+.notif-campana.vibrando {
+  animation: notif-timbre 0.45s ease-in-out infinite;
+}
+
+@keyframes notif-timbre {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  20% {
+    transform: rotate(14deg);
+  }
+  40% {
+    transform: rotate(-12deg);
+  }
+  60% {
+    transform: rotate(9deg);
+  }
+  80% {
+    transform: rotate(-6deg);
+  }
+}
+
+.notif-badge {
+  animation: notif-pop 0.25s ease-out;
+}
+
+@keyframes notif-pop {
+  from {
+    transform: scale(0.3);
+    opacity: 0.4;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.notif-menu {
+  animation: notif-entra 0.18s ease-out;
+}
+
+@keyframes notif-entra {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Menú de usuario estilo avatar (como Facebook) */
+.user-menu-wrapper {
+  margin-right: 0.4rem;
+}
+
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #e9e6f7, #cfc8ee);
+  color: #4c4770;
+  font-weight: 700;
+  font-size: 1rem;
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 2px solid rgba(237, 233, 255, 0.45);
+  user-select: none;
+}
+
+.user-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.user-avatar-btn {
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.user-avatar-btn:hover,
+.show > .user-avatar-btn {
+  border-color: rgba(237, 233, 255, 0.85);
+  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.18);
+}
+
+.user-menu {
+  width: 260px;
+  border: 1px solid rgba(168, 85, 247, 0.3) !important;
+  border-radius: 0.5rem !important;
+  box-shadow: 0 18px 40px rgba(26, 11, 46, 0.35) !important;
+  padding: 0.4rem !important;
+  margin-top: 0.5rem !important;
+  animation: notif-entra 0.18s ease-out;
+}
+
+.user-menu-cabeza {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.55rem 0.6rem 0.7rem;
+  margin-bottom: 0.3rem;
+  border-bottom: 1px solid #eceaf3;
+}
+
+.user-menu-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #e9e6f7, #cfc8ee);
+  color: #4c4770;
+  font-weight: 700;
+  font-size: 1.15rem;
+  flex-shrink: 0;
+}
+
+.user-menu-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.user-menu-datos {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.25;
+}
+
+.user-menu-datos strong {
+  color: #231d3d;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-menu-datos span {
+  color: #6b6486;
+  font-size: 0.78rem;
+}
+
+.user-menu .dropdown-item {
+  font-size: 0.86rem;
+  border-radius: 0.35rem;
+  color: #4c4770;
+  font-weight: 600;
+  padding: 0.5rem 0.8rem;
+}
+
+.user-menu .dropdown-item:hover,
+.user-menu .dropdown-item:focus {
+  background: #fbf8ff;
+  color: var(--nx-morado-oscuro);
+}
+
+.user-menu-sep {
+  margin: 0.3rem 0.4rem;
+  border-color: #eceaf3;
+}
+
+.user-menu-cerrar {
+  color: #b91c1c !important;
+}
+
+.user-menu-cerrar:hover {
+  background: #fef2f2 !important;
+  color: #b91c1c !important;
 }
 
 .btn-morado-outline {

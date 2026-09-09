@@ -60,7 +60,11 @@ const rutas = [
     { metodo: "DELETE", ruta: "/proyecto-habilidad/:id", descripcion: "Eliminar relación proyecto-habilidad" },
 
     { metodo: "POST", ruta: "/proyecto/:id/postular", descripcion: "Postular a un proyecto (autenticado)" },
-    { metodo: "POST", ruta: "/equipo/:id/unirse", descripcion: "Unirse a un equipo (autenticado)" },
+    { metodo: "POST", ruta: "/equipo/:id/solicitar", descripcion: "Solicitar unirse a un equipo (autenticado)" },
+    { metodo: "GET", ruta: "/mis-solicitudes-enviadas", descripcion: "Solicitudes que envié a equipos" },
+    { metodo: "GET", ruta: "/mis-solicitudes-equipo", descripcion: "Solicitudes pendientes de mis equipos (creador/aprueba)" },
+    { metodo: "PUT", ruta: "/solicitud-equipo/:id/estado", descripcion: "Aprobar o rechazar solicitud de equipo" },
+    { metodo: "DELETE", ruta: "/solicitud-equipo/own/:id", descripcion: "Cancelar mi solicitud pendiente" },
     { metodo: "POST", ruta: "/recurso-aprendizaje/:id/calificar", descripcion: "Calificar un recurso (autenticado)" },
 
     { metodo: "GET", ruta: "/stats", descripcion: "Estadísticas generales de la plataforma" }

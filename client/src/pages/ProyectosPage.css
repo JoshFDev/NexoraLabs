@@ -193,6 +193,18 @@
   margin-bottom: 0.8rem;
 }
 
+.habilidad-en-perfil {
+  color: #047857 !important;
+  background: rgba(16, 185, 129, 0.12) !important;
+  border: 1px solid rgba(16, 185, 129, 0.5) !important;
+}
+
+.habilidad-seleccionada {
+  background: linear-gradient(135deg, #10b981, #059669) !important;
+  border: 1px solid #10b981 !important;
+  color: #fff !important;
+}
+
 .proyecto-fila.abierto .proyecto-fila-flecha {
   transform: rotate(180deg);
   color: var(--nx-morado);

@@ -7,6 +7,7 @@ import {
     crearUsuarioHabilidad,
     actualizarUsuarioHabilidad,
     eliminarUsuarioHabilidad,
+    eliminarMiUsuarioHabilidad,
     misHabilidades,
     habilidadesPublicas
 } from "../controllers/usuarioHabilidadController";
@@ -33,5 +34,8 @@ router.put('/usuario-habilidad/:id', verifyToken, actualizarUsuarioHabilidad);
 
 //Eliminar relación usuario-habilidad (admin)
 router.delete('/usuario-habilidad/:id', verifyToken, authorize("admin"), eliminarUsuarioHabilidad);
+
+//El usuario elimina su propia relación (autenticado)
+router.delete('/usuario-habilidad/own/:id', verifyToken, eliminarMiUsuarioHabilidad);
 
 export default router;

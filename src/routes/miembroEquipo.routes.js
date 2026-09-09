@@ -7,7 +7,7 @@ import {
     crearMiembro,
     actualizarMiembro,
     eliminarMiembro,
-    unirseAEquipo,
+    solicitarIngreso,
     misEquipos,
     salirDeEquipo
 } from "../controllers/miembroEquipoController";
@@ -29,8 +29,8 @@ router.put('/miembro-equipo/:id', verifyToken, authorize("admin", "mentor"), act
 //Eliminar miembro
 router.delete('/miembro-equipo/:id', verifyToken, authorize("admin", "mentor"), eliminarMiembro);
 
-//Lógica de negocio: unirse a un equipo (autenticado)
-router.post('/equipo/:id/unirse', verifyToken, unirseAEquipo);
+//Lógica de negocio: solicitar unirse a un equipo (autenticado, el creador aprueba)
+router.post('/equipo/:id/solicitar', verifyToken, solicitarIngreso);
 
 //Equipos donde soy miembro
 router.get('/mis-equipos', verifyToken, misEquipos);

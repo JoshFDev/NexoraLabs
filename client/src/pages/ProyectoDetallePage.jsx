@@ -45,6 +45,7 @@ function ProyectoDetallePage() {
   const [equipo, setEquipo] = useState(null);
   const [miembros, setMiembros] = useState([]);
   const [soyMiembro, setSoyMiembro] = useState(false);
+  const [solicitudPendiente, setSolicitudPendiente] = useState(false);
   const [nPostulaciones, setNPostulaciones] = useState(null);
   const [cargando, setCargando] = useState(true);
   const [cargandoEquipo, setCargandoEquipo] = useState(true);
@@ -58,14 +59,25 @@ function ProyectoDetallePage() {
     Promise.all([
       api.get('/equipos?limite=1&orden=recientes&' + new URLSearchParams({ proyecto: id })),
       api.get('/mis-equipos').catch(() => ({ data: [] })),
+      api.get('/mis-solicitudes-enviadas').catch(() => ({ data: [] })),
     ])
-      .then(([resEquipos, resMis]) => {
+      .then(([resEquipos, resMis, resSolicitudes]) => {
         const primerEquipo = (resEquipos.data.equipos || [])[0] || null;
         setEquipo(primerEquipo);
         const pertenezco = (resMis.data || []).some(
           (e) => String(e._id) === String(primerEquipo?._id)
         );
         setSoyMiembro(pertenezco);
+        setSolicitudPendiente(
+          Boolean(
+            primerEquipo &&
+            (resSolicitudes.data || []).some(
+              (s) =>
+                s.estado === 'pendiente' &&
+                String(s.equipo_id?._id || s.equipo_id) === String(primerEquipo._id)
+            )
+          )
+        );
         if (primerEquipo) {
           return api.get(`/equipo/${primerEquipo._id}/miembros`).then((r) => {
             setMiembros(r.data || []);
@@ -108,10 +120,10 @@ function ProyectoDetallePage() {
     setAccion('unirse');
     setError('');
     try {
-      await api.post(`/equipo/${equipo._id}/unirse`, {});
-      await cargarDatos();
+      await api.post(`/equipo/${equipo._id}/solicitar`, {});
+      setSolicitudPendiente(true);
     } catch (err) {
-      setError(err.response?.data?.error || 'No se pudo unir al equipo');
+      setError(err.response?.data?.error || 'No se pudo enviar la solicitud');
     } finally {
       setAccion(null);
     }
@@ -293,9 +305,13 @@ function ProyectoDetallePage() {
                           <Button size="sm" variant="outline-light" className="proyectos-boton" disabled={!!accion} onClick={salir}>
                             {accion === 'salir' ? 'Saliendo…' : 'Salir del equipo'}
                           </Button>
+                        ) : solicitudPendiente ? (
+                          <span className="proyecto-badge" style={{ background: '#2a2740', color: '#c9c4de' }}>
+                            Solicitud enviada
+                          </span>
                         ) : (
                           <Button size="sm" className="proyectos-boton" disabled={!!accion} onClick={unirse}>
-                            {accion === 'unirse' ? 'Uniéndote…' : 'Unirse al equipo'}
+                            {accion === 'unirse' ? 'Enviando…' : 'Solicitar unirme'}
                           </Button>
                         ))}
                     </>
