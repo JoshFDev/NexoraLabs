@@ -60,32 +60,6 @@ function DashboardPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (cargando) {
-    return (
-      <Container className="dash-cargando">
-        <Spinner animation="border" />
-        <p>Preparando tu panel…</p>
-      </Container>
-    );
-  }
-
-  if (!perfilCompleto) {
-    return (
-      <Container className="dash-bloqueo-wrap">
-        <div className="dash-bloqueo">
-          <span className="dash-bloqueo-icono">!</span>
-          <h2>Tu perfil está incompleto</h2>
-          <p>
-            Completa tu perfil para desbloquear el panel y poder crear proyectos, unirte a equipos y postularte.
-          </p>
-          <Button as={Link} to="/perfil" className="dash-bloqueo-btn">
-            Completar mi perfil
-          </Button>
-        </div>
-      </Container>
-    );
-  }
-
   const hora = new Date().getHours();
   const saludo = hora < 12 ? 'Buenos días' : hora < 19 ? 'Buenas tardes' : 'Buenas noches';
   const inicial = (usuario?.nombre || 'U').charAt(0).toUpperCase();
@@ -290,6 +264,32 @@ function DashboardPage() {
       color: 'oro',
     },
   ];
+
+  if (cargando) {
+    return (
+      <Container className="dash-cargando">
+        <Spinner animation="border" />
+        <p>Preparando tu panel…</p>
+      </Container>
+    );
+  }
+
+  if (!perfilCompleto) {
+    return (
+      <Container className="dash-bloqueo-wrap">
+        <div className="dash-bloqueo">
+          <span className="dash-bloqueo-icono">!</span>
+          <h2>Tu perfil está incompleto</h2>
+          <p>
+            Completa tu perfil para desbloquear el panel y poder crear proyectos, unirte a equipos y postularte.
+          </p>
+          <Button as={Link} to="/perfil" className="dash-bloqueo-btn">
+            Completar mi perfil
+          </Button>
+        </div>
+      </Container>
+    );
+  }
 
   return (
     <div className="proyectos-pagina">
