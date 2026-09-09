@@ -68,6 +68,7 @@ function NavBar() {
                 <Nav.Link as={Link} to="/recursos" className="nav-link-nexora">Recursos</Nav.Link>
                 <Nav.Link as={Link} to="/habilidades" className="nav-link-nexora">Habilidades</Nav.Link>
                 <Nav.Link as={Link} to="/logros" className="nav-link-nexora">Logros</Nav.Link>
+                <Nav.Link as={Link} to="/ofertas" className="nav-link-nexora">Ofertas</Nav.Link>
                 {usuario.rol === 'admin' && (
                   <Nav.Link as={Link} to="/admin" className="nav-link-nexora">Panel admin</Nav.Link>
                 )}

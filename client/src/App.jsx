@@ -14,6 +14,7 @@ import HabilidadesPage from './pages/HabilidadesPage';
 import PerfilPublicoPage from './pages/PerfilPublicoPage';
 import AdminPanelPage from './pages/AdminPanelPage';
 import LogrosPage from './pages/LogrosPage';
+import OfertasEmpleoPage from './pages/OfertasEmpleoPage';
 import RutaProtegida from './components/RutaProtegida';
 
 function App() {
@@ -111,6 +112,14 @@ function App() {
           element={
             <RutaProtegida>
               <LogrosPage />
+            </RutaProtegida>
+          }
+        />
+        <Route
+          path="/ofertas"
+          element={
+            <RutaProtegida>
+              <OfertasEmpleoPage />
             </RutaProtegida>
           }
         />

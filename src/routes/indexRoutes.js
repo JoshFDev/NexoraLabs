@@ -80,7 +80,18 @@ const rutas = [
 
     { metodo: "GET", ruta: "/logros", descripcion: "Catálogo de logros (público)" },
     { metodo: "GET", ruta: "/mis-logros", descripcion: "Verificar y listar mis logros (autenticado)" },
-    { metodo: "GET", ruta: "/logros/usuario/:id", descripcion: "Logros obtenidos por un usuario (público)" }
+    { metodo: "GET", ruta: "/logros/usuario/:id", descripcion: "Logros obtenidos por un usuario (público)" },
+
+    { metodo: "GET", ruta: "/ofertas", descripcion: "Listar ofertas (público, token opcional)" },
+    { metodo: "GET", ruta: "/oferta/:id", descripcion: "Ver oferta por id (público)" },
+    { metodo: "POST", ruta: "/oferta/agregar", descripcion: "Crear oferta (admin/mentor)" },
+    { metodo: "PUT", ruta: "/oferta/:id", descripcion: "Actualizar oferta (admin/mentor o quien la publicó)" },
+    { metodo: "DELETE", ruta: "/oferta/:id", descripcion: "Eliminar oferta (admin/mentor o quien la publicó)" },
+    { metodo: "POST", ruta: "/oferta/:id/postular", descripcion: "Postular a una oferta (autenticado)" },
+    { metodo: "GET", ruta: "/mis-postulaciones-ofertas", descripcion: "Mis postulaciones a ofertas (autenticado)" },
+    { metodo: "DELETE", ruta: "/postulacion-oferta-own/:id", descripcion: "Retirar mi postulación pendiente (autenticado)" },
+    { metodo: "GET", ruta: "/oferta/:id/postulaciones", descripcion: "Postulaciones de una oferta (admin/mentor o publicador)" },
+    { metodo: "PUT", ruta: "/postulacion-oferta/:id/estado", descripcion: "Responder postulación de oferta (admin/mentor o publicador)" }
 ];
 
 router.get('/', (req, res) => {
