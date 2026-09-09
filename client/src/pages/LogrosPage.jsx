@@ -37,15 +37,17 @@ const estilos = {
     display: 'inline-flex',
     alignItems: 'center',
     justifyContent: 'center',
-    width: '34px',
-    height: '34px',
-    borderRadius: '0.4rem',
+    width: '38px',
+    height: '38px',
+    borderRadius: '50%',
     color: '#6D28D9',
-    background: '#f3ecfd',
+    background: '#faf7ff',
+    border: '2px solid rgba(109, 40, 217, 0.35)',
   },
   insigniaBloqueada: {
     color: '#a7a4b7',
-    background: '#ecebf1',
+    background: '#f5f4f8',
+    border: '2px solid #dcdae4',
   },
   bloqueo: {
     fontSize: '0.68rem',
@@ -95,8 +97,8 @@ function LogrosPage() {
                 fontWeight: 700,
                 border: '1px solid rgba(109, 40, 217, 0.35)',
                 background: '#f3ecfd',
-                borderRadius: '0.4rem',
-                padding: '0.3rem 0.7rem',
+                borderRadius: '999px',
+                padding: '0.3rem 0.75rem',
                 whiteSpace: 'nowrap',
               }}
             >

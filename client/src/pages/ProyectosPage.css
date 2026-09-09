@@ -1207,15 +1207,16 @@
 }
 
 .dash-stat-icono {
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 0.35rem;
+  border-radius: 50%;
   color: var(--nx-morado-oscuro);
-  background: #f1e8fb;
+  background: #faf7ff;
+  border: 2px solid rgba(109, 40, 217, 0.35);
 }
 
 .dash-stat-icono .material-symbols-outlined {
