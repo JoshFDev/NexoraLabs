@@ -53,10 +53,10 @@ function LogrosPage() {
 
   return (
     <div className="proyectos-pagina">
-      <Container fluid className="pt-4 px-lg-5">
-        <div className="d-flex flex-wrap align-items-end justify-content-between mb-4 gap-4">
+      <Container fluid className="px-lg-5">
+        <div className="logros-cabecera">
           <div>
-            <h2 className="proyectos-titulo mb-0">Mis logros</h2>
+            <h2 className="proyectos-titulo mb-1">Mis logros</h2>
             <p className="proyectos-subtitulo mb-0">
               {datos
                 ? `Has desbloqueado ${datos.total_obtenidos} de ${datos.total_logros} logros. Sigue participando para ganar los demás.`
@@ -64,7 +64,7 @@ function LogrosPage() {
             </p>
           </div>
           {datos && (
-            <div style={{ minWidth: '240px', flex: '1 1 300px', maxWidth: '430px' }}>
+            <div style={{ minWidth: '240px', flex: '1 1 280px', maxWidth: '400px' }}>
               <div className="d-flex align-items-center justify-content-between mb-1">
                 <span className="honeycomb-etiqueta">Progreso general</span>
                 <span className="honeycomb-etiqueta">

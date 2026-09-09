@@ -37,9 +37,13 @@ function MenuUsuario({ usuario, onCerrarSesion }) {
           </span>
         </div>
 
-        <Dropdown.Item as={Link} to="/perfil">Editar perfil</Dropdown.Item>
+        <Dropdown.Item as={Link} to="/perfil">
+          <span className="material-symbols-outlined">edit</span>
+          Editar perfil
+        </Dropdown.Item>
         <Dropdown.Divider className="user-menu-sep" />
         <Dropdown.Item className="user-menu-cerrar" onClick={onCerrarSesion}>
+          <span className="material-symbols-outlined">logout</span>
           Cerrar sesión
         </Dropdown.Item>
       </Dropdown.Menu>

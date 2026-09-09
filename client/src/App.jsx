@@ -24,7 +24,8 @@ function App() {
   return (
     <>
       {!esPaginaAuth && <NavBar />}
-      <Routes>
+      <main key={pathname} className="app-pagina">
+        <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/registro" element={<RegistroPage />} />
         <Route
@@ -132,6 +133,7 @@ function App() {
           }
         />
       </Routes>
+      </main>
     </>
   );
 }

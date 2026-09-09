@@ -1,11 +1,28 @@
 .proyectos-pagina {
   min-height: calc(100vh - 72px);
   padding-bottom: 3rem;
+  padding-top: 1.75rem;
   position: relative;
   color: #2b2840;
   background:
     radial-gradient(800px 400px at 90% -10%, rgba(190, 183, 220, 0.25), transparent 60%),
     linear-gradient(180deg, #fbfbfd 0%, #f2f3f8 100%);
+}
+
+/* Cabecera de página profesional */
+.logros-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  background: #ffffff;
+  border: 1px solid #e4e3ec;
+  border-left: 4px solid var(--nx-morado);
+  border-radius: 0.5rem;
+  padding: 1.3rem 1.5rem;
+  margin-bottom: 1.75rem;
+  box-shadow: 0 1px 3px rgba(43, 40, 64, 0.06);
 }
 
 .proyectos-titulo {
@@ -1243,6 +1260,40 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* Entrada escalonada del dashboard */
+.dash-hero,
+.dash-stat,
+.dash-seccion {
+  animation: dash-entrada 0.38s ease-out both;
+}
+
+.dash-stat {
+  animation-delay: 0.08s;
+}
+
+.dash-seccion {
+  animation-delay: 0.16s;
+}
+
+@keyframes dash-entrada {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dash-hero,
+  .dash-stat,
+  .dash-seccion {
+    animation: none;
+  }
 }
 
 /* Responsive */
