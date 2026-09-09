@@ -222,46 +222,26 @@ function DashboardPage() {
     {
       etiqueta: 'Proyectos recientes',
       valor: proyectos.length,
-      icono: (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
-        </svg>
-      ),
+      icono: 'folder_open',
       enlace: '/explorar',
-      color: 'dalton',
     },
     {
       etiqueta: 'Recomendados para ti',
       valor: totalRecomendados,
-      icono: (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-        </svg>
-      ),
+      icono: 'favorite_border',
       enlace: '/explorar',
-      color: 'rosa',
     },
     {
       etiqueta: 'Mis proyectos',
       valor: misProyectos?.length || 0,
-      icono: (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M9 12l2 2 4-4" /><path d="M4 12a8 8 0 1 1 16 0 8 8 0 0 1-16 0z" />
-        </svg>
-      ),
+      icono: 'check_circle_outline',
       enlace: '/crear-proyecto',
-      color: 'verde',
     },
     {
       etiqueta: 'Logros desbloqueados',
       valor: misLogros ? `${misLogros.total_obtenidos}/${misLogros.total_logros}` : '—',
-      icono: (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" /><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
-        </svg>
-      ),
+      icono: 'workspace_premium',
       enlace: '/logros',
-      color: 'oro',
     },
   ];
 
@@ -310,16 +290,16 @@ function DashboardPage() {
               {usuario?.nombre || 'compañero'}
             </h1>
             <p className="dash-hero-subtitulo mb-0">
-              Aquí está lo nuevo de {puedeCrear ? 'tus proyectos' : 'la comunidad'} y tus recomendaciones.
+              Resumen de {puedeCrear ? 'tus proyectos' : 'la comunidad'} y recomendaciones para ti.
             </p>
           </div>
           <div className="dash-hero-acciones">
-            <Button variant="outline-light" className="dash-hero-btn" as={Link} to="/explorar">
+            <Button variant="outline-primary" className="dash-hero-btn" as={Link} to="/explorar">
               Explorar
             </Button>
             {puedeCrear && (
               <Button className="dash-hero-btn dash-hero-btn-primario" as={Link} to="/crear-proyecto">
-                + Crear proyecto
+                Crear proyecto
               </Button>
             )}
           </div>
@@ -327,9 +307,11 @@ function DashboardPage() {
 
         <Row className="g-3 mb-4">
           {estadisticas.map((e) => (
-            <Col key={e.etiqueta} xs={6} lg={3}>
-              <Link to={e.enlace} className={`dash-stat dash-stat-${e.color}`}>
-                <span className="dash-stat-icono">{e.icono}</span>
+            <Col key={e.etiqueta} xs={6} md={6} lg={3}>
+              <Link to={e.enlace} className="dash-stat">
+                <span className="dash-stat-icono" aria-hidden="true">
+                  <span className="material-symbols-outlined">{e.icono}</span>
+                </span>
                 <span className="dash-stat-dato">
                   <strong>{e.valor}</strong>
                   <small>{e.etiqueta}</small>
@@ -353,7 +335,7 @@ function DashboardPage() {
 
               {proyectos.length === 0 ? (
                 <div className="dash-vacio">
-                  <span className="dash-vacio-icono">🚀</span>
+                  <span className="dash-vacio-icono"><span className="material-symbols-outlined">rocket_launch</span></span>
                   <p>Todavía no hay proyectos publicados.</p>
                   <Button size="sm" className="proyectos-boton" as={Link} to="/ofertas">
                     Ver oportunidades
@@ -376,7 +358,7 @@ function DashboardPage() {
               </div>
               {!recomendados || recomendados.proyectos?.length === 0 ? (
                 <div className="dash-vacio dash-vacio-chico">
-                  <span className="dash-vacio-icono">💡</span>
+                  <span className="dash-vacio-icono"><span className="material-symbols-outlined">lightbulb</span></span>
                   <p>
                     Registra tus habilidades para recibir recomendaciones.
                   </p>
@@ -406,7 +388,7 @@ function DashboardPage() {
             <p className="proyectos-subtitulo">Cargando…</p>
           ) : misProyectos.length === 0 ? (
             <div className="dash-vacio">
-              <span className="dash-vacio-icono">🗂️</span>
+              <span className="dash-vacio-icono"><span className="material-symbols-outlined">folder_open</span></span>
               <p>
                 {puedeCrear
                   ? 'Aún no has creado proyectos. Publica tu primera idea.'
