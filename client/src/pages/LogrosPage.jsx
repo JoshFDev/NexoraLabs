@@ -15,10 +15,10 @@ const ICONOS_TIPO = {
 const estilos = {
   tarjeta: {
     position: 'relative',
-    borderRadius: '0.5rem',
+    borderRadius: '0.6rem',
     border: '1px solid #e4e3ec',
     background: '#ffffff',
-    padding: '1.1rem 1rem',
+    padding: '1.15rem 1rem 1rem',
     height: '100%',
     display: 'flex',
     flexDirection: 'column',
@@ -33,34 +33,57 @@ const estilos = {
     background: '#f8f8fa',
     opacity: 0.72,
   },
-  insignia: {
+  cinta: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    width: 0,
+    height: 0,
+    borderTop: '34px solid #6D28D9',
+    borderLeft: '34px solid transparent',
+    borderTopRightRadius: '0.35rem',
+  },
+  cintaBloqueada: {
+    borderTopColor: '#c9c6d4',
+  },
+  medalla: {
     display: 'inline-flex',
     alignItems: 'center',
     justifyContent: 'center',
-    width: '38px',
-    height: '38px',
-    borderRadius: '50%',
-    color: '#6D28D9',
-    background: '#faf7ff',
-    border: '2px solid rgba(109, 40, 217, 0.35)',
+    width: '44px',
+    height: '50px',
+    flexShrink: 0,
+    clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
+    background: 'linear-gradient(135deg, #A855F7, #6D28D9)',
+    color: '#ffffff',
   },
-  insigniaBloqueada: {
-    color: '#a7a4b7',
-    background: '#f5f4f8',
-    border: '2px solid #dcdae4',
+  medallaBloqueada: {
+    background: 'linear-gradient(135deg, #cfccd9, #aeabbd)',
   },
-  bloqueo: {
-    fontSize: '0.68rem',
+  pildora: {
+    fontSize: '0.72rem',
     fontWeight: 700,
-    letterSpacing: '0.08em',
+    letterSpacing: '0.06em',
     textTransform: 'uppercase',
+    color: '#6D28D9',
+    border: '1px solid rgba(109, 40, 217, 0.4)',
+    background: '#f7f2fe',
+    padding: '0.2rem 0.65rem',
+    borderRadius: '999px',
+    whiteSpace: 'nowrap',
+  },
+  pildoraBloqueada: {
     color: '#9a96ab',
     border: '1px solid #d8d5e2',
-    padding: '0.15rem 0.6rem',
-    borderRadius: '999px',
+    background: '#f3f2f6',
+  },
+  divisor: {
+    height: '1px',
+    background: 'linear-gradient(90deg, rgba(109, 40, 217, 0.4), transparent)',
+    margin: '0.55rem 0',
   },
   fecha: {
-    fontSize: '0.74rem',
+    fontSize: '0.72rem',
     color: '#6D28D9',
     fontWeight: 600,
   },
@@ -127,12 +150,31 @@ function LogrosPage() {
                       ...(l.obtenido ? estilos.obtenido : estilos.bloqueado),
                     }}
                   >
+                    {l.obtenido && <span style={{ ...estilos.cinta, ...(!l.obtenido && estilos.cintaBloqueada) }} />}
                     <div className="d-flex align-items-center justify-content-between mb-2">
-                      <span style={{ ...estilos.insignia, ...(!l.obtenido && estilos.insigniaBloqueada) }}>
-                        <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>
+                      <span style={{ ...estilos.medalla, ...(!l.obtenido && estilos.medallaBloqueada) }}>
+                        <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
                           {meta.icono}
                         </span>
                       </span>
+                      <span style={{ ...estilos.pildora, ...(!l.obtenido && estilos.pildoraBloqueada) }}>
+                        {l.obtenido ? 'Obtenido' : 'Bloqueado'}
+                      </span>
+                    </div>
+                    <h4
+                      className="proyectos-titulo mb-0"
+                      style={{ fontSize: '0.98rem', lineHeight: 1.25 }}
+                    >
+                      {l.nombre}
+                    </h4>
+                    <div style={estilos.divisor} />
+                    <p
+                      className="proyectos-subtitulo"
+                      style={{ fontSize: '0.8rem', flexGrow: 1, marginBottom: '0.75rem' }}
+                    >
+                      {l.descripcion}
+                    </p>
+                    <div className="d-flex align-items-center justify-content-between">
                       <span
                         style={{
                           fontSize: '0.68rem',
@@ -144,26 +186,19 @@ function LogrosPage() {
                       >
                         {meta.etiqueta}
                       </span>
+                      {l.obtenido ? (
+                        <span style={estilos.fecha}>
+                          {new Date(l.fecha_obtencion).toLocaleDateString('es')}
+                        </span>
+                      ) : (
+                        <span
+                          className="material-symbols-outlined"
+                          style={{ fontSize: '16px', color: '#9a96ab' }}
+                        >
+                          lock
+                        </span>
+                      )}
                     </div>
-                    <h4
-                      className="proyectos-titulo mb-1"
-                      style={{ fontSize: '0.98rem', lineHeight: 1.25 }}
-                    >
-                      {l.nombre}
-                    </h4>
-                    <p
-                      className="proyectos-subtitulo"
-                      style={{ fontSize: '0.8rem', flexGrow: 1, marginBottom: '0.75rem' }}
-                    >
-                      {l.descripcion}
-                    </p>
-                    {l.obtenido ? (
-                      <span style={estilos.fecha}>
-                        Obtenido · {new Date(l.fecha_obtencion).toLocaleDateString('es')}
-                      </span>
-                    ) : (
-                      <span style={estilos.bloqueo}>Bloqueado</span>
-                    )}
                   </div>
                 </Col>
               );
