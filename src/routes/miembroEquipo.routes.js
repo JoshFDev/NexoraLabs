@@ -9,7 +9,9 @@ import {
     eliminarMiembro,
     solicitarIngreso,
     misEquipos,
-    salirDeEquipo
+    salirDeEquipo,
+    cambiarRolMiembro,
+    eliminarMiembroDeEquipo
 } from "../controllers/miembroEquipoController";
 
 const router = Router();
@@ -37,5 +39,11 @@ router.get('/mis-equipos', verifyToken, misEquipos);
 
 //Salir de un equipo (autenticado)
 router.delete('/equipo/:id/salir', verifyToken, salirDeEquipo);
+
+//Cambiar el rol de un integrante (creador del equipo o admin/mentor)
+router.put('/equipo/:id/miembros/:miembroId/rol', verifyToken, cambiarRolMiembro);
+
+//Quitar a un integrante del equipo (creador del equipo o admin/mentor)
+router.delete('/equipo/:id/miembros/:miembroId', verifyToken, eliminarMiembroDeEquipo);
 
 export default router;

@@ -65,6 +65,8 @@ const rutas = [
     { metodo: "GET", ruta: "/mis-solicitudes-equipo", descripcion: "Solicitudes pendientes de mis equipos (creador/aprueba)" },
     { metodo: "PUT", ruta: "/solicitud-equipo/:id/estado", descripcion: "Aprobar o rechazar solicitud de equipo" },
     { metodo: "DELETE", ruta: "/solicitud-equipo/own/:id", descripcion: "Cancelar mi solicitud pendiente" },
+    { metodo: "PUT", ruta: "/equipo/:id/miembros/:miembroId/rol", descripcion: "Cambiar rol de integrante (creador/admin/mentor)" },
+    { metodo: "DELETE", ruta: "/equipo/:id/miembros/:miembroId", descripcion: "Quitar integrante del equipo (creador/admin/mentor)" },
     { metodo: "POST", ruta: "/recurso-aprendizaje/:id/calificar", descripcion: "Calificar un recurso (autenticado)" },
 
     { metodo: "GET", ruta: "/stats", descripcion: "Estadísticas generales de la plataforma" }

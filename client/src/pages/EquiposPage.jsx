@@ -164,6 +164,40 @@ function EquiposPage() {
     }
   };
 
+  const recargarMiembros = (equipoId) => {
+    api
+      .get(`/equipo/${equipoId}/miembros`)
+      .then((res) => setMiembrosMap((m) => ({ ...m, [String(equipoId)]: res.data || [] })))
+      .catch(() => {});
+  };
+
+  const cambiarRol = async (equipoId, miembroId, rol) => {
+    setCargandoAccion(`miembro-${String(miembroId)}`);
+    setError('');
+    try {
+      await api.put(`/equipo/${equipoId}/miembros/${miembroId}/rol`, { rol });
+      recargarMiembros(equipoId);
+    } catch (err) {
+      setError(err.response?.data?.error || 'No se pudo cambiar el rol');
+    } finally {
+      setCargandoAccion(null);
+    }
+  };
+
+  const quitarMiembro = async (equipoId, miembroId) => {
+    if (!window.confirm('¿Quitar a este integrante del equipo?')) return;
+    setCargandoAccion(`miembro-${String(miembroId)}`);
+    setError('');
+    try {
+      await api.delete(`/equipo/${equipoId}/miembros/${miembroId}`);
+      recargarMiembros(equipoId);
+    } catch (err) {
+      setError(err.response?.data?.error || 'No se pudo quitar al integrante');
+    } finally {
+      setCargandoAccion(null);
+    }
+  };
+
   const abrirModal = () => {
     setErrorCrear('');
     setCreado(false);
@@ -210,6 +244,8 @@ function EquiposPage() {
   const soyCreadorDelEquipo = (e) =>
     !!usuario?._id && !!e.proyecto_id?.creador_id &&
     String(e.proyecto_id.creador_id) === String(usuario._id);
+
+  const puedeGestionar = (e) => soyCreadorDelEquipo(e) || puedeCrear;
 
   const solicitudPendienteDe = (id) => misSolicitudesEnviadas[String(id)] || null;
 
@@ -370,7 +406,36 @@ function EquiposPage() {
                                       </strong>
                                       <div className="proyecto-detalle-texto">{m.usuario_id?.email || ''}</div>
                                     </div>
-                                    <span className="proyecto-badge">{m.rol || 'miembro'}</span>
+                                    {puedeGestionar(e) ? (
+                                      <div className="d-flex flex-wrap align-items-center gap-2">
+                                        <Form.Select
+                                          size="sm"
+                                          style={{ width: 'auto', fontSize: '0.78rem' }}
+                                          value={m.rol || 'miembro'}
+                                          disabled={cargandoAccion === `miembro-${String(m._id)}`}
+                                          onChange={(ev) => cambiarRol(e._id, m._id, ev.target.value)}
+                                          onClick={(ev) => ev.stopPropagation()}
+                                        >
+                                          <option value="lider">Líder</option>
+                                          <option value="colaborador">Colaborador</option>
+                                          <option value="miembro">Miembro</option>
+                                        </Form.Select>
+                                        <Button
+                                          size="sm"
+                                          variant="outline-light"
+                                          className="proyectos-boton"
+                                          disabled={cargandoAccion === `miembro-${String(m._id)}`}
+                                          onClick={(ev) => {
+                                            ev.stopPropagation();
+                                            quitarMiembro(e._id, m._id);
+                                          }}
+                                        >
+                                          Quitar
+                                        </Button>
+                                      </div>
+                                    ) : (
+                                      <span className="proyecto-badge">{m.rol || 'miembro'}</span>
+                                    )}
                                   </div>
                                 ))}
                               </div>

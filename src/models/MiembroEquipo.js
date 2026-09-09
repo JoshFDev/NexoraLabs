@@ -13,7 +13,9 @@ const miembroEquipoEsquema = new Schema(
             required: true
         },
         rol: {
-            type: String
+            type: String,
+            enum: ["lider", "colaborador", "miembro"],
+            default: "miembro"
         },
         fecha_ingreso: {
             type: Date,

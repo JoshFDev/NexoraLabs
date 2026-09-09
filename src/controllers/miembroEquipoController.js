@@ -19,6 +19,13 @@ const nombreDeUsuario = async (usuarioId) => {
     return usuario ? `${usuario.nombre}${usuario.apellido_paterno ? ' ' + usuario.apellido_paterno : ''}` : 'Un usuario';
 };
 
+//¿Puede el usuario gestionar el equipo? (admin, mentor o creador del proyecto del equipo)
+const esResponsableDelEquipo = async (usuarioId, rol, equipo) => {
+    if (rol === "admin" || rol === "mentor") return true;
+    const datosProyecto = await creadorDelEquipo(equipo);
+    return datosProyecto ? String(datosProyecto.creador) === String(usuarioId) : false;
+};
+
 //GET /miembros-equipo → listar todos los miembros de equipos
 export const listarMiembros = async (req, res) => {
     try {
@@ -90,6 +97,74 @@ export const misEquipos = async (req, res) => {
         const equipos = await Equipo.find({ _id: { $in: idsEquipos } })
             .populate('proyecto_id', 'titulo');
         res.json(equipos);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json(serverError(error));
+    }
+};
+
+//PUT /equipo/:id/miembros/:miembroId/rol → cambiar el rol de un integrante (creador del equipo o admin/mentor)
+export const cambiarRolMiembro = async (req, res) => {
+    try {
+        const { rol } = req.body;
+        const rolesValidos = ["lider", "colaborador", "miembro"];
+        if (!rolesValidos.includes(rol)) {
+            return res.status(httpStatus.BAD_REQUEST).json(badRequest("Rol no válido (lider, colaborador, miembro)"));
+        }
+
+        const equipo = await Equipo.findById(req.params.id);
+        if (!equipo) return res.status(httpStatus.NOT_FOUND).json(notFound("Equipo no encontrado"));
+
+        const responsable = await esResponsableDelEquipo(req.usuario.id, req.usuario.rol, equipo);
+        if (!responsable) return res.status(httpStatus.FORBIDDEN).json(forbidden());
+
+        const miembro = await MiembroEquipo.findOne({
+            _id: req.params.miembroId,
+            equipo_id: equipo._id
+        });
+        if (!miembro) return res.status(httpStatus.NOT_FOUND).json(notFound("El integrante no pertenece a este equipo"));
+
+        miembro.rol = rol;
+        await miembro.save();
+
+        const miembroConDatos = await MiembroEquipo.findById(miembro._id)
+            .populate('usuario_id', 'nombre apellido_paterno email rol');
+        res.json(miembroConDatos);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json(serverError(error));
+    }
+};
+
+//DELETE /equipo/:id/miembros/:miembroId → quitar a un integrante del equipo (creador del equipo o admin/mentor)
+export const eliminarMiembroDeEquipo = async (req, res) => {
+    try {
+        const equipo = await Equipo.findById(req.params.id);
+        if (!equipo) return res.status(httpStatus.NOT_FOUND).json(notFound("Equipo no encontrado"));
+
+        const responsable = await esResponsableDelEquipo(req.usuario.id, req.usuario.rol, equipo);
+        if (!responsable) return res.status(httpStatus.FORBIDDEN).json(forbidden());
+
+        const miembro = await MiembroEquipo.findOneAndDelete({
+            _id: req.params.miembroId,
+            equipo_id: equipo._id
+        });
+        if (!miembro) return res.status(httpStatus.NOT_FOUND).json(notFound("El integrante no pertenece a este equipo"));
+
+        const nombreMiembro = await nombreDeUsuario(miembro.usuario_id);
+        const datosProyecto = await creadorDelEquipo(equipo);
+
+        if (datosProyecto) {
+            await registrarNotificacion({
+                usuario_id: miembro.usuario_id,
+                tipo: "equipo",
+                titulo: "Fuiste removido del equipo",
+                mensaje: `${nombreMiembro} ya no forma parte del equipo del proyecto "${datosProyecto.titulo}".`,
+                enlace: `/equipos`
+            });
+        }
+
+        res.json({ message: "Integrante removido del equipo", miembro });
     } catch (error) {
         console.log(error);
         res.status(500).json(serverError(error));
