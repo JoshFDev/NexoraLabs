@@ -1,16 +1,28 @@
 import { Navbar, Nav, Container } from 'react-bootstrap';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import logo from '../assets/Logo.png';
 import api from '../api';
 import CampanaNotificaciones from './CampanaNotificaciones';
 import MenuUsuario from './MenuUsuario';
 
+const RUTAS = [
+  { to: '/explorar', etiqueta: 'Explorar', para: 'todos' },
+  { to: '/crear-proyecto', etiqueta: 'Crear proyecto', para: 'creador' },
+  { to: '/postulaciones', etiqueta: 'Postulaciones', para: 'creador' },
+  { to: '/equipos', etiqueta: 'Equipos', para: 'todos' },
+  { to: '/recursos', etiqueta: 'Recursos', para: 'todos' },
+  { to: '/habilidades', etiqueta: 'Habilidades', para: 'todos' },
+  { to: '/logros', etiqueta: 'Logros', para: 'todos' },
+  { to: '/ofertas', etiqueta: 'Ofertas', para: 'todos' },
+];
+
 function NavBar() {
   const [usuario, setUsuario] = useState(() =>
     JSON.parse(localStorage.getItem('usuario') || sessionStorage.getItem('usuario') || 'null')
   );
   const navigate = useNavigate();
+  const { pathname } = useLocation();
 
   useEffect(() => {
     if (!usuario) return;
@@ -38,15 +50,18 @@ function NavBar() {
   };
 
   const puedeCrear = usuario && ['admin', 'mentor', 'desarrollador', 'ingeniero'].includes(usuario.rol);
+  const esActivo = (ruta) => (ruta === '/' ? pathname === '/' : pathname.startsWith(ruta));
+
+  const ClaseEnlace = (ruta) => `nav-link-nexora${esActivo(ruta) ? ' activo' : ''}`;
 
   return (
-    <Navbar variant="dark" expand="lg" className="navbar-nexora">
-      <Container fluid className="px-4">
-        <Navbar.Brand as={Link} to="/" className="d-flex align-items-center">
+    <Navbar variant="dark" expand="xl" className="navbar-nexora">
+      <Container fluid className="px-lg-4">
+        <Navbar.Brand as={Link} to="/" className="d-flex align-items-center navbar-brand-nexora">
           <img
             src={logo}
             alt="NexoraLabs"
-            height="68"
+            height="62"
             className="brand-firma"
             onContextMenu={(e) => e.preventDefault()}
             onDragStart={(e) => e.preventDefault()}
@@ -54,32 +69,37 @@ function NavBar() {
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="navbar-nav" />
         <Navbar.Collapse id="navbar-nav">
-          <Nav className="ms-auto">
+          {usuario && (
+            <Nav className="navbar-enlaces ms-lg-5">
+              {RUTAS.filter((r) => r.para === 'todos' || puedeCrear).map((r) => (
+                <Nav.Link key={r.to} as={Link} to={r.to} className={ClaseEnlace(r.to)}>
+                  {r.etiqueta}
+                </Nav.Link>
+              ))}
+            </Nav>
+          )}
+          <Nav className="navbar-utilidades ms-auto">
             {usuario ? (
               <>
-                <Nav.Link as={Link} to="/explorar" className="nav-link-nexora">Explorar</Nav.Link>
-                {puedeCrear && (
-                  <Nav.Link as={Link} to="/crear-proyecto" className="nav-link-nexora">Crear proyecto</Nav.Link>
-                )}
-                {puedeCrear && (
-                  <Nav.Link as={Link} to="/postulaciones" className="nav-link-nexora">Postulaciones</Nav.Link>
-                )}
-                <Nav.Link as={Link} to="/equipos" className="nav-link-nexora">Equipos</Nav.Link>
-                <Nav.Link as={Link} to="/recursos" className="nav-link-nexora">Recursos</Nav.Link>
-                <Nav.Link as={Link} to="/habilidades" className="nav-link-nexora">Habilidades</Nav.Link>
-                <Nav.Link as={Link} to="/logros" className="nav-link-nexora">Logros</Nav.Link>
-                <Nav.Link as={Link} to="/ofertas" className="nav-link-nexora">Ofertas</Nav.Link>
                 {usuario.rol === 'admin' && (
-                  <Nav.Link as={Link} to="/admin" className="nav-link-nexora">Panel admin</Nav.Link>
+                  <Nav.Link as={Link} to="/admin" className={ClaseEnlace('/admin')}>
+                    Panel admin
+                  </Nav.Link>
                 )}
-                <Nav.Link as={Link} to="/" className="nav-link-nexora">Panel</Nav.Link>
+                <Nav.Link as={Link} to="/" className={ClaseEnlace('/')}>
+                  Panel
+                </Nav.Link>
                 <CampanaNotificaciones />
                 <MenuUsuario usuario={usuario} onCerrarSesion={cerrarSesion} />
               </>
             ) : (
               <>
-                <Nav.Link as={Link} to="/login">Iniciar sesión</Nav.Link>
-                <Nav.Link as={Link} to="/registro">Registrarse</Nav.Link>
+                <Nav.Link as={Link} to="/login" className="nav-link-nexora">
+                  Iniciar sesión
+                </Nav.Link>
+                <Nav.Link as={Link} to="/registro" className="nav-link-nexora nav-cta">
+                  Registrarse
+                </Nav.Link>
               </>
             )}
           </Nav>

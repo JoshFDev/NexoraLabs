@@ -329,9 +329,33 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  gap: 0.55rem;
   border-top: 1px solid #efeff5;
   margin-top: 0.4rem;
   padding-top: 0.8rem;
+}
+
+.recomendado-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.5rem;
+}
+
+.proyecto-badge-coincidencia {
+  border-color: rgba(52, 211, 153, 0.45);
+  background: rgba(52, 211, 153, 0.12);
+  color: #0f7a52;
+}
+
+.recomendado-mini-acciones {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.55rem;
+  border-top: 1px solid #efeff5;
+  margin-top: 0.5rem;
+  padding-top: 0.7rem;
 }
 
 .proyecto-postulacion-form {

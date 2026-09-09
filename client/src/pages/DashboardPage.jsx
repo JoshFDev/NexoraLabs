@@ -170,15 +170,17 @@ function DashboardPage() {
         onClick={() => alternar(p._id)}
       >
         <h6>{p.titulo}</h6>
-        <span className="proyecto-badge">{ETIQUETAS_ESTADO[p.estado] || p.estado}</span>
         <p>{p.descripcion.length > 90 ? `${p.descripcion.slice(0, 90)}…` : p.descripcion}</p>
-        {p.coincidencias !== undefined && (
-          <span className="proyecto-badge">
-            {p.coincidencias} coincidencia{p.coincidencias !== 1 ? 's' : ''}
-          </span>
-        )}
+        <div className="recomendado-badges">
+          <span className="proyecto-badge">{ETIQUETAS_ESTADO[p.estado] || p.estado}</span>
+          {p.coincidencias > 0 && (
+            <span className="proyecto-badge proyecto-badge-coincidencia">
+              {p.coincidencias} habilidad{p.coincidencias !== 1 ? 'es' : ''} en común
+            </span>
+          )}
+        </div>
         {esMio && (
-          <div className="proyecto-detalle-acciones" onClick={(ev) => ev.stopPropagation()}>
+          <div className="recomendado-mini-acciones" onClick={(ev) => ev.stopPropagation()}>
             <Button
               variant="primary"
               size="sm"
