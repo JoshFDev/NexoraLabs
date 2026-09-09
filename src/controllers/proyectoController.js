@@ -1,6 +1,6 @@
 import Proyecto from "../models/Proyecto";
 import UsuarioHabilidad from "../models/UsuarioHabilidad";
-import { serverError, notFound, badRequest } from "../shared/errors/errorHandler";
+import { serverError, notFound, badRequest, forbidden } from "../shared/errors/errorHandler";
 import httpStatus from "../shared/errors/httpStatus";
 
 //Recibe (req, res) = misma firma que un callback de ruta de Express.
@@ -74,11 +74,21 @@ export const crearProyecto = async (req, res) => {
     }
 };
 
-//PUT /proyecto/:id → actualizar un proyecto
+//PUT /proyecto/:id → actualizar un proyecto (creador o admin)
 export const actualizarProyecto = async (req, res) => {
     try {
-        const actualizado = await Proyecto.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        if (!actualizado) return res.status(httpStatus.NOT_FOUND).json(notFound("Proyecto no encontrado"));
+        const proyectoActual = await Proyecto.findById(req.params.id);
+        if (!proyectoActual) return res.status(httpStatus.NOT_FOUND).json(notFound("Proyecto no encontrado"));
+
+        const esAdmin = req.usuario.rol === "admin";
+        const esCreador = String(proyectoActual.creador_id) === String(req.usuario.id);
+        if (!esAdmin && !esCreador) {
+            return res.status(httpStatus.FORBIDDEN).json(forbidden());
+        }
+
+        const actualizado = await Proyecto.findByIdAndUpdate(req.params.id, req.body, { new: true })
+            .populate('creador_id', 'nombre email')
+            .populate('habilidades_requeridas', 'nombre');
         res.json(actualizado);
     } catch (error) {
         console.log(error);
@@ -86,11 +96,19 @@ export const actualizarProyecto = async (req, res) => {
     }
 };
 
-//DELETE /proyecto/:id → eliminar un proyecto
+//DELETE /proyecto/:id → eliminar un proyecto (creador o admin)
 export const eliminarProyecto = async (req, res) => {
     try {
+        const proyecto = await Proyecto.findById(req.params.id);
+        if (!proyecto) return res.status(httpStatus.NOT_FOUND).json(notFound("Proyecto no encontrado"));
+
+        const esAdmin = req.usuario.rol === "admin";
+        const esCreador = String(proyecto.creador_id) === String(req.usuario.id);
+        if (!esAdmin && !esCreador) {
+            return res.status(httpStatus.FORBIDDEN).json(forbidden());
+        }
+
         const eliminado = await Proyecto.findByIdAndDelete(req.params.id);
-        if (!eliminado) return res.status(httpStatus.NOT_FOUND).json(notFound("Proyecto no encontrado"));
         res.json({ message: "Proyecto eliminado", proyecto: eliminado });
     } catch (error) {
         console.log(error);

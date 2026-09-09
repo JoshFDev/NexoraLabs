@@ -152,8 +152,18 @@ function DashboardPage() {
     [expandido, rendDetalle]
   );
 
+  const eliminarProyecto = async (id) => {
+    if (!window.confirm('¿Seguro que quieres eliminar este proyecto? No se puede deshacer.')) return;
+    try {
+      await api.delete(`/proyecto/${id}`);
+      setMisProyectos((prev) => (prev || []).filter((p) => String(p._id) !== String(id)));
+    } catch (err) {
+      setError(err.response?.data?.error || 'No pudimos eliminar el proyecto.');
+    }
+  };
+
   const rendMini = useCallback(
-    (p) => (
+    (p, esMio = false) => (
       <div
         className={`recomendado-mini${expandido === p._id ? ' abierto' : ''}`}
         key={p._id}
@@ -167,12 +177,32 @@ function DashboardPage() {
             {p.coincidencias} coincidencia{p.coincidencias !== 1 ? 's' : ''}
           </span>
         )}
+        {esMio && (
+          <div className="proyecto-detalle-acciones" onClick={(ev) => ev.stopPropagation()}>
+            <Button
+              variant="primary"
+              size="sm"
+              className="proyectos-boton"
+              onClick={() => navigate(`/crear-proyecto?editar=${p._id}`)}
+            >
+              Editar
+            </Button>
+            <Button
+              variant="outline-danger"
+              size="sm"
+              className="proyectos-boton"
+              onClick={() => eliminarProyecto(p._id)}
+            >
+              Eliminar
+            </Button>
+          </div>
+        )}
         <div className={`proyecto-fila-contenido${expandido === p._id ? ' abierto' : ''}`}>
           {rendDetalle(p)}
         </div>
       </div>
     ),
-    [expandido, rendDetalle]
+    [expandido, rendDetalle, navigate]
   );
 
   if (cargando) {
@@ -260,7 +290,7 @@ function DashboardPage() {
                   Aún no has creado proyectos.
                 </p>
               ) : (
-                misProyectos.map(rendMini)
+                misProyectos.map((p) => rendMini(p, true))
               )}
             </aside>
           </Col>

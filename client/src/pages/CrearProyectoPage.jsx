@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Container, Row, Col, Form, Button, Spinner, Alert } from 'react-bootstrap';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import api from '../api';
 import Chispas from '../components/Chispas';
 import IconoHabilidad from '../components/IconoHabilidad';
@@ -11,10 +11,13 @@ const ROLES_CREADOR = ['admin', 'mentor', 'desarrollador', 'ingeniero'];
 
 const NIVELES = ['principiante', 'intermedio', 'avanzado', 'experto'];
 const ESTADOS = ['borrador', 'buscando_equipo', 'en_desarrollo'];
+const ESTADOS_EDITAR = [...ESTADOS, 'finalizado', 'cancelado'];
 const ETIQUETAS_ESTADO_CREAR = {
   borrador: 'Borrador',
   buscando_equipo: 'Buscando equipo',
   en_desarrollo: 'En desarrollo',
+  finalizado: 'Finalizado',
+  cancelado: 'Cancelado',
 };
 const CATEGORIAS = ['web', 'movil', 'ia', 'backend', 'frontend', 'devops', 'big_data', 'diseno', 'otro'];
 
@@ -22,6 +25,9 @@ function CrearProyectoPage() {
   const usuario = leerUsuario();
   const puedeCrear = ROLES_CREADOR.includes(usuario?.rol);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const editId = searchParams.get('editar');
+  const esEdicion = Boolean(editId);
 
   const [form, setForm] = useState({
     titulo: '',
@@ -38,6 +44,7 @@ function CrearProyectoPage() {
   const [errores, setErrores] = useState({});
   const [cargando, setCargando] = useState(false);
   const [cargandoHabilidades, setCargandoHabilidades] = useState(true);
+  const [cargandoProyecto, setCargandoProyecto] = useState(esEdicion);
   const [exito, setExito] = useState(false);
   const [error, setError] = useState('');
 
@@ -48,6 +55,38 @@ function CrearProyectoPage() {
       .catch(() => setHabilidades([]))
       .finally(() => setCargandoHabilidades(false));
   }, []);
+
+  useEffect(() => {
+    if (!editId) return;
+    let activo = true;
+    setError('');
+    api
+      .get(`/proyecto/${editId}`)
+      .then((res) => {
+        const p = res.data;
+        setForm({
+          titulo: p.titulo || '',
+          descripcion: p.descripcion || '',
+          categoria: p.categoria || '',
+          nivel_dificultad: p.nivel_dificultad || 'intermedio',
+          estado: p.estado || 'buscando_equipo',
+          integrantes_maximos: p.integrantes_maximos || 3,
+          fecha_limite: p.fecha_limite ? p.fecha_limite.slice(0, 10) : '',
+        });
+        if (Array.isArray(p.habilidades_requeridas)) {
+          setSeleccionadas(p.habilidades_requeridas.map((h) => (typeof h === 'string' ? h : h._id)));
+        }
+      })
+      .catch((err) => {
+        if (activo) setError(err.response?.data?.error || 'No pudimos cargar el proyecto.');
+      })
+      .finally(() => {
+        if (activo) setCargandoProyecto(false);
+      });
+    return () => {
+      activo = false;
+    };
+  }, [editId]);
 
   const cambiar = (campo, valor) => {
     setForm((f) => ({ ...f, [campo]: valor }));
@@ -74,20 +113,29 @@ function CrearProyectoPage() {
       setErrores(campos);
       return;
     }
+    if (esEdicion && ['finalizado', 'cancelado'].includes(form.estado)) {
+      const accion = form.estado === 'finalizado' ? 'finalizar' : 'cancelar';
+      if (!window.confirm(`¿Seguro que quieres ${accion} este proyecto?`)) return;
+    }
     setCargando(true);
     try {
-      await api.post('/proyecto/agregar', {
+      const datos = {
         ...form,
         creador_id: usuario._id || usuario.id,
         fecha_limite: form.fecha_limite || undefined,
         habilidades_requeridas: seleccionadas,
         integrantes_maximos: Number(form.integrantes_maximos),
-      });
+      };
+      if (esEdicion) {
+        await api.put(`/proyecto/${editId}`, datos);
+      } else {
+        await api.post('/proyecto/agregar', datos);
+      }
       setExito(true);
       setCargando(false);
-      setTimeout(() => navigate('/explorar'), 750);
+      setTimeout(() => (esEdicion ? navigate(`/proyecto/${editId}`) : navigate('/explorar')), 750);
     } catch (err) {
-      setError(err.response?.data?.error || 'No pudimos crear el proyecto.');
+      setError(err.response?.data?.error || 'No pudimos guardar el proyecto.');
       setCargando(false);
     }
   };
@@ -115,21 +163,32 @@ function CrearProyectoPage() {
   return (
     <div className="proyectos-pagina crear-proyecto-pagina">
       <Container fluid className="pt-4 px-lg-5">
-        <h2 className="proyectos-titulo mb-1">Crear proyecto</h2>
-        <p className="proyectos-subtitulo mb-4">Publica tu idea y encuentra con quién construirla.</p>
+        <h2 className="proyectos-titulo mb-1">{esEdicion ? 'Editar proyecto' : 'Crear proyecto'}</h2>
+        <p className="proyectos-subtitulo mb-4">
+          {esEdicion
+            ? 'Actualiza la información o el estado de tu proyecto.'
+            : 'Publica tu idea y encuentra con quién construirla.'}
+        </p>
 
         {error && <Alert variant="danger">{error}</Alert>}
 
         {exito && (
           <div className="proyectos-bloqueo" style={{ margin: '2rem auto' }}>
             <span className="dash-bloqueo-icono" style={{ color: '#34d399' }}>✓</span>
-            <h2>¡Proyecto publicado!</h2>
-            <p>Tu proyecto ya está en la plataforma.</p>
+            <h2>{esEdicion ? '¡Proyecto actualizado!' : '¡Proyecto publicado!'}</h2>
+            <p>{esEdicion ? 'Los cambios se guardaron correctamente.' : 'Tu proyecto ya está en la plataforma.'}</p>
           </div>
         )}
         {exito && <Chispas />}
 
-        {!exito && (
+        {!exito && cargandoProyecto && (
+          <div className="text-center py-5">
+            <Spinner animation="border" variant="light" />
+            <p className="proyectos-subtitulo mt-2">Cargando proyecto…</p>
+          </div>
+        )}
+
+        {!exito && !cargandoProyecto && (
           <Form onSubmit={submit} className="proyecto-form crear-form" noValidate>
             <Row className="g-4 h-100">
               <Col lg={8}>
@@ -187,9 +246,9 @@ function CrearProyectoPage() {
                   <Row>
                     <Col md={6}>
                       <Form.Group className="mb-3">
-                        <Form.Label className="proyecto-form-label">Estado inicial</Form.Label>
+                        <Form.Label className="proyecto-form-label">{esEdicion ? 'Estado del proyecto' : 'Estado inicial'}</Form.Label>
 <Form.Select value={form.estado} onChange={(e) => cambiar('estado', e.target.value)}>
-                        {ESTADOS.map((s) => (
+                        {(esEdicion ? ESTADOS_EDITAR : ESTADOS).map((s) => (
                           <option key={s} value={s}>{ETIQUETAS_ESTADO_CREAR[s] || s}</option>
                         ))}
                       </Form.Select>
@@ -275,7 +334,7 @@ function CrearProyectoPage() {
 
                   <div className="d-flex gap-3">
                     <Button variant="primary" type="submit" className="proyectos-boton" disabled={cargando}>
-                      {cargando ? <Spinner animation="border" size="sm" /> : 'Publicar proyecto'}
+                      {cargando ? <Spinner animation="border" size="sm" /> : esEdicion ? 'Guardar cambios' : 'Publicar proyecto'}
                     </Button>
                     <Button variant="outline-light" className="proyectos-boton" as={Link} to="/explorar">
                       Cancelar
