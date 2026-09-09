@@ -137,8 +137,14 @@ function LogrosPage() {
                         </div>
                       </div>
                       <div className="honeycomb-tooltip">
+                        <span className="honeycomb-tooltip-tipo">{meta.etiqueta}</span>
                         <strong>{l.nombre}</strong>
-                        <span>{l.descripcion}</span>
+                        <span className="honeycomb-tooltip-desc">{l.descripcion}</span>
+                        {l.obtenido && (
+                          <span className="honeycomb-tooltip-fecha">
+                            Obtenido el {new Date(l.fecha_obtencion).toLocaleDateString('es')}
+                          </span>
+                        )}
                       </div>
                     </div>
                   );
