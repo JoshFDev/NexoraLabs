@@ -34,6 +34,8 @@ const rutas = [
     { metodo: "POST", ruta: "/postulacion/agregar", descripcion: "Crear postulación" },
     { metodo: "PUT", ruta: "/postulacion/:id", descripcion: "Actualizar postulación (admin)" },
     { metodo: "DELETE", ruta: "/postulacion/:id", descripcion: "Eliminar postulación (admin)" },
+    { metodo: "PUT", ruta: "/postulacion-own/:id", descripcion: "Editar mi postulación pendiente (autenticado)" },
+    { metodo: "DELETE", ruta: "/postulacion-own/:id", descripcion: "Retirar/cancelar mi postulación (autenticado)" },
 
     { metodo: "GET", ruta: "/recursos-aprendizaje", descripcion: "Listar recursos de aprendizaje" },
     { metodo: "GET", ruta: "/recurso-aprendizaje/:id", descripcion: "Ver recurso por id" },

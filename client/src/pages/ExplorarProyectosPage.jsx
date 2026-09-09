@@ -45,6 +45,7 @@ function ExplorarProyectosPage() {
   const [sugAbierta, setSugAbierta] = useState(false);
   const [misPostulaciones, setMisPostulaciones] = useState({});
   const [formPostulacion, setFormPostulacion] = useState(null);
+  const [editForm, setEditForm] = useState(null);
   const [cargandoPost, setCargandoPost] = useState(false);
 
   const alternar = (id) => setExpandido((x) => (x === id ? null : id));
@@ -115,13 +116,28 @@ function ExplorarProyectosPage() {
     setCargandoPost(true);
     try {
       await api.delete(`/postulacion-own/${po._id}`);
-      setMisPostulaciones((prev) => {
-        const nuevo = { ...prev };
-        delete nuevo[String(p._id)];
-        return nuevo;
-      });
+      await refrescarMisPostulaciones();
+      setEditForm(null);
     } catch (err) {
       setError(err.response?.data?.error || 'No se pudo retirar la postulación');
+    } finally {
+      setCargandoPost(false);
+    }
+  };
+
+  const editarPostulacion = async (p) => {
+    const po = misPostulaciones[String(p._id)];
+    if (!po) return;
+    setCargandoPost(true);
+    setError('');
+    try {
+      await api.put(`/postulacion-own/${po._id}`, {
+        mensaje: editForm.mensaje ?? '',
+      });
+      setEditForm(null);
+      await refrescarMisPostulaciones();
+    } catch (err) {
+      setError(err.response?.data?.error || 'No se pudo editar la postulación');
     } finally {
       setCargandoPost(false);
     }
@@ -256,15 +272,66 @@ function ExplorarProyectosPage() {
                   misPostulaciones[String(p._id)].estado}
               </span>
               {misPostulaciones[String(p._id)].estado === 'pendiente' && (
-                <Button
-                  variant="outline-light"
-                  className="proyectos-boton"
-                  size="sm"
-                  disabled={cargandoPost}
-                  onClick={() => retirarPostulacion(p)}
-                >
-                  Retirar postulación
-                </Button>
+                <>
+                  {editForm?.proyectoId === String(p._id) ? (
+                    <div className="proyecto-postulacion-form w-100">
+                      <Form.Control
+                        as="textarea"
+                        rows={2}
+                        className="proyecto-post-mensaje"
+                        placeholder="Cuéntale al creador por qué te interesa (opcional)"
+                        value={editForm.mensaje}
+                        onChange={(e) => setEditForm({ ...editForm, mensaje: e.target.value })}
+                      />
+                      <div className="d-flex gap-2 mt-2">
+                        <Button
+                          variant="primary"
+                          className="proyectos-boton"
+                          size="sm"
+                          disabled={cargandoPost}
+                          onClick={() => editarPostulacion(p)}
+                        >
+                          Guardar cambios
+                        </Button>
+                        <Button
+                          variant="outline-light"
+                          className="proyectos-boton"
+                          size="sm"
+                          disabled={cargandoPost}
+                          onClick={() => setEditForm(null)}
+                        >
+                          Cancelar
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <Button
+                        variant="outline-light"
+                        className="proyectos-boton"
+                        size="sm"
+                        disabled={cargandoPost}
+                        onClick={() =>
+                          setEditForm({
+                            proyectoId: String(p._id),
+                            mensaje: misPostulaciones[String(p._id)].mensaje || '',
+                          })
+                        }
+                      >
+                        Editar
+                      </Button>
+                      <Button
+                        variant="outline-light"
+                        className="proyectos-boton"
+                        size="sm"
+                        disabled={cargandoPost}
+                        onClick={() => retirarPostulacion(p)}
+                      >
+                        Retirar postulación
+                      </Button>
+                    </>
+                  )}
+                </>
               )}
             </div>
           ) : (
@@ -297,7 +364,7 @@ function ExplorarProyectosPage() {
         </div>
       </section>
     ),
-    [misPostulaciones, formPostulacion, cargandoPost]
+    [misPostulaciones, formPostulacion, cargandoPost, editForm]
   );
 
   const rendTarjeta = useCallback(

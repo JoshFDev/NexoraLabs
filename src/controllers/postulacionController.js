@@ -5,6 +5,11 @@ import { registrarNotificacion } from "../shared/notificaciones";
 import { serverError, notFound, conflict, badRequest, forbidden } from "../shared/errors/errorHandler";
 import httpStatus from "../shared/errors/httpStatus";
 
+const nombreDeUsuario = async (usuarioId) => {
+    const usuario = await Usuario.findById(usuarioId).select('nombre apellido_paterno');
+    return usuario ? `${usuario.nombre}${usuario.apellido_paterno ? ' ' + usuario.apellido_paterno : ''}` : 'Un usuario';
+};
+
 //GET /mis-postulaciones → postulaciones del usuario autenticado
 export const misPostulaciones = async (req, res) => {
     try {
@@ -18,13 +23,64 @@ export const misPostulaciones = async (req, res) => {
     }
 };
 
-//DELETE /postulacion-own/:id → el usuario retira su propia postulación
+//DELETE /postulacion-own/:id → el usuario retira (cancela) su propia postulación pendiente
 export const retirarMiPostulacion = async (req, res) => {
     try {
-        const postulacion = await Postulacion.findOne({ _id: req.params.id, usuario_id: req.usuario.id });
+        const postulacion = await Postulacion.findOne({ _id: req.params.id, usuario_id: req.usuario.id })
+            .populate('proyecto_id', 'creador_id titulo');
         if (!postulacion) return res.status(httpStatus.NOT_FOUND).json(notFound("Postulación no encontrada"));
-        await Postulacion.findByIdAndDelete(postulacion._id);
-        res.json({ message: "Postulación retirada", postulacion });
+
+        if (postulacion.estado !== "pendiente") {
+            return res.status(httpStatus.BAD_REQUEST).json(badRequest("Solo puedes retirar postulaciones pendientes"));
+        }
+
+        postulacion.estado = "cancelada";
+        await postulacion.save();
+
+        const nombrePostulante = await nombreDeUsuario(req.usuario.id);
+        await registrarNotificacion({
+            usuario_id: postulacion.proyecto_id?.creador_id,
+            tipo: "postulacion",
+            titulo: "Postulación retirada",
+            mensaje: `${nombrePostulante} retiró su postulación para "${postulacion.proyecto_id?.titulo || 'tu proyecto'}".`,
+            enlace: `/postulaciones`
+        });
+
+        res.json({ message: "Postulación cancelada", postulacion });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json(serverError(error));
+    }
+};
+
+//PUT /postulacion-own/:id → el usuario edita mensaje/habilidades de su postulación pendiente
+export const editarMiPostulacion = async (req, res) => {
+    try {
+        const postulacion = await Postulacion.findOne({ _id: req.params.id, usuario_id: req.usuario.id })
+            .populate('proyecto_id', 'creador_id titulo');
+        if (!postulacion) return res.status(httpStatus.NOT_FOUND).json(notFound("Postulación no encontrada"));
+
+        if (postulacion.estado !== "pendiente") {
+            return res.status(httpStatus.BAD_REQUEST).json(badRequest("Solo puedes editar postulaciones pendientes"));
+        }
+
+        if (req.body.mensaje !== undefined) postulacion.mensaje = req.body.mensaje;
+        if (req.body.habilidades_ofrecidas !== undefined) postulacion.habilidades_ofrecidas = req.body.habilidades_ofrecidas;
+        await postulacion.save();
+
+        const nombrePostulante = await nombreDeUsuario(req.usuario.id);
+        await registrarNotificacion({
+            usuario_id: postulacion.proyecto_id?.creador_id,
+            tipo: "postulacion",
+            titulo: "Postulación actualizada",
+            mensaje: `${nombrePostulante} actualizó su postulación para "${postulacion.proyecto_id?.titulo || 'tu proyecto'}".`,
+            enlace: `/postulaciones`
+        });
+
+        const actualizada = await Postulacion.findById(postulacion._id)
+            .populate('proyecto_id', 'titulo estado')
+            .populate('habilidades_ofrecidas', 'nombre');
+        res.json(actualizada);
     } catch (error) {
         console.log(error);
         res.status(500).json(serverError(error));

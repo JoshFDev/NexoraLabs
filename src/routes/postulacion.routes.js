@@ -10,6 +10,7 @@ import {
     postularAProyecto,
     misPostulaciones,
     retirarMiPostulacion,
+    editarMiPostulacion,
     postulacionesDeMisProyectos,
     cambiarEstadoPostulacion
 } from "../controllers/postulacionController";
@@ -24,6 +25,9 @@ router.get('/mis-postulaciones', verifyToken, misPostulaciones);
 
 //Retirar la propia postulación (autenticado, solo propietario)
 router.delete('/postulacion-own/:id', verifyToken, retirarMiPostulacion);
+
+//Editar la propia postulación pendiente (autenticado, solo propietario)
+router.put('/postulacion-own/:id', verifyToken, editarMiPostulacion);
 
 //Ver una postulación por id
 router.get('/postulacion/:id', obtenerPostulacion);
