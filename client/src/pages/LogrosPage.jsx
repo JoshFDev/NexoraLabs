@@ -54,7 +54,7 @@ function LogrosPage() {
   return (
     <div className="proyectos-pagina">
       <Container fluid className="pt-4 px-lg-5">
-        <div className="d-flex align-items-end justify-content-between mb-4">
+        <div className="d-flex flex-wrap align-items-end justify-content-between mb-4 gap-4">
           <div>
             <h2 className="proyectos-titulo mb-0">Mis logros</h2>
             <p className="proyectos-subtitulo mb-0">
@@ -64,34 +64,7 @@ function LogrosPage() {
             </p>
           </div>
           {datos && (
-            <span
-              style={{
-                fontSize: '0.78rem',
-                color: '#6D28D9',
-                fontWeight: 700,
-                border: '1px solid rgba(109, 40, 217, 0.35)',
-                background: '#f3ecfd',
-                borderRadius: '999px',
-                padding: '0.3rem 0.75rem',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              {datos.total_obtenidos}/{datos.total_logros}
-            </span>
-          )}
-        </div>
-
-        {error && <Alert variant="danger">{error}</Alert>}
-
-        {!datos && !error && (
-          <div className="text-center py-5">
-            <Spinner animation="border" />
-          </div>
-        )}
-
-        {datos && (
-          <>
-            <div style={{ maxWidth: '720px', margin: '0 auto 1.4rem' }}>
+            <div style={{ minWidth: '240px', flex: '1 1 300px', maxWidth: '430px' }}>
               <div className="d-flex align-items-center justify-content-between mb-1">
                 <span className="honeycomb-etiqueta">Progreso general</span>
                 <span className="honeycomb-etiqueta">
@@ -105,7 +78,7 @@ function LogrosPage() {
                   }}
                 />
               </div>
-              <div className="d-flex align-items-center justify-content-center gap-4 mt-3">
+              <div className="d-flex align-items-center justify-content-between gap-4 mt-2">
                 <span className="honeycomb-leyenda">
                   <span className="honeycomb-leyenda-dot obtenido" />
                   Obtenido · {datos.total_obtenidos}
@@ -116,18 +89,31 @@ function LogrosPage() {
                 </span>
               </div>
             </div>
+          )}
+        </div>
 
-            <div className="honeycomb">
-              {filas.map((fila, idx) => (
-                <div key={idx} className={`honeycomb-fila${idx % 2 ? ' desplazada' : ''}`}>
-                  {fila.map((l) => {
-                    const meta = ICONOS_TIPO[l.tipo] || { icono: 'workspace_premium', etiqueta: l.tipo };
-                    return (
-                      <div
-                        key={l._id}
-                        className={`honeycomb-hex ${l.obtenido ? 'obtenido' : 'bloqueado'}`}
-                        title={l.descripcion}
-                      >
+        {error && <Alert variant="danger">{error}</Alert>}
+
+        {!datos && !error && (
+          <div className="text-center py-5">
+            <Spinner animation="border" />
+          </div>
+        )}
+
+        {datos && (
+          <div className="honeycomb" style={{ paddingTop: '0.5rem' }}>
+            {filas.map((fila, idx) => (
+              <div key={idx} className={`honeycomb-fila${idx % 2 ? ' desplazada' : ''}`}>
+                {fila.map((l, j) => {
+                  const meta = ICONOS_TIPO[l.tipo] || { icono: 'workspace_premium', etiqueta: l.tipo };
+                  const retraso = Math.min((idx * 4 + j) * 0.05, 0.7);
+                  return (
+                    <div
+                      key={l._id}
+                      className="honeycomb-celda"
+                      style={{ animationDelay: `${retraso}s` }}
+                    >
+                      <div className={`honeycomb-hex ${l.obtenido ? 'obtenido' : 'bloqueado'}`}>
                         <div className="honeycomb-hex-cuerpo">
                           <span className="honeycomb-hex-ico">
                             <span className="material-symbols-outlined">{meta.icono}</span>
@@ -150,12 +136,16 @@ function LogrosPage() {
                           </div>
                         </div>
                       </div>
-                    );
-                  })}
-                </div>
-              ))}
-            </div>
-          </>
+                      <div className="honeycomb-tooltip">
+                        <strong>{l.nombre}</strong>
+                        <span>{l.descripcion}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ))}
+          </div>
         )}
       </Container>
     </div>

@@ -1445,10 +1445,17 @@
   transform: translateX(calc(var(--hex) / 2 + var(--gap) / 2));
 }
 
-.honeycomb-hex {
+.honeycomb-celda {
   position: relative;
   width: var(--hex);
   height: var(--hex-alto);
+  animation: honeycomb-entrada 0.4s ease both;
+}
+
+.honeycomb-hex {
+  position: relative;
+  width: 100%;
+  height: 100%;
   clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
   transition: filter 0.18s ease;
 }
@@ -1557,6 +1564,54 @@
 
 .honeycomb-hex.bloqueado .honeycomb-hex-pie {
   color: #9a96ab;
+}
+
+/* Tooltip */
+.honeycomb-tooltip {
+  position: absolute;
+  left: 50%;
+  bottom: 4px;
+  z-index: 30;
+  width: min(230px, 90%);
+  transform: translateX(-50%) translateY(calc(100% + 10px));
+  background: #ffffff;
+  border: 1px solid rgba(109, 40, 217, 0.35);
+  border-radius: 0.4rem;
+  box-shadow: 0 8px 20px rgba(43, 40, 64, 0.18);
+  padding: 0.55rem 0.7rem;
+  font-size: 0.75rem;
+  color: #524d70;
+  line-height: 1.35;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.honeycomb-celda:hover .honeycomb-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(calc(100% + 6px));
+}
+
+@keyframes honeycomb-entrada {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .honeycomb-celda {
+    animation: none;
+  }
 }
 
 /* Progreso y leyenda */
