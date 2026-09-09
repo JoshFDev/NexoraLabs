@@ -34,6 +34,15 @@ const NIVEL_HABILIDAD = {
   experto: 'Experto',
 };
 
+const ICONOS_LOGROS = {
+  crear_proyecto: 'rocket_launch',
+  completar_perfil: 'how_to_reg',
+  postularse: 'connect_without_contact',
+  unirse_equipo: 'group',
+  comentar: 'forum',
+  calificar_recurso: 'school',
+};
+
 function PerfilPublicoPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -212,8 +221,10 @@ function PerfilPublicoPage() {
                             style={{ cursor: 'default', fontSize: '0.85rem', gap: '0.35rem', display: 'inline-flex', alignItems: 'center' }}
                             title={l.descripcion}
                           >
-                            <span style={{ fontSize: '1rem' }}>{l.icono}</span>
-                            {l.nombre}
+                            <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>
+                              {ICONOS_LOGROS[l.tipo] || 'workspace_premium'}
+                            </span>
+                            <span>{l.nombre}</span>
                             {l.fecha_obtencion && (
                               <span className="perfil-publico-nivel">
                                 {new Date(l.fecha_obtencion).toLocaleDateString('es')}

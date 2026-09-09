@@ -3,54 +3,65 @@ import { Container, Row, Col, Spinner, Alert } from 'react-bootstrap';
 import api from '../api';
 import './ProyectosPage.css';
 
+const ICONOS_TIPO = {
+  crear_proyecto: { icono: 'rocket_launch', etiqueta: 'Creador' },
+  completar_perfil: { icono: 'how_to_reg', etiqueta: 'Perfil' },
+  postularse: { icono: 'connect_without_contact', etiqueta: 'Participación' },
+  unirse_equipo: { icono: 'group', etiqueta: 'Equipo' },
+  comentar: { icono: 'forum', etiqueta: 'Comunidad' },
+  calificar_recurso: { icono: 'school', etiqueta: 'Aprendizaje' },
+};
+
 const estilos = {
   tarjeta: {
     position: 'relative',
-    borderRadius: '0.9rem',
-    border: '1px solid rgba(255,255,255,0.09)',
-    background: 'linear-gradient(135deg, rgba(255,255,255,0.055), rgba(255,255,255,0.02))',
-    padding: '1.25rem 1.1rem',
+    borderRadius: '0.5rem',
+    border: '1px solid #e4e3ec',
+    background: '#ffffff',
+    padding: '1.1rem 1rem',
     height: '100%',
     display: 'flex',
     flexDirection: 'column',
-    transition: 'transform 0.15s ease',
-  },
-  icono: {
-    fontSize: '2.1rem',
-    lineHeight: 1,
+    boxShadow: '0 1px 3px rgba(43, 40, 64, 0.06)',
+    transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
   },
   obtenido: {
-    borderColor: 'rgba(52,211,153,0.4)',
-    boxShadow: '0 0 0 1px rgba(52,211,153,0.18)',
+    borderColor: 'rgba(124, 58, 237, 0.45)',
+    boxShadow: '0 0 0 1px rgba(124, 58, 237, 0.12)',
   },
   bloqueado: {
-    opacity: 0.55,
-    filter: 'grayscale(0.85)',
+    background: '#f8f8fa',
+    opacity: 0.72,
+  },
+  insignia: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '34px',
+    height: '34px',
+    borderRadius: '0.4rem',
+    color: '#6D28D9',
+    background: '#f3ecfd',
+  },
+  insigniaBloqueada: {
+    color: '#a7a4b7',
+    background: '#ecebf1',
   },
   bloqueo: {
-    fontSize: '0.62rem',
+    fontSize: '0.68rem',
     fontWeight: 700,
     letterSpacing: '0.08em',
     textTransform: 'uppercase',
-    color: '#f59e0b',
-    border: '1px solid rgba(245,158,11,0.4)',
-    padding: '0.15rem 0.55rem',
+    color: '#9a96ab',
+    border: '1px solid #d8d5e2',
+    padding: '0.15rem 0.6rem',
     borderRadius: '999px',
   },
   fecha: {
-    fontSize: '0.72rem',
-    color: '#34d399',
+    fontSize: '0.74rem',
+    color: '#6D28D9',
     fontWeight: 600,
   },
-};
-
-const ICONOS_TIPO = {
-  crear_proyecto: '🚀 Creador',
-  completar_perfil: '🎯 Perfil',
-  postularse: '✋ Participación',
-  unirse_equipo: '🤝 Equipo',
-  comentar: '💬 Comunidad',
-  calificar_recurso: '📚 Aprendizaje',
 };
 
 function LogrosPage() {
@@ -77,7 +88,18 @@ function LogrosPage() {
             </p>
           </div>
           {datos && (
-            <span style={{ fontSize: '0.8rem', color: '#34d399', fontWeight: 700 }}>
+            <span
+              style={{
+                fontSize: '0.78rem',
+                color: '#6D28D9',
+                fontWeight: 700,
+                border: '1px solid rgba(109, 40, 217, 0.35)',
+                background: '#f3ecfd',
+                borderRadius: '0.4rem',
+                padding: '0.3rem 0.7rem',
+                whiteSpace: 'nowrap',
+              }}
+            >
               {datos.total_obtenidos}/{datos.total_logros}
             </span>
           )}
@@ -87,48 +109,63 @@ function LogrosPage() {
 
         {!datos && !error && (
           <div className="text-center py-5">
-            <Spinner animation="border" variant="light" />
+            <Spinner animation="border" />
           </div>
         )}
 
         {datos && (
-          <Row className="g-4">
-            {datos.logros.map((l) => (
-              <Col key={l._id} xs={12} sm={6} lg={4} xl={3}>
-                <div
-                  style={{
-                    ...estilos.tarjeta,
-                    ...(l.obtenido ? estilos.obtenido : estilos.bloqueado),
-                  }}
-                >
-                  <span style={estilos.icono}>{l.icono}</span>
-                  <h4 className="proyectos-titulo mt-3 mb-1" style={{ fontSize: '1rem' }}>
-                    {l.nombre}
-                  </h4>
-                  <p className="proyectos-subtitulo" style={{ fontSize: '0.82rem', flexGrow: 1 }}>
-                    {l.descripcion}
-                  </p>
+          <Row className="g-3">
+            {datos.logros.map((l) => {
+              const meta = ICONOS_TIPO[l.tipo] || { icono: 'workspace_premium', etiqueta: l.tipo };
+              return (
+                <Col key={l._id} xs={12} sm={6} lg={4} xl={3} className="d-flex">
                   <div
-                    className="mb-2"
                     style={{
-                      fontSize: '0.68rem',
-                      color: 'rgba(255,255,255,0.5)',
-                      letterSpacing: '0.05em',
-                      textTransform: 'uppercase',
+                      ...estilos.tarjeta,
+                      ...(l.obtenido ? estilos.obtenido : estilos.bloqueado),
                     }}
                   >
-                    {ICONOS_TIPO[l.tipo] || l.tipo}
+                    <div className="d-flex align-items-center justify-content-between mb-2">
+                      <span style={{ ...estilos.insignia, ...(!l.obtenido && estilos.insigniaBloqueada) }}>
+                        <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>
+                          {meta.icono}
+                        </span>
+                      </span>
+                      <span
+                        style={{
+                          fontSize: '0.68rem',
+                          fontWeight: 700,
+                          letterSpacing: '0.05em',
+                          textTransform: 'uppercase',
+                          color: '#9a96ab',
+                        }}
+                      >
+                        {meta.etiqueta}
+                      </span>
+                    </div>
+                    <h4
+                      className="proyectos-titulo mb-1"
+                      style={{ fontSize: '0.98rem', lineHeight: 1.25 }}
+                    >
+                      {l.nombre}
+                    </h4>
+                    <p
+                      className="proyectos-subtitulo"
+                      style={{ fontSize: '0.8rem', flexGrow: 1, marginBottom: '0.75rem' }}
+                    >
+                      {l.descripcion}
+                    </p>
+                    {l.obtenido ? (
+                      <span style={estilos.fecha}>
+                        Obtenido · {new Date(l.fecha_obtencion).toLocaleDateString('es')}
+                      </span>
+                    ) : (
+                      <span style={estilos.bloqueo}>Bloqueado</span>
+                    )}
                   </div>
-                  {l.obtenido ? (
-                    <span style={estilos.fecha}>
-                      Obtenido · {new Date(l.fecha_obtencion).toLocaleDateString('es')}
-                    </span>
-                  ) : (
-                    <span style={estilos.bloqueo}>Bloqueado</span>
-                  )}
-                </div>
-              </Col>
-            ))}
+                </Col>
+              );
+            })}
           </Row>
         )}
       </Container>
