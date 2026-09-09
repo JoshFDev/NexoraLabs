@@ -61,7 +61,7 @@ function NavBar() {
           <img
             src={logo}
             alt="NexoraLabs"
-            height="62"
+            height="70"
             className="brand-firma"
             onContextMenu={(e) => e.preventDefault()}
             onDragStart={(e) => e.preventDefault()}

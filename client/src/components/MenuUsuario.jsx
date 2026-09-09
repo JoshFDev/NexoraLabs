@@ -38,9 +38,6 @@ function MenuUsuario({ usuario, onCerrarSesion }) {
         </div>
 
         <Dropdown.Item as={Link} to="/perfil">Editar perfil</Dropdown.Item>
-        <Dropdown.Item as={Link} to="/explorar">Explorar proyectos</Dropdown.Item>
-        <Dropdown.Item as={Link} to="/logros">Mis logros</Dropdown.Item>
-        <Dropdown.Item as={Link} to="/">Panel</Dropdown.Item>
         <Dropdown.Divider className="user-menu-sep" />
         <Dropdown.Item className="user-menu-cerrar" onClick={onCerrarSesion}>
           Cerrar sesión
