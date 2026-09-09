@@ -1,8 +1,8 @@
 :root {
-  --nx-morado: #1F4E79;
-  --nx-morado-oscuro: #16324F;
-  --nx-fondo: #151A22;
-  --nx-brillo: #E9EEF4;
+  --nx-morado: #A855F7;
+  --nx-morado-oscuro: #6D28D9;
+  --nx-fondo: #1A0B2E;
+  --nx-brillo: #EDE9FF;
 }
 
 body {
@@ -12,9 +12,9 @@ body {
 }
 
 .navbar-nexora {
-  background: #1f2733 !important;
-  border-bottom: 1px solid #3a4454;
-  box-shadow: 0 1px 0 rgba(26, 34, 45, 0.6);
+  background: linear-gradient(135deg, #17092b 0%, #261043 55%, #2a1247 100%) !important;
+  border-bottom: 1px solid rgba(168, 85, 247, 0.35);
+  box-shadow: 0 4px 14px rgba(20, 4, 40, 0.45);
   position: sticky;
   top: 0;
   z-index: 1000;
@@ -43,20 +43,20 @@ body {
 }
 
 .navbar-nexora .navbar-text {
-  color: #e8ecf2 !important;
+  color: var(--nx-brillo) !important;
 }
 
 .navbar-nexora .navbar-toggler {
-  border-color: #5b6779;
-  border-radius: 0.4rem;
+  border-color: rgba(237, 233, 255, 0.4);
+  border-radius: 0.5rem;
 }
 
 .navbar-nexora .navbar-toggler:focus {
-  box-shadow: none;
+  box-shadow: 0 0 0 0.2rem rgba(168, 85, 247, 0.25);
 }
 
 .navbar-nexora .navbar-toggler-icon {
-  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='%23aeb8c6' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='%23EDE9FF' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
 }
 
 .navbar-enlaces {
@@ -69,13 +69,13 @@ body {
   display: flex;
   align-items: center;
   gap: 0.35rem;
-  border-left: 1px solid #3a4454;
+  border-left: 1px solid rgba(237, 233, 255, 0.16);
   padding-left: 0.9rem;
   margin-left: 0;
 }
 
 .nav-link-nexora {
-  color: #c6cdd8 !important;
+  color: rgba(237, 233, 255, 0.82) !important;
   font-weight: 600;
   font-size: 0.97rem;
   letter-spacing: 0.01em;
@@ -85,23 +85,24 @@ body {
 }
 
 .nav-link-nexora:hover {
-  color: #ffffff !important;
-  background: #2b3644;
+  color: #f5d0fe !important;
+  background: rgba(168, 85, 247, 0.16);
 }
 
 .nav-link-nexora.activo {
   color: #ffffff !important;
-  background: #36404f;
+  background: rgba(168, 85, 247, 0.24);
+  box-shadow: inset 0 0 0 1px rgba(168, 85, 247, 0.45);
 }
 
 .nav-link-nexora.nav-cta {
-  background: var(--nx-morado);
+  background: linear-gradient(135deg, #A855F7, #7C3AED);
   color: #ffffff !important;
-  border: 1px solid var(--nx-morado-oscuro);
+  border: 1px solid rgba(237, 233, 255, 0.25);
 }
 
 .nav-link-nexora.nav-cta:hover {
-  background: var(--nx-morado-oscuro);
+  background: linear-gradient(135deg, #b966f8, #8b5cf6);
   color: #ffffff !important;
 }
 

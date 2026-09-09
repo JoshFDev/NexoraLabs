@@ -671,35 +671,34 @@
 
 /* ---------- Botones y controles ---------- */
 .proyectos-boton {
-  background: var(--nx-morado);
-  border: 1px solid var(--nx-morado-oscuro);
+  background: linear-gradient(135deg, #544e78 0%, #413c60 100%);
+  border: none;
   border-radius: 0.35rem;
   font-weight: 600;
   font-size: 0.9rem;
   color: #fff;
   padding: 0.55rem 1.2rem;
-  transition: background 0.15s ease;
+  transition: transform 0.15s ease, background 0.15s ease;
 }
 
 .proyectos-boton:hover:not(:disabled) {
-  background: var(--nx-morado-oscuro);
+  background: linear-gradient(135deg, var(--nx-morado), var(--nx-morado-oscuro));
 }
 
 .proyectos-boton:disabled {
-  background: #aeb8c9;
-  border-color: #aeb8c9;
+  background: #c6c3d6;
 }
 
 .proyectos-boton.btn-outline-light {
-  border: 1px solid #c6ccd6;
+  border: 1px solid #d4d1e2;
   background: #fff;
-  color: #3a4454;
+  color: #524d70;
 }
 
 .proyectos-boton.btn-outline-light:hover:not(:disabled) {
-  background: #eef2f7;
-  border-color: #9db4d2;
-  color: #1f2733;
+  background: #f3f2f8;
+  border-color: rgba(168, 85, 247, 0.5);
+  color: var(--nx-morado-oscuro);
 }
 
 .proyectos-vacio {
@@ -1139,7 +1138,7 @@
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #64748b;
+  color: var(--nx-morado-oscuro);
   margin-bottom: 0.1rem;
 }
 
@@ -1204,7 +1203,7 @@
 }
 
 .dash-stat:hover {
-  border-color: #9db4d2;
+  border-color: rgba(168, 85, 247, 0.45);
 }
 
 .dash-stat-icono {
@@ -1215,8 +1214,8 @@
   align-items: center;
   justify-content: center;
   border-radius: 0.35rem;
-  color: #4b5a70;
-  background: #eef2f6;
+  color: var(--nx-morado-oscuro);
+  background: #f1e8fb;
 }
 
 .dash-stat-icono .material-symbols-outlined {
