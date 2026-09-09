@@ -12,6 +12,7 @@ import EquiposPage from './pages/EquiposPage';
 import RecursosPage from './pages/RecursosPage';
 import HabilidadesPage from './pages/HabilidadesPage';
 import PerfilPublicoPage from './pages/PerfilPublicoPage';
+import AdminPanelPage from './pages/AdminPanelPage';
 import RutaProtegida from './components/RutaProtegida';
 
 function App() {
@@ -93,6 +94,14 @@ function App() {
           element={
             <RutaProtegida>
               <PerfilPublicoPage />
+            </RutaProtegida>
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            <RutaProtegida>
+              <AdminPanelPage />
             </RutaProtegida>
           }
         />

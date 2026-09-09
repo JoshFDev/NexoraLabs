@@ -75,7 +75,8 @@ const rutas = [
     { metodo: "POST", ruta: "/proyecto/:id/comentar", descripcion: "Comentar un proyecto (autenticado)" },
     { metodo: "DELETE", ruta: "/comentario/:id", descripcion: "Eliminar comentario (autor/creador/admin)" },
 
-    { metodo: "GET", ruta: "/stats", descripcion: "Estadísticas generales de la plataforma" }
+    { metodo: "GET", ruta: "/stats", descripcion: "Estadísticas generales de la plataforma" },
+    { metodo: "GET", ruta: "/admin/stats", descripcion: "Métricas ampliadas del administrador" }
 ];
 
 router.get('/', (req, res) => {

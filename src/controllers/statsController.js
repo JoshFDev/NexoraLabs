@@ -4,6 +4,9 @@ import Equipo from "../models/Equipo";
 import Postulacion from "../models/Postulacion";
 import Habilidad from "../models/Habilidad";
 import RecursoAprendizaje from "../models/RecursoAprendizaje";
+import Comentario from "../models/Comentario";
+import MiembroEquipo from "../models/MiembroEquipo";
+import SolicitudEquipo from "../models/SolicitudEquipo";
 import { serverError } from "../shared/errors/errorHandler";
 
 //GET /stats → estadísticas generales de la plataforma
@@ -60,6 +63,76 @@ export const obtenerStats = async (req, res) => {
             total_habilidades: totalHabilidades,
             total_recursos_aprendizaje: totalRecursos,
             habilidades_mas_pedidas: habilidadesMasPedidas
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json(serverError(error));
+    }
+};
+
+//GET /admin/stats → métricas ampliadas solo para administradores
+export const statsAdmin = async (req, res) => {
+    try {
+        const [
+            totalUsuarios, totalProyectos, totalEquipos, totalPostulaciones,
+            totalHabilidades, totalRecursos, totalComentarios, totalMiembros,
+            totalSolicitudes
+        ] = await Promise.all([
+            Usuario.countDocuments(),
+            Proyecto.countDocuments(),
+            Equipo.countDocuments(),
+            Postulacion.countDocuments(),
+            Habilidad.countDocuments(),
+            RecursoAprendizaje.countDocuments(),
+            Comentario.countDocuments(),
+            MiembroEquipo.countDocuments(),
+            SolicitudEquipo.countDocuments()
+        ]);
+
+        const [
+            usuariosPorRol, proyectosPorEstado, postulacionesPorEstado, equiposPorEstado
+        ] = await Promise.all([
+            Usuario.aggregate([{ $group: { _id: "$rol", cantidad: { $sum: 1 } } }, { $sort: { cantidad: -1 } }]),
+            Proyecto.aggregate([{ $group: { _id: "$estado", cantidad: { $sum: 1 } } }, { $sort: { cantidad: -1 } }]),
+            Postulacion.aggregate([{ $group: { _id: "$estado", cantidad: { $sum: 1 } } }, { $sort: { cantidad: -1 } }]),
+            Equipo.aggregate([{ $group: { _id: "$estado", cantidad: { $sum: 1 } } }, { $sort: { cantidad: -1 } }])
+        ]);
+
+        const [recursosPorTipo, habilidadesMasPedidas, usuariosRecientes, proyectosRecientes, equiposRecientes] = await Promise.all([
+            RecursoAprendizaje.aggregate([{ $group: { _id: "$tipo", cantidad: { $sum: 1 } } }, { $sort: { cantidad: -1 } }]),
+            Proyecto.aggregate([
+                { $unwind: "$habilidades_requeridas" },
+                { $group: { _id: "$habilidades_requeridas", cantidad: { $sum: 1 } } },
+                { $sort: { cantidad: -1 } },
+                { $limit: 5 },
+                { $lookup: { from: "habilidades", localField: "_id", foreignField: "_id", as: "habilidad" } },
+                { $unwind: "$habilidad" },
+                { $project: { _id: 1, nombre: "$habilidad.nombre", cantidad: 1 } }
+            ]),
+            Usuario.find().sort({ fecha_registro: -1 }).limit(5).select('nombre apellido_paterno email rol fecha_registro'),
+            Proyecto.find().sort({ fecha_creacion: -1 }).limit(5).select('titulo estado fecha_creacion'),
+            Equipo.find().sort({ fecha_creacion: -1 }).limit(5).select('nombre estado fecha_creacion')
+        ]);
+
+        res.json({
+            total_usuarios: totalUsuarios,
+            usuarios_por_rol: usuariosPorRol,
+            total_proyectos: totalProyectos,
+            proyectos_por_estado: proyectosPorEstado,
+            total_equipos: totalEquipos,
+            equipos_por_estado: equiposPorEstado,
+            total_postulaciones: totalPostulaciones,
+            postulaciones_por_estado: postulacionesPorEstado,
+            total_habilidades: totalHabilidades,
+            total_recursos_aprendizaje: totalRecursos,
+            total_comentarios: totalComentarios,
+            total_miembros_equipos: totalMiembros,
+            total_solicitudes_equipo: totalSolicitudes,
+            recursos_por_tipo: recursosPorTipo,
+            habilidades_mas_pedidas: habilidadesMasPedidas,
+            usuarios_recientes: usuariosRecientes,
+            proyectos_recientes: proyectosRecientes,
+            equipos_recientes: equiposRecientes
         });
     } catch (error) {
         console.log(error);

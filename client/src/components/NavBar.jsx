@@ -67,6 +67,9 @@ function NavBar() {
                 <Nav.Link as={Link} to="/equipos" className="nav-link-nexora">Equipos</Nav.Link>
                 <Nav.Link as={Link} to="/recursos" className="nav-link-nexora">Recursos</Nav.Link>
                 <Nav.Link as={Link} to="/habilidades" className="nav-link-nexora">Habilidades</Nav.Link>
+                {usuario.rol === 'admin' && (
+                  <Nav.Link as={Link} to="/admin" className="nav-link-nexora">Panel admin</Nav.Link>
+                )}
                 <Nav.Link as={Link} to="/" className="nav-link-nexora">Panel</Nav.Link>
                 <CampanaNotificaciones />
                 <MenuUsuario usuario={usuario} onCerrarSesion={cerrarSesion} />
