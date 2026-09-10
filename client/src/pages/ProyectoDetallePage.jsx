@@ -182,14 +182,9 @@ function ProyectoDetallePage() {
   return (
     <div className="proyectos-pagina">
       <Container fluid className="pt-4 px-lg-5" style={{ maxWidth: 1100 }}>
-        <Button
-          variant="link"
-          className="mb-3 p-0 nav-link-nexora"
-          style={{ fontWeight: 600, textDecoration: 'none', alignSelf: 'flex-start' }}
-          onClick={() => navigate(-1)}
-        >
+        <button type="button" className="volver-pagina mb-3" onClick={() => navigate(-1)}>
           ← Volver
-        </Button>
+        </button>
 
         {cargando ? (
           <div className="text-center py-5">

@@ -183,6 +183,28 @@ body {
   line-height: 1;
 }
 
+/* Botón Volver en páginas */
+.volver-pagina {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.95rem;
+  border: 1.5px solid #d4d1e2;
+  border-radius: 0.35rem;
+  background: #ffffff;
+  color: #4c4770;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.volver-pagina:hover {
+  background: #f3f2f8;
+  border-color: rgba(168, 85, 247, 0.5);
+  color: #6d28d9;
+}
+
 /* Transición entre páginas */
 .app-pagina {
   animation: app-transicion 0.42s ease-out;

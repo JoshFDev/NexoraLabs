@@ -619,8 +619,8 @@
 }
 
 /* Mi perfil: edición */
-.perfil-editar-pagina {
-  padding-top: 0.6rem;
+.proyectos-pagina.perfil-editar-pagina {
+  padding-top: 0;
 }
 
 .perfil-foto.con-foto {

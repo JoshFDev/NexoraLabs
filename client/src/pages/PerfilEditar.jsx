@@ -354,15 +354,10 @@ function PerfilEditar() {
 
   return (
     <div className="proyectos-pagina perfil-editar-pagina">
-      <Container fluid className="pt-2 px-lg-5">
-        <Button
-          variant="link"
-          className="mb-2 p-0 nav-link-nexora"
-          style={{ fontWeight: 600, textDecoration: 'none', alignSelf: 'flex-start' }}
-          onClick={() => navigate(-1)}
-        >
+      <Container fluid className="pt-1 px-lg-5">
+        <button type="button" className="volver-pagina mb-2" onClick={() => navigate(-1)}>
           ← Volver
-        </Button>
+        </button>
         <h2 className="proyectos-titulo mb-1">Mi perfil</h2>
         <p className="proyectos-subtitulo mb-4">
           Administra tus datos, tu foto y las habilidades que dominas.

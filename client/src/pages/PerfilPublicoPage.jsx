@@ -86,14 +86,9 @@ function PerfilPublicoPage() {
   return (
     <div className="proyectos-pagina">
       <Container fluid className="pt-4 px-lg-5">
-        <Button
-          variant="link"
-          className="mb-3 p-0 nav-link-nexora"
-          style={{ fontWeight: 600, textDecoration: 'none', alignSelf: 'flex-start' }}
-          onClick={() => navigate(-1)}
-        >
+        <button type="button" className="volver-pagina mb-3" onClick={() => navigate(-1)}>
           ← Volver
-        </Button>
+        </button>
 
         {error || !perfil ? (
           <>
