@@ -185,13 +185,13 @@ body {
 
 /* Transición entre páginas */
 .app-pagina {
-  animation: app-transicion 0.32s ease-out;
+  animation: app-transicion 0.42s ease-out;
 }
 
 @keyframes app-transicion {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(14px);
   }
   to {
     opacity: 1;

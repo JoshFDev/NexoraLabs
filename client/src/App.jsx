@@ -19,13 +19,13 @@ import OfertasEmpleoPage from './pages/OfertasEmpleoPage';
 import RutaProtegida from './components/RutaProtegida';
 
 function App() {
-  const { pathname } = useLocation();
+  const { pathname, key } = useLocation();
   const esPaginaAuth = pathname === '/login' || pathname === '/registro';
 
   return (
     <>
       {!esPaginaAuth && <NavBar />}
-      <main key={pathname} className="app-pagina">
+      <main key={key} className="app-pagina">
         <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/registro" element={<RegistroPage />} />
