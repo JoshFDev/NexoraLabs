@@ -14,7 +14,7 @@ function MenuUsuario({ usuario, onCerrarSesion }) {
 
   return (
     <Dropdown align="end" className="user-menu-wrapper">
-      <Dropdown.Toggle as="div" className="user-avatar user-avatar-btn" aria-label="Menú de usuario">
+      <Dropdown.Toggle as="div" className={`user-avatar user-avatar-btn${usuario.foto ? ' con-foto' : ''}`} aria-label="Menú de usuario">
         {usuario.foto ? (
           <img src={usuario.foto} alt={`Foto de ${usuario.nombre}`} />
         ) : (
@@ -37,9 +37,22 @@ function MenuUsuario({ usuario, onCerrarSesion }) {
           </span>
         </div>
 
+        <Dropdown.Item as={Link} to={`/usuario/${usuario._id || usuario.id}`}>
+          <span className="material-symbols-outlined">account_circle</span>
+          Ver perfil
+        </Dropdown.Item>
         <Dropdown.Item as={Link} to="/perfil">
           <span className="material-symbols-outlined">edit</span>
           Editar perfil
+        </Dropdown.Item>
+        <Dropdown.Divider className="user-menu-sep" />
+        <Dropdown.Item as={Link} to="/habilidades">
+          <span className="material-symbols-outlined">workspace_premium</span>
+          Mis habilidades
+        </Dropdown.Item>
+        <Dropdown.Item as={Link} to="/logros">
+          <span className="material-symbols-outlined">emoji_events</span>
+          Logros
         </Dropdown.Item>
         <Dropdown.Divider className="user-menu-sep" />
         <Dropdown.Item className="user-menu-cerrar" onClick={onCerrarSesion}>

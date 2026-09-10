@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Container, Row, Col, Spinner, Alert, Button } from 'react-bootstrap';
+import { Container, Row, Col, Spinner, Alert, Button, Modal } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../api';
 import IconoHabilidad from '../components/IconoHabilidad';
@@ -29,6 +29,7 @@ function DashboardPage() {
   const [error, setError] = useState('');
   const [cargando, setCargando] = useState(true);
   const [expandido, setExpandido] = useState(null);
+  const [proyectoAEliminar, setProyectoAEliminar] = useState(null);
   const navigate = useNavigate();
 
   const usuario = leerUsuario();
@@ -157,7 +158,7 @@ function DashboardPage() {
   );
 
   const eliminarProyecto = async (id) => {
-    if (!window.confirm('¿Seguro que quieres eliminar este proyecto? No se puede deshacer.')) return;
+    setProyectoAEliminar(null);
     try {
       await api.delete(`/proyecto/${id}`);
       setMisProyectos((prev) => (prev || []).filter((p) => String(p._id) !== String(id)));
@@ -207,9 +208,9 @@ function DashboardPage() {
               variant="outline-danger"
               size="sm"
               className="proyectos-boton"
-              onClick={() => eliminarProyecto(p._id)}
+              onClick={() => setProyectoAEliminar(p)}
             >
-              Eliminar
+              Dar de baja
             </Button>
           </div>
         )}
@@ -411,6 +412,46 @@ function DashboardPage() {
           )}
         </section>
       </Container>
+
+      <Modal
+        show={!!proyectoAEliminar}
+        onHide={() => setProyectoAEliminar(null)}
+        centered
+      >
+        <Modal.Header closeButton className="proyecto-modal-cabecera">
+          <Modal.Title className="proyectos-titulo" style={{ fontSize: '1.05rem' }}>
+            Solicitar la baja de un proyecto
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p className="mb-1">
+            Vas a enviar la solicitud para dar de baja el proyecto{' '}
+            <strong>"{proyectoAEliminar?.titulo}"</strong>.
+          </p>
+          <p className="proyectos-subtitulo mb-0" style={{ fontSize: '0.85rem' }}>
+            El proyecto dejará de estar visible para la comunidad y los integrantes serán
+            notificados de la salida. Esta acción no se puede deshacer.
+          </p>
+        </Modal.Body>
+        <Modal.Footer className="proyecto-modal-pie">
+          <Button
+            variant="outline-light"
+            className="proyectos-boton"
+            onClick={() => setProyectoAEliminar(null)}
+          >
+            Cancelar
+          </Button>
+          <Button
+            variant="danger"
+            className="proyectos-boton"
+            onClick={() =>
+              proyectoAEliminar && eliminarProyecto(proyectoAEliminar._id)
+            }
+          >
+            Enviar solicitud de baja
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }

@@ -512,6 +512,9 @@ function PerfilPage() {
                   value={buscarHabilidad}
                   onChange={(e) => setBuscarHabilidad(e.target.value)}
                 />
+                <p className="perfil-nota">
+                  Haz clic en una habilidad para agregarla a tu perfil.
+                </p>
                 {cargandoCatalogo ? (
                   <div className="perfil-cargando mt-2 text-center">
                     <Spinner animation="border" size="sm" />
@@ -519,7 +522,7 @@ function PerfilPage() {
                 ) : habilidadesCatalogo.length === 0 ? (
                   <small className="login-error-campo">El catálogo aún no tiene habilidades registradas.</small>
                 ) : (
-                  <div className="perfil-chips">
+                  <div className="perfil-catalogo">
                     {habilidadesCatalogo
                       .filter((h) => !datos.habilidades.some((s) => String(s.habilidad_id) === String(h._id)))
                       .filter((h) =>

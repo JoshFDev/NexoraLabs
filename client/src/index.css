@@ -447,6 +447,10 @@ body {
   margin-right: 0.4rem;
 }
 
+.user-avatar-btn.dropdown-toggle::after {
+  display: none;
+}
+
 .user-avatar {
   width: 42px;
   height: 42px;
@@ -474,6 +478,13 @@ body {
 .user-avatar-btn {
   cursor: pointer;
   transition: all 0.15s ease;
+}
+
+.user-avatar-btn.con-foto {
+  width: 54px;
+  height: 54px;
+  border-width: 3px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35), 0 0 0 2px rgba(168, 85, 247, 0.4);
 }
 
 .user-avatar-btn:hover,

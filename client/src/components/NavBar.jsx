@@ -12,8 +12,6 @@ const RUTAS = [
   { to: '/postulaciones', etiqueta: 'Postulaciones', para: 'creador' },
   { to: '/equipos', etiqueta: 'Equipos', para: 'todos' },
   { to: '/recursos', etiqueta: 'Recursos', para: 'todos' },
-  { to: '/habilidades', etiqueta: 'Habilidades', para: 'todos' },
-  { to: '/logros', etiqueta: 'Logros', para: 'todos' },
   { to: '/ofertas', etiqueta: 'Ofertas', para: 'todos' },
 ];
 

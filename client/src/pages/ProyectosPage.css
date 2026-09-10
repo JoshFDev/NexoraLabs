@@ -369,10 +369,15 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 0.55rem;
+  flex-wrap: wrap;
+  gap: 0.75rem;
   border-top: 1px solid #efeff5;
   margin-top: 0.5rem;
   padding-top: 0.7rem;
+}
+
+.recomendado-mini-acciones .btn {
+  white-space: nowrap;
 }
 
 .proyecto-postulacion-form {
@@ -583,12 +588,16 @@
   font-weight: 700;
   color: #2b2840;
   font-size: 0.9rem;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .recomendado-mini p {
   font-size: 0.78rem;
   color: #7c7790;
   margin: 0 0 0.5rem;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 /* ---------- Tarjetas de proyecto ---------- */
@@ -1355,6 +1364,8 @@
   padding: 1.15rem 1.2rem;
   box-shadow: 0 1px 3px rgba(20, 24, 34, 0.05);
   height: 100%;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .dash-seccion-cabecera {
@@ -1392,6 +1403,27 @@
   color: #64748b;
 }
 
+.proyecto-modal-cabecera {
+  border-bottom: 1px solid #eceaf3;
+}
+
+.proyecto-modal-pie {
+  border-top: 1px solid #eceaf3;
+}
+
+.proyecto-modal-pie .btn {
+  white-space: nowrap;
+}
+
+.proyecto-modal-pie .btn.danger {
+  background: linear-gradient(135deg, #ef4444, #b91c1c);
+  border: none;
+}
+
+.proyecto-modal-pie .btn.danger:hover:not(:disabled) {
+  background: linear-gradient(135deg, #dc2626, #991b1b);
+}
+
 .dash-vacio p {
   margin-bottom: 0.9rem;
   font-size: 0.9rem;
@@ -1419,6 +1451,7 @@
   display: flex;
   flex-direction: column;
   height: 100%;
+  min-width: 0;
 }
 
 .recomendado-mini-cabecera {
@@ -1426,6 +1459,7 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 0.6rem;
+  min-width: 0;
 }
 
 .recomendado-mini-posicion {
