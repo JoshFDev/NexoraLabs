@@ -739,15 +739,19 @@ function PerfilEditar() {
         </Row>
       </Container>
 
-      <Modal show={verFoto} onHide={() => setVerFoto(false)} centered>
-        <Modal.Header closeButton className="border-0 px-4 pt-4">
-          <Modal.Title className="proyectos-titulo">Mi foto de perfil</Modal.Title>
-        </Modal.Header>
-        <Modal.Body className="text-center px-4 pb-4">
-          {datos.foto && (
-            <img className="perfil-foto-grande" src={datos.foto} alt="Foto de perfil" />
-          )}
-        </Modal.Body>
+      <Modal show={verFoto} onHide={() => setVerFoto(false)} centered className="foto-modal">
+        {datos.foto && (
+          <img className="perfil-foto-grande" src={datos.foto} alt="Foto de perfil" />
+        )}
+        <button
+          type="button"
+          className="foto-modal-cerrar"
+          onClick={() => setVerFoto(false)}
+          aria-label="Cerrar"
+          title="Cerrar"
+        >
+          <span className="material-symbols-outlined">close</span>
+        </button>
       </Modal>
 
       <Modal show={cropAbierto} onHide={() => setCropAbierto(false)} centered>

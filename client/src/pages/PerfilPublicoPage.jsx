@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Container, Row, Col, Spinner, Alert, Button } from 'react-bootstrap';
+import { Container, Row, Col, Spinner, Alert, Button, Modal } from 'react-bootstrap';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import api from '../api';
 import IconoHabilidad from '../components/IconoHabilidad';
@@ -55,6 +55,7 @@ function PerfilPublicoPage() {
   const [logros, setLogros] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState('');
+  const [verFoto, setVerFoto] = useState(false);
 
   const soyYo = perfil && miUsuario && String(perfil._id || perfil.id) === String(miUsuario._id || miUsuario.id);
 
@@ -101,12 +102,22 @@ function PerfilPublicoPage() {
           <Row className="g-4">
             <Col xl={4} xxl={3}>
               <aside className="proyectos-filtros-panel perfil-resumen">
-                <div className="perfil-foto" style={{ cursor: 'default' }}>
+                <div
+                  className={`perfil-foto${perfil.foto ? ' con-foto' : ''}`}
+                  style={perfil.foto ? {} : { cursor: 'default' }}
+                  onClick={() => perfil.foto && setVerFoto(true)}
+                >
                   {perfil.foto ? (
                     <img className="perfil-foto-img" src={perfil.foto} alt="Foto de perfil" />
                   ) : (
                     <span className="perfil-foto-iniciales">
                       {(perfil.nombre || 'U').charAt(0).toUpperCase()}
+                    </span>
+                  )}
+                  {perfil.foto && (
+                    <span className="perfil-foto-ver" aria-hidden="true">
+                      <span className="material-symbols-outlined">visibility</span>
+                      Ver
                     </span>
                   )}
                 </div>
@@ -311,6 +322,21 @@ function PerfilPublicoPage() {
           </Row>
         )}
       </Container>
+
+      <Modal show={verFoto} onHide={() => setVerFoto(false)} centered className="foto-modal">
+        {perfil?.foto && (
+          <img className="perfil-foto-grande" src={perfil.foto} alt="Foto de perfil" />
+        )}
+        <button
+          type="button"
+          className="foto-modal-cerrar"
+          onClick={() => setVerFoto(false)}
+          aria-label="Cerrar"
+          title="Cerrar"
+        >
+          <span className="material-symbols-outlined">close</span>
+        </button>
+      </Modal>
     </div>
   );
 }
