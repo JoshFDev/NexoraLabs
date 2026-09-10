@@ -84,9 +84,9 @@ function PerfilPublicoPage() {
   }
 
   return (
-    <div className="proyectos-pagina">
-      <Container fluid className="pt-4 px-lg-5">
-        <button type="button" className="volver-pagina mb-3" onClick={() => navigate(-1)}>
+    <div className="proyectos-pagina perfil-publico-pagina">
+      <Container fluid className="pt-1 px-lg-5">
+        <button type="button" className="volver-pagina mb-2" onClick={() => navigate(-1)}>
           ← Volver
         </button>
 

@@ -623,6 +623,10 @@
   padding-top: 0;
 }
 
+.proyectos-pagina.perfil-publico-pagina {
+  padding-top: 0;
+}
+
 .perfil-foto.con-foto {
   cursor: zoom-in;
 }
