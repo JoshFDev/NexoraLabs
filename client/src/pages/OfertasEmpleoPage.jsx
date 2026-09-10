@@ -263,57 +263,41 @@ function OfertasEmpleoPage() {
 
         {error && <Alert variant="danger">{error}</Alert>}
 
-        <Row className="g-4">
-          <Col xl={3}>
-            <aside className="proyectos-filtros-panel">
-              <strong className="d-block mb-3">Filtrar</strong>
-              <Form.Group className="mb-3">
-                <Form.Control
-                  type="search"
-                  placeholder="Buscar por título, empresa…"
-                  value={filtros.busqueda}
-                  onChange={(e) => setFiltros((f) => ({ ...f, busqueda: e.target.value }))}
-                />
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>Tipo</Form.Label>
-                <Form.Select value={filtros.tipo} onChange={(e) => setFiltros((f) => ({ ...f, tipo: e.target.value }))}>
-                  <option value="">Todos</option>
-                  {TIPOS.map((t) => <option key={t} value={t}>{ETIQUETAS_TIPO[t]}</option>)}
-                </Form.Select>
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>Modalidad</Form.Label>
-                <Form.Select value={filtros.modalidad} onChange={(e) => setFiltros((f) => ({ ...f, modalidad: e.target.value }))}>
-                  <option value="">Todas</option>
-                  {MODALIDADES.map((m) => <option key={m} value={m}>{ETIQUETAS_MODALIDAD[m]}</option>)}
-                </Form.Select>
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>Nivel</Form.Label>
-                <Form.Select value={filtros.nivel} onChange={(e) => setFiltros((f) => ({ ...f, nivel: e.target.value }))}>
-                  <option value="">Todos</option>
-                  {NIVELES.map((n) => <option key={n} value={n}>{ETIQUETAS_NIVEL[n]}</option>)}
-                </Form.Select>
-              </Form.Group>
-            </aside>
-          </Col>
+        <Form className="proyectos-toolbar mb-4" onSubmit={(e) => e.preventDefault()}>
+          <div className="proyectos-buscar-wrap">
+            <Form.Control
+              type="search"
+              placeholder="Buscar por título, empresa…"
+              value={filtros.busqueda}
+              onChange={(e) => setFiltros((f) => ({ ...f, busqueda: e.target.value }))}
+            />
+          </div>
+          <Form.Select style={{ width: 'auto' }} value={filtros.tipo} onChange={(e) => setFiltros((f) => ({ ...f, tipo: e.target.value }))}>
+            <option value="">Tipo</option>
+            {TIPOS.map((t) => <option key={t} value={t}>{ETIQUETAS_TIPO[t]}</option>)}
+          </Form.Select>
+          <Form.Select style={{ width: 'auto' }} value={filtros.modalidad} onChange={(e) => setFiltros((f) => ({ ...f, modalidad: e.target.value }))}>
+            <option value="">Modalidad</option>
+            {MODALIDADES.map((m) => <option key={m} value={m}>{ETIQUETAS_MODALIDAD[m]}</option>)}
+          </Form.Select>
+          <Form.Select style={{ width: 'auto' }} value={filtros.nivel} onChange={(e) => setFiltros((f) => ({ ...f, nivel: e.target.value }))}>
+            <option value="">Nivel</option>
+            {NIVELES.map((n) => <option key={n} value={n}>{ETIQUETAS_NIVEL[n]}</option>)}
+          </Form.Select>
+        </Form>
 
-          <Col xl={9}>
-            {cargando ? (
-              <div className="text-center py-5">
-                <Spinner animation="border" variant="light" />
-              </div>
-            ) : ofertasAbiertas.length === 0 && misPostulaciones.length === 0 ? (
-              <p className="proyectos-vacio">Aún no hay ofertas publicadas. ¡Vuelve pronto!</p>
-            ) : (
-              <div className="d-flex flex-column gap-3">
-                {ofertasAbiertas.map((o) => rendCard(o))}
-                {ofertasAbiertas.length === 0 && <p className="proyectos-vacio">No hay ofertas que coincidan con tus filtros.</p>}
-              </div>
-            )}
-          </Col>
-        </Row>
+        {cargando ? (
+          <div className="text-center py-5">
+            <Spinner animation="border" variant="primary" />
+          </div>
+        ) : ofertasAbiertas.length === 0 && misPostulaciones.length === 0 ? (
+          <p className="proyectos-vacio">Aún no hay ofertas publicadas. ¡Vuelve pronto!</p>
+        ) : (
+          <div className="d-flex flex-column gap-3">
+            {ofertasAbiertas.map((o) => rendCard(o))}
+            {ofertasAbiertas.length === 0 && <p className="proyectos-vacio">No hay ofertas que coincidan con tus filtros.</p>}
+          </div>
+        )}
 
         {misPostulaciones.length > 0 && (
           <section className="mt-5">

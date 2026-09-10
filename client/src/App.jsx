@@ -1,5 +1,6 @@
 import { Routes, Route, useLocation } from 'react-router-dom';
 import NavBar from './components/NavBar';
+import Footer from './components/Footer';
 import LoginPage from './pages/LoginPage';
 import RegistroPage from './pages/RegistroPage';
 import DashboardPage from './pages/DashboardPage';
@@ -134,6 +135,7 @@ function App() {
         />
       </Routes>
       </main>
+      {!esPaginaAuth && <Footer />}
     </>
   );
 }

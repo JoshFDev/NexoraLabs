@@ -686,6 +686,121 @@ body {
   transform: translateY(-1px);
 }
 
+/* ---------- Pie de página global ---------- */
+.pie-nexora {
+  margin-top: 2rem;
+  background: linear-gradient(180deg, #150a26, #1b0d31);
+  color: #cfc8ee;
+  border-top: 3px solid var(--nx-morado);
+}
+
+.pie-grid {
+  display: grid;
+  grid-template-columns: 2.2fr 1fr 1fr 1.5fr;
+  gap: 2rem;
+  padding: 2.2rem 0 2rem;
+}
+
+.pie-bloque {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.55rem;
+  min-width: 0;
+}
+
+.pie-logo {
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.4px;
+  color: #ffffff;
+}
+
+.pie-logo span {
+  color: var(--nx-morado);
+}
+
+.pie-descripcion {
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: #a99fc9;
+  margin: 0;
+  max-width: 30rem;
+}
+
+.pie-bloque h4 {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.9px;
+  color: #e9d5ff;
+  margin: 0 0 0.25rem;
+}
+
+.pie-bloque a {
+  font-size: 0.85rem;
+  color: #a99fc9;
+  text-decoration: none;
+  transition: color 0.15s ease, transform 0.15s ease;
+}
+
+.pie-bloque a:hover {
+  color: #ffffff;
+  transform: translateX(2px);
+}
+
+.pie-info {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: #a99fc9;
+}
+
+.pie-info strong {
+  display: block;
+  color: #e9d5ff;
+  font-size: 0.85rem;
+  margin-bottom: 0.1rem;
+}
+
+.pie-info + .pie-info {
+  margin-top: 0.4rem;
+}
+
+.pie-barra {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 1rem 0;
+  border-top: 1px solid rgba(237, 233, 255, 0.12);
+  font-size: 0.76rem;
+  color: #8b7fb0;
+}
+
+.pie-frase {
+  color: #b8a9e0;
+}
+
+@media (max-width: 991.98px) {
+  .pie-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .pie-grid {
+    grid-template-columns: 1fr;
+    gap: 1.4rem;
+  }
+
+  .pie-barra {
+    justify-content: center;
+    text-align: center;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
