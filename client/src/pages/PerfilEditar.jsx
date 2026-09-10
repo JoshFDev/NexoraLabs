@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { Container, Row, Col, Button, Alert, Spinner } from 'react-bootstrap';
+import { Container, Row, Col, Button, Alert, Spinner, Modal } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 import api from '../api';
 import {
   leerUsuario,
@@ -20,6 +21,7 @@ const ROL_LABEL = {
 };
 
 const TAMANO_FOTO = 256;
+const VISOR_RECORTE = 280;
 
 const NIVEL_LABEL = {
   principiante: 'Básico',
@@ -38,6 +40,15 @@ const DISP_LABEL = {
 function PerfilEditar() {
   const almacenado = leerUsuario();
   const inputFotoRef = useRef(null);
+  const arrastreRef = useRef(null);
+  const navigate = useNavigate();
+
+  const [verFoto, setVerFoto] = useState(false);
+  const [cropAbierto, setCropAbierto] = useState(false);
+  const [cropImagen, setCropImagen] = useState('');
+  const [cropNat, setCropNat] = useState({ w: 0, h: 0 });
+  const [cropEscala, setCropEscala] = useState(1);
+  const [cropPos, setCropPos] = useState({ x: 0, y: 0 });
 
   const [datos, setDatos] = useState({
     apellido_materno: almacenado?.apellido_materno || '',
@@ -180,21 +191,103 @@ function PerfilEditar() {
     lector.onload = () => {
       const img = new Image();
       img.onload = () => {
-        const lienzo = document.createElement('canvas');
-        lienzo.width = TAMANO_FOTO;
-        lienzo.height = TAMANO_FOTO;
-        const ctx = lienzo.getContext('2d');
-        const escala = Math.max(TAMANO_FOTO / img.width, TAMANO_FOTO / img.height);
-        const ancho = img.width * escala;
-        const alto = img.height * escala;
-        ctx.drawImage(img, (TAMANO_FOTO - ancho) / 2, (TAMANO_FOTO - alto) / 2, ancho, alto);
-        setDatos((p) => ({ ...p, foto: lienzo.toDataURL('image/jpeg', 0.85) }));
+        setCropImagen(lector.result);
+        setCropNat({ w: img.width, h: img.height });
+        setCropEscala(1);
+        setCropPos({ x: 0, y: 0 });
+        setCropAbierto(true);
         setErrorFoto('');
       };
       img.onerror = () => setErrorFoto('No pudimos leer la imagen.');
       img.src = lector.result;
     };
     lector.readAsDataURL(archivo);
+  };
+
+  const tamanoVisor = (escala) => {
+    const base = Math.max(VISOR_RECORTE / cropNat.w, VISOR_RECORTE / cropNat.h);
+    return { w: cropNat.w * base * escala, h: cropNat.h * base * escala };
+  };
+
+  const limitesVisor = (escala) => {
+    const { w, h } = tamanoVisor(escala);
+    return {
+      x: Math.max(0, (w - VISOR_RECORTE) / 2),
+      y: Math.max(0, (h - VISOR_RECORTE) / 2),
+    };
+  };
+
+  const ajustarPos = (pos, escala) => {
+    const lim = limitesVisor(escala);
+    return {
+      x: Math.min(lim.x, Math.max(-lim.x, pos.x)),
+      y: Math.min(lim.y, Math.max(-lim.y, pos.y)),
+    };
+  };
+
+  const estiloCrop = () => {
+    const { w, h } = tamanoVisor(cropEscala);
+    return {
+      width: w,
+      height: h,
+      left: (VISOR_RECORTE - w) / 2 + cropPos.x,
+      top: (VISOR_RECORTE - h) / 2 + cropPos.y,
+    };
+  };
+
+  const empezarArrastre = (e) => {
+    if (!cropImagen) return;
+    arrastreRef.current = { x: e.clientX - cropPos.x, y: e.clientY - cropPos.y };
+  };
+
+  const moverArrastre = (e) => {
+    const a = arrastreRef.current;
+    if (!a) return;
+    setCropPos((p) => ajustarPos({ x: e.clientX - a.x, y: e.clientY - a.y }, cropEscala));
+  };
+
+  const terminarArrastre = () => {
+    arrastreRef.current = null;
+  };
+
+  const cambiarEscala = (v) => {
+    const s = Math.max(1, Math.min(4, Number(v)));
+    setCropEscala(s);
+    setCropPos((p) => ajustarPos(p, s));
+  };
+
+  const aplicarRecorte = () => {
+    if (!cropImagen || !cropNat.w || !cropNat.h) return;
+    const imagen = new Image();
+    imagen.onload = () => {
+      const lienzo = document.createElement('canvas');
+      lienzo.width = TAMANO_FOTO;
+      lienzo.height = TAMANO_FOTO;
+      const ctx = lienzo.getContext('2d');
+      const { w, h } = tamanoVisor(cropEscala);
+      const ratio = cropNat.w / w;
+      ctx.drawImage(
+        imagen,
+        -((VISOR_RECORTE - w) / 2 + cropPos.x) * ratio,
+        -((VISOR_RECORTE - h) / 2 + cropPos.y) * ratio,
+        VISOR_RECORTE * ratio,
+        VISOR_RECORTE * ratio,
+        0,
+        0,
+        TAMANO_FOTO,
+        TAMANO_FOTO
+      );
+      try {
+        const dataUrl = lienzo.toDataURL('image/jpeg', 0.85);
+        setDatos((p) => ({ ...p, foto: dataUrl }));
+        setCropAbierto(false);
+        setErrorFoto('');
+      } catch {
+        setErrorFoto('No pudimos recortar la imagen.');
+      }
+    };
+    imagen.onerror = () => setErrorFoto('No pudimos procesar la imagen.');
+    imagen.src = cropImagen;
   };
 
   const quitarFoto = () => {
@@ -260,8 +353,16 @@ function PerfilEditar() {
   }
 
   return (
-    <div className="proyectos-pagina">
-      <Container fluid className="pt-4 px-lg-5">
+    <div className="proyectos-pagina perfil-editar-pagina">
+      <Container fluid className="pt-2 px-lg-5">
+        <Button
+          variant="link"
+          className="mb-2 p-0 nav-link-nexora"
+          style={{ fontWeight: 600, textDecoration: 'none', alignSelf: 'flex-start' }}
+          onClick={() => navigate(-1)}
+        >
+          ← Volver
+        </Button>
         <h2 className="proyectos-titulo mb-1">Mi perfil</h2>
         <p className="proyectos-subtitulo mb-4">
           Administra tus datos, tu foto y las habilidades que dominas.
@@ -273,7 +374,10 @@ function PerfilEditar() {
         <Row className="g-4">
           <Col xl={4} xxl={3}>
             <aside className="proyectos-filtros-panel perfil-resumen">
-              <div className="perfil-foto" onClick={() => inputFotoRef.current?.click()}>
+              <div
+                className={`perfil-foto${datos.foto ? ' con-foto' : ''}`}
+                onClick={() => (datos.foto ? setVerFoto(true) : inputFotoRef.current?.click())}
+              >
                 {datos.foto ? (
                   <img className="perfil-foto-img" src={datos.foto} alt="Foto de perfil" />
                 ) : (
@@ -287,6 +391,12 @@ function PerfilEditar() {
                     <circle cx="12" cy="13" r="4" />
                   </svg>
                 </span>
+                {datos.foto && (
+                  <span className="perfil-foto-ver" aria-hidden="true">
+                    <span className="material-symbols-outlined">visibility</span>
+                    Ver
+                  </span>
+                )}
               </div>
               <input
                 ref={inputFotoRef}
@@ -633,6 +743,63 @@ function PerfilEditar() {
           </Col>
         </Row>
       </Container>
+
+      <Modal show={verFoto} onHide={() => setVerFoto(false)} centered>
+        <Modal.Header closeButton className="border-0 px-4 pt-4">
+          <Modal.Title className="proyectos-titulo">Mi foto de perfil</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="text-center px-4 pb-4">
+          {datos.foto && (
+            <img className="perfil-foto-grande" src={datos.foto} alt="Foto de perfil" />
+          )}
+        </Modal.Body>
+      </Modal>
+
+      <Modal show={cropAbierto} onHide={() => setCropAbierto(false)} centered>
+        <Modal.Header closeButton className="border-0 px-4 pt-4">
+          <Modal.Title className="proyectos-titulo">Recortar foto</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="px-4 pb-4">
+          <div
+            className="perfil-recorte-visor"
+            onMouseDown={(e) => empezarArrastre(e)}
+            onMouseMove={(e) => moverArrastre(e)}
+            onMouseUp={terminarArrastre}
+            onMouseLeave={terminarArrastre}
+            onTouchStart={(e) => empezarArrastre({ clientX: e.touches[0].clientX, clientY: e.touches[0].clientY })}
+            onTouchMove={(e) => moverArrastre({ clientX: e.touches[0].clientX, clientY: e.touches[0].clientY })}
+            onTouchEnd={terminarArrastre}
+          >
+            <img src={cropImagen} alt="Recorte de foto" style={estiloCrop()} draggable={false} />
+            <span className="perfil-recorte-rejilla" aria-hidden="true" />
+          </div>
+          <div className="perfil-recorte-control">
+            <span className="material-symbols-outlined">zoom_out</span>
+            <input
+              type="range"
+              min="1"
+              max="4"
+              step="0.01"
+              value={cropEscala}
+              onChange={(e) => cambiarEscala(e.target.value)}
+            />
+            <span className="material-symbols-outlined">zoom_in</span>
+          </div>
+          <p className="perfil-nota">Arrastra la imagen para centrar el recorte.</p>
+          <div className="d-flex justify-content-center gap-3">
+            <Button className="proyectos-boton" onClick={aplicarRecorte}>
+              Aplicar recorte
+            </Button>
+            <Button
+              variant="outline-light"
+              className="proyectos-boton"
+              onClick={() => setCropAbierto(false)}
+            >
+              Cancelar
+            </Button>
+          </div>
+        </Modal.Body>
+      </Modal>
     </div>
   );
 }

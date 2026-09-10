@@ -1519,7 +1519,7 @@
   display: flex;
   justify-content: center;
   gap: var(--gap);
-  margin-bottom: calc(var(--hex-alto) * -0.09);
+  margin-bottom: 0.85rem;
 }
 
 .honeycomb-fila:last-child {
