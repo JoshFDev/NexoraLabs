@@ -620,11 +620,11 @@
 
 /* Mi perfil: edición */
 .proyectos-pagina.perfil-editar-pagina {
-  padding-top: 3cm;
+  padding-top: 1rem;
 }
 
 .proyectos-pagina.perfil-publico-pagina {
-  padding-top: 3cm;
+  padding-top: 1rem;
 }
 
 .perfil-foto.con-foto {
