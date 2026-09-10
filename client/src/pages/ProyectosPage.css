@@ -1022,6 +1022,27 @@
 }
 
 /* ---------- Módulo Recursos de aprendizaje ---------- */
+.recursos-pagina .proyecto-fila {
+  padding: 1rem 1.2rem;
+  margin-bottom: 0;
+}
+
+.recursos-pagina .proyecto-fila .proyecto-descripcion {
+  margin-bottom: 0.55rem;
+}
+
+.recursos-pagina .proyecto-fila .proyecto-meta {
+  margin-bottom: 0.6rem;
+}
+
+.recursos-pagina .proyecto-fila .equipo-acciones {
+  padding-top: 0.6rem;
+}
+
+.recursos-pagina .proyecto-fila.abierto {
+  box-shadow: 0 12px 26px rgba(70, 62, 105, 0.1);
+}
+
 .recurso-recorte {
   display: -webkit-box;
   -webkit-line-clamp: 2;

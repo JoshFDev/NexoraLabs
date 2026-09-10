@@ -222,7 +222,7 @@ function RecursosPage() {
   };
 
   return (
-    <div className="proyectos-pagina">
+    <div className="proyectos-pagina recursos-pagina">
       <Container fluid className="pt-4 px-lg-5">
         <div className="d-flex align-items-center justify-content-between mb-1">
           <h2 className="proyectos-titulo mb-0">Recursos de aprendizaje</h2>
@@ -292,11 +292,11 @@ function RecursosPage() {
           <p className="proyectos-vacio">No hay recursos que coincidan con la búsqueda.</p>
         ) : (
           <>
-            <Row className="g-4">
+            <Row className="g-4 align-items-start">
               {lista.map((r) => (
                 <Col xl={4} md={6} key={String(r._id)}>
                   <article
-                    className={`proyecto-fila h-100${expandido === String(r._id) ? ' abierto' : ''}`}
+                    className={`proyecto-fila${expandido === String(r._id) ? ' abierto' : ''}`}
                     onClick={() => alternar(String(r._id))}
                   >
                     <div className="proyecto-fila-cabecera">
