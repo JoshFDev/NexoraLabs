@@ -37,6 +37,11 @@ body {
   padding: 0 !important;
 }
 
+.navbar-brand-nexora .brand-firma {
+  height: 78px;
+  width: auto;
+}
+
 .brand-firma {
   -webkit-user-drag: none;
   user-select: none;
@@ -121,20 +126,45 @@ body {
   user-select: none;
 }
 
+@media (min-width: 1200px) {
+  .navbar-enlaces {
+    margin-left: 2.8rem;
+  }
+}
+
+@media (max-width: 1599.98px) and (min-width: 1200px) {
+  .navbar-brand-nexora .brand-firma {
+    height: 62px;
+  }
+
+  .navbar-nexora {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+  }
+
+  .navbar-enlaces {
+    margin-left: 2rem;
+  }
+}
+
 @media (max-width: 1399.98px) {
+  .navbar-brand-nexora .brand-firma {
+    height: 52px;
+  }
+
   .nav-link-nexora {
-    font-size: 0.85rem;
-    padding: 0.45rem 0.7rem !important;
-    letter-spacing: 0.05em;
+    font-size: 0.82rem;
+    padding: 0.42rem 0.6rem !important;
+    letter-spacing: 0.045em;
   }
 
   .nav-sep {
-    font-size: 0.78rem;
+    font-size: 0.74rem;
   }
 
   .navbar-utilidades {
-    gap: 0.4rem;
-    padding-left: 0.9rem;
+    gap: 0.35rem;
+    padding-left: 0.85rem;
   }
 }
 
@@ -150,18 +180,40 @@ body {
 }
 
 @media (max-width: 1199.98px) {
+  .navbar-brand-nexora .brand-firma {
+    height: 46px;
+  }
+
+  .navbar-nexora {
+    padding-top: 0.6rem;
+    padding-bottom: 0.6rem;
+  }
+
+  .navbar-nexora .navbar-collapse {
+    background: rgba(18, 7, 34, 0.97);
+    border: 1px solid rgba(168, 85, 247, 0.32);
+    border-radius: 0.6rem;
+    margin-top: 0.8rem;
+    padding: 0.5rem 1rem 0.8rem;
+  }
+
+  .navbar-nexora .navbar-collapse .navbar-enlaces,
+  .navbar-nexora .navbar-collapse .navbar-utilidades {
+    width: 100%;
+  }
+
   .navbar-enlaces {
     align-items: flex-start;
     flex-direction: column;
-    gap: 0.3rem;
-    margin-top: 0.75rem;
+    gap: 0.15rem;
+    margin-top: 0;
     margin-bottom: 0.5rem;
     overflow-x: visible;
   }
 
   .nav-link-nexora {
     font-size: 1rem;
-    padding: 0.5rem 0.4rem !important;
+    padding: 0.65rem 0.4rem !important;
   }
 
   .nav-sep {
@@ -169,11 +221,16 @@ body {
   }
 
   .navbar-utilidades {
-    gap: 0.4rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
     border-left: none;
     padding-left: 0;
     margin-left: 0;
-    margin-bottom: 0.6rem;
+    padding-top: 0.6rem;
+    border-top: 1px solid rgba(237, 233, 255, 0.16);
+    margin-bottom: 0;
   }
 }
 

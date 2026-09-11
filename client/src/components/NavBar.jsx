@@ -68,7 +68,7 @@ function NavBar() {
         <Navbar.Toggle aria-controls="navbar-nav" />
         <Navbar.Collapse id="navbar-nav">
           {usuario && (
-            <Nav className="navbar-enlaces ms-lg-5">
+            <Nav className="navbar-enlaces">
               {RUTAS.filter((r) => r.para === 'todos' || puedeCrear).map((r, i) => (
                 <Fragment key={r.to}>
                   {i > 0 && <span className="nav-sep">/</span>}
