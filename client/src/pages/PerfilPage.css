@@ -213,10 +213,10 @@
   border: 1.5px solid rgba(109, 40, 217, 0.3);
   background: #fbf8ff;
   color: #4c4770;
-  font-size: 0.8rem;
+  font-size: 0.88rem;
   font-weight: 500;
   border-radius: 999px;
-  padding: 0.32rem 0.95rem;
+  padding: 0.35rem 1rem;
   cursor: pointer;
   transition: all 0.15s ease;
 }
@@ -374,7 +374,7 @@
 }
 
 .perfil-rol {
-  font-size: 0.85rem;
+  font-size: 1rem;
   color: var(--nx-morado);
   font-weight: 600;
   margin: 0.15rem 0 0.4rem;
@@ -469,7 +469,7 @@
 }
 
 .perfil-resumen-nombre {
-  font-size: 1.15rem;
+  font-size: 1.35rem;
   font-weight: 800;
   letter-spacing: -0.3px;
   color: #231d3d;
@@ -487,13 +487,13 @@
 
 .perfil-resumen-badge {
   display: inline-block;
-  font-size: 0.75rem;
+  font-size: 0.82rem;
   font-weight: 600;
   color: #4c4770;
   background: #f7f7fa;
   border: 1px solid #dcdbe6;
   border-radius: 999px;
-  padding: 0.28rem 0.75rem;
+  padding: 0.32rem 0.85rem;
   white-space: nowrap;
 }
 
@@ -513,7 +513,7 @@
 }
 
 .perfil-card-titulo {
-  font-size: 0.92rem;
+  font-size: 1rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.4px;
@@ -525,17 +525,17 @@
 .perfil-publico-linea {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 0.85rem;
+  gap: 0.55rem;
+  font-size: 0.95rem;
   color: #4c4770;
-  margin-bottom: 0.55rem;
+  margin-bottom: 0.6rem;
   overflow-wrap: anywhere;
 }
 
 .perfil-publico-icono {
   flex-shrink: 0;
-  width: 20px;
-  height: 20px;
+  width: 23px;
+  height: 23px;
   border-radius: 50%;
   background: rgba(168, 85, 247, 0.12);
   color: var(--nx-morado-oscuro);
@@ -545,8 +545,8 @@
 }
 
 .perfil-publico-icono svg {
-  width: 12px;
-  height: 12px;
+  width: 13px;
+  height: 13px;
 }
 
 .perfil-publico-redes {
@@ -556,12 +556,12 @@
 }
 
 .perfil-publico-redes a {
-  font-size: 0.78rem;
+  font-size: 0.85rem;
   font-weight: 600;
   color: var(--nx-morado-oscuro);
   border: 1.5px solid rgba(109, 40, 217, 0.35);
   border-radius: 999px;
-  padding: 0.28rem 0.8rem;
+  padding: 0.3rem 0.9rem;
   background: #fbf8ff;
   text-decoration: none;
   transition: all 0.15s ease;
@@ -573,7 +573,7 @@
 }
 
 .perfil-publico-texto {
-  font-size: 0.92rem;
+  font-size: 1rem;
   line-height: 1.6;
   color: #3a3458;
   white-space: pre-wrap;
@@ -586,7 +586,7 @@
 }
 
 .perfil-publico-nivel {
-  font-size: 0.65rem;
+  font-size: 0.7rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.4px;
