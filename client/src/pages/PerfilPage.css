@@ -711,3 +711,40 @@
   flex: 1;
   accent-color: var(--nx-morado);
 }
+
+.perfil-peligro-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  max-width: 1280px;
+  margin: 2.5rem auto 2rem;
+  padding: 1.25rem 1.5rem;
+  border: 1px dashed #f2a9b8;
+  background: rgba(120, 18, 34, 0.08);
+  border-radius: 14px;
+}
+
+.perfil-peligro-titulo {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.perfil-peligro-titulo .material-symbols-outlined {
+  color: #e0556f;
+  margin-top: 0.15rem;
+}
+
+.perfil-peligro-boton {
+  border-radius: 10px;
+  padding: 0.55rem 1.1rem;
+  border-color: #e0556f !important;
+  color: #e0556f !important;
+}
+
+.perfil-peligro-boton:hover {
+  background: #e0556f !important;
+  color: #fff !important;
+}

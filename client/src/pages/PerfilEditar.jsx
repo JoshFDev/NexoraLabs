@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-import { Container, Row, Col, Button, Alert, Spinner, Modal } from 'react-bootstrap';
+import { Container, Row, Col, Button, Alert, Spinner, Modal, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import api from '../api';
+import EliminarCuentaModal from '../components/EliminarCuentaModal';
 import {
   leerUsuario,
   guardarUsuario,
@@ -49,6 +50,8 @@ function PerfilEditar() {
   const [cropNat, setCropNat] = useState({ w: 0, h: 0 });
   const [cropEscala, setCropEscala] = useState(1);
   const [cropPos, setCropPos] = useState({ x: 0, y: 0 });
+
+  const [eliminarAbierto, setEliminarAbierto] = useState(false);
 
   const [datos, setDatos] = useState({
     apellido_materno: almacenado?.apellido_materno || '',
@@ -738,6 +741,23 @@ function PerfilEditar() {
           </Col>
         </Row>
       </Container>
+
+      <div className="perfil-peligro-wrap">
+        <div className="perfil-peligro-titulo">
+          <span className="material-symbols-outlined">delete_forever</span>
+          <div>
+            <h2 className="proyectos-titulo">Eliminar mi cuenta</h2>
+            <p className="proyectos-subtitulo">
+              Esta acción borra tu cuenta y todo tu contenido (proyectos, postulaciones, comentarios, etc.) de forma permanente.
+            </p>
+          </div>
+        </div>
+        <Button variant="outline-danger" className="perfil-peligro-boton" onClick={() => setEliminarAbierto(true)}>
+          Eliminar mi cuenta
+        </Button>
+      </div>
+
+      <EliminarCuentaModal mostrar={eliminarAbierto} onCerrar={() => setEliminarAbierto(false)} />
 
       <Modal show={verFoto} onHide={() => setVerFoto(false)} centered className="foto-modal">
         {datos.foto && (

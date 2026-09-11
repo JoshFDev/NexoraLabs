@@ -3,6 +3,7 @@ import { Form, Button, Alert, InputGroup, Spinner } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import api from '../api';
 import Chispas from '../components/Chispas';
+import VerificarCorreo from '../components/VerificarCorreo';
 import './LoginPage.css';
 import './RegistroPage.css';
 
@@ -86,6 +87,8 @@ function RegistroPage() {
   const [listo, setListo] = useState(false);
   const [agitar, setAgitar] = useState(false);
   const [cerrando, setCerrando] = useState(false);
+  const [verificando, setVerificando] = useState(false);
+  const [emailPendiente, setEmailPendiente] = useState('');
   const [errores, setErrores] = useState({ nombre: '', apellido_paterno: '', email: '', password: '' });
   const emailRef = useRef(null);
   const navigate = useNavigate();
@@ -123,18 +126,23 @@ function RegistroPage() {
     setCargando(true);
     try {
       await api.post('/usuario/registro', form);
-      setListo(true);
       setCargando(false);
-      setTimeout(() => {
-        setCerrando(true);
-        setTimeout(() => navigate('/login'), 460);
-      }, 750);
+      setEmailPendiente(form.email);
+      setVerificando(true);
     } catch (err) {
       setError(err.response?.data?.error || 'No pudimos crear tu cuenta. Inténtalo de nuevo.');
       setAgitar(true);
       setTimeout(() => setAgitar(false), 500);
       setCargando(false);
     }
+  };
+
+  const verificado = ({ token, usuario }) => {
+    localStorage.setItem('token', token);
+    localStorage.setItem('usuario', JSON.stringify(usuario));
+    setListo(true);
+    setCerrando(true);
+    setTimeout(() => navigate('/perfil'), 500);
   };
 
   const detectarCaps = (e) => {
@@ -170,15 +178,23 @@ function RegistroPage() {
             onDragStart={(e) => e.preventDefault()}
             onCopy={(e) => e.preventDefault()}
           />
-          <h1>Crea tu cuenta</h1>
+          <h1>{verificando ? 'Verifica tu correo' : 'Crea tu cuenta'}</h1>
+          {verificando && (
+            <p className="login-subtitulo">
+              Ingresa el código que enviamos a <strong>{emailPendiente}</strong> para activar tu cuenta.
+            </p>
+          )}
         </div>
 
-        {error && (
+        {error && !verificando && (
           <Alert variant="danger" className="login-alerta">
             <strong>No pudimos crear tu cuenta.</strong> {error}
           </Alert>
         )}
 
+        {verificando ? (
+          <VerificarCorreo email={emailPendiente} onVerificado={verificado} />
+        ) : (
         <Form onSubmit={submit} className={agitar ? 'login-agitar' : ''} noValidate>
           <div className="registro-fila">
             <Form.Group className="mb-2" controlId="nombre">
@@ -324,13 +340,16 @@ function RegistroPage() {
                 : 'Crear cuenta'}
           </Button>
         </Form>
+        )}
 
-        <p className="login-registro">
-          ¿Ya tienes cuenta?{' '}
-          <a href="/login" className="login-enlace-boton" onClick={irALogin}>
-            Inicia sesión
-          </a>
-        </p>
+        {!verificando && (
+          <p className="login-registro">
+            ¿Ya tienes cuenta?{' '}
+            <a href="/login" className="login-enlace-boton" onClick={irALogin}>
+              Inicia sesión
+            </a>
+          </p>
+        )}
       </main>
 
       <footer className="login-pie">© 2026 NexoraLabs · Plataforma de proyectos colaborativos</footer>

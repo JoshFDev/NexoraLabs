@@ -8,6 +8,10 @@ import {
     obtenerUsuario,
     registrarUsuario,
     iniciarSesion,
+    verificarEmail,
+    reenviarCodigoVerificacion,
+    solicitarEliminarCuenta,
+    confirmarEliminarCuenta,
     actualizarMiPerfil,
     actualizarUsuario,
     eliminarUsuario
@@ -47,8 +51,33 @@ const limitadorLoginActivo = process.env.NODE_ENV === "test"
     ? (req, res, next) => next()
     : limitadorLogin;
 
+//Limitador para códigos de verificación (anti fuerza bruta): 5 intentos por IP cada 15 minutos
+const limitadorCodigos = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    limit: 5,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: "Demasiados intentos. Espera 15 minutos." }
+});
+
+const limitadorCodigosActivo = process.env.NODE_ENV === "test"
+    ? (req, res, next) => next()
+    : limitadorCodigos;
+
 //Login de usuario (público)
 router.post('/usuario/login', limitadorLoginActivo, iniciarSesion);
+
+//Verificar el correo con el código recibido (público)
+router.post('/usuario/verificar-email', limitadorCodigosActivo, verificarEmail);
+
+//Reenviar el código de verificación (público)
+router.post('/usuario/reenviar-codigo', limitadorCodigosActivo, reenviarCodigoVerificacion);
+
+//Pedir el código para eliminar la cuenta (autenticado)
+router.post('/usuario/eliminar/solicitar', verifyToken, limitadorCodigosActivo, solicitarEliminarCuenta);
+
+//Confirmar la eliminación de la cuenta con el código (autenticado)
+router.post('/usuario/eliminar/confirmar', verifyToken, confirmarEliminarCuenta);
 
 //Actualizar usuario (solo admin)
 router.put('/usuario/:id', verifyToken, authorize("admin"), actualizarUsuario);

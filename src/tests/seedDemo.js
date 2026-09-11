@@ -138,6 +138,9 @@ const main = async () => {
 
   const admin = await Usuario.findOne({ rol: "admin" });
   if (!admin) throw new Error("No se encontró un usuario con rol admin en la base de datos.");
+  if (admin.email_verificado !== true) {
+    await Usuario.updateOne({ _id: admin._id }, { $set: { email_verificado: true } });
+  }
 
   let creadas = 0;
   for (const s of HABILIDADES) {

@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
+import EliminarCuentaModal from './EliminarCuentaModal';
 
 const ROL_LABEL = {
   admin: 'Admin',
@@ -11,6 +13,7 @@ const ROL_LABEL = {
 
 function MenuUsuario({ usuario, onCerrarSesion }) {
   const inicial = (usuario.nombre || 'U').charAt(0).toUpperCase();
+  const [eliminarAbierto, setEliminarAbierto] = useState(false);
 
   return (
     <Dropdown align="end" className="user-menu-wrapper">
@@ -59,7 +62,12 @@ function MenuUsuario({ usuario, onCerrarSesion }) {
           <span className="material-symbols-outlined">logout</span>
           Cerrar sesión
         </Dropdown.Item>
+        <Dropdown.Item className="user-menu-eliminar" onClick={() => setEliminarAbierto(true)}>
+          <span className="material-symbols-outlined">delete_forever</span>
+          Eliminar cuenta
+        </Dropdown.Item>
       </Dropdown.Menu>
+      <EliminarCuentaModal mostrar={eliminarAbierto} onCerrar={() => setEliminarAbierto(false)} />
     </Dropdown>
   );
 }

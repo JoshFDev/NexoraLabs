@@ -1,0 +1,16 @@
+.eliminar-cargando {
+  color: #8a7f9c;
+  font-size: 0.9rem;
+  margin-bottom: 0.75rem;
+}
+
+.eliminar-aviso {
+  font-size: 0.9rem;
+}
+
+.perfil-eliminar-input {
+  letter-spacing: 0.35em;
+  text-align: center;
+  font-weight: 600;
+  font-size: 1.05rem;
+}

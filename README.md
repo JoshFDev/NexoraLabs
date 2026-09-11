@@ -53,7 +53,13 @@ NexoraLabs/
 ```
 PORT=3000
 MONGO_URI=mongodb://localhost:27017/nexoralabs
+# SMTP_HOST=smtp.gmail.com
+# SMTP_PORT=587
+# SMTP_USER=tu_correo@gmail.com
+# SMTP_PASS=tu_contrasena_de_aplicacion
 ```
+
+Si defines `SMTP_USER` y `SMTP_PASS` se envia un correo de bienvenida al registrarse (Gmail requiere una contrasena de aplicacion de 16 caracteres, no la contrasena normal de la cuenta).
 
 2. Para las pruebas se usa una base aparte. Puedes definirla con `MONGO_TEST_URI` en `.env` (por defecto `mongodb://localhost:27017/nexoralabs_test`). El test runner limpia esa base al terminar.
 

@@ -3,6 +3,7 @@ import { Form, Button, Alert, InputGroup, Spinner } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import api from '../api';
 import Chispas from '../components/Chispas';
+import VerificarCorreo from '../components/VerificarCorreo';
 import { guardarUsuario, esPerfilCompleto } from '../utils/perfil';
 import './LoginPage.css';
 
@@ -86,6 +87,7 @@ function LoginPage() {
   const [listo, setListo] = useState(false);
   const [agitar, setAgitar] = useState(false);
   const [cerrando, setCerrando] = useState(false);
+  const [verificando, setVerificando] = useState(false);
   const [errores, setErrores] = useState({ email: '', password: '' });
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
@@ -134,6 +136,12 @@ function LoginPage() {
       setCargando(false);
       setTimeout(() => navigate(perfil && !esPerfilCompleto(perfil) ? '/perfil' : '/'), 650);
     } catch (err) {
+      if (err.response && err.response.status === 403) {
+        setError('');
+        setVerificando(true);
+        setCargando(false);
+        return;
+      }
       setError(
         err.response
           ? 'Usuario o contraseña incorrectos.'
@@ -145,6 +153,20 @@ function LoginPage() {
       setCargando(false);
       emailRef.current?.focus();
     }
+  };
+
+  const verificado = async ({ token, usuario }) => {
+    guardarSesion({ token, usuario, recordarme });
+    let perfil = null;
+    try {
+      perfil = (await api.get('/usuario/perfil')).data;
+    } catch {
+      perfil = null;
+    }
+    if (perfil) guardarUsuario(perfil);
+    setListo(true);
+    setCargando(false);
+    setTimeout(() => navigate(perfil && !esPerfilCompleto(perfil) ? '/perfil' : '/'), 650);
   };
 
   const autocompletar = (demoEmail, demoPassword) => {
@@ -195,16 +217,25 @@ function LoginPage() {
             onDragStart={(e) => e.preventDefault()}
             onCopy={(e) => e.preventDefault()}
           />
-          <h1>Bienvenido</h1>
-          <p>Inicia sesión para acceder a NexoraLabs</p>
+          <h1>{verificando ? 'Verifica tu correo' : 'Bienvenido'}</h1>
+          {verificando ? (
+            <p className="login-subtitulo">
+              Tu cuenta aún no está activa. Ingresa el código que enviamos a <strong>{email}</strong>.
+            </p>
+          ) : (
+            <p>Inicia sesión para acceder a NexoraLabs</p>
+          )}
         </div>
 
-        {error && (
+        {error && !verificando && (
           <Alert variant="danger" className="login-alerta">
             <strong>No pudimos iniciar sesión.</strong> {error}
           </Alert>
         )}
 
+        {verificando ? (
+          <VerificarCorreo email={email} onVerificado={verificado} yaEnviado />
+        ) : (
         <Form onSubmit={submit} className={agitar ? 'login-agitar' : ''} noValidate>
           <Form.Group className="mb-2" controlId="email">
             <Form.Label className="login-label">Correo electrónico</Form.Label>
@@ -308,10 +339,11 @@ function LoginPage() {
                 : 'Iniciar sesión'}
           </Button>
         </Form>
+        )}
 
-        {nota && <small className="login-social-nota">{nota}</small>}
+        {!verificando && nota && <small className="login-social-nota">{nota}</small>}
 
-        <div className="login-social">
+        {!verificando && (<div className="login-social">
           <div className="login-divisor">
             <span>o continúa con</span>
           </div>
@@ -326,9 +358,9 @@ function LoginPage() {
               <IconoGitHub /> GitHub
             </Button>
           </div>
-        </div>
+        </div>)}
 
-        <div className="login-demo">
+        {!verificando && (<div className="login-demo">
           <span className="login-demo-titulo">Cuentas de prueba</span>
           <div className="login-demo-opciones">
             <button type="button" className="login-chipe" onClick={() => autocompletar('joshua@test.com', '123456')}>
@@ -338,7 +370,7 @@ function LoginPage() {
               Admin
             </button>
           </div>
-        </div>
+        </div>)}
 
         <p className="login-registro">
           ¿No tienes cuenta?{' '}

@@ -90,6 +90,22 @@ const usuarioEsquema = new Schema(
         fecha_registro: {
             type: Date,
             default: Date.now
+        },
+        email_verificado: {
+            type: Boolean,
+            default: false
+        },
+        codigo_verificacion: {
+            type: String
+        },
+        codigo_verificacion_expira: {
+            type: Date
+        },
+        codigo_eliminacion: {
+            type: String
+        },
+        codigo_eliminacion_expira: {
+            type: Date
         }
     },
     {

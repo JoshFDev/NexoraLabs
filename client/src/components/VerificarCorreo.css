@@ -1,0 +1,18 @@
+.verificar-codigo-input {
+  letter-spacing: 0.35em;
+  text-align: center;
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+
+.verificar-reenvio {
+  margin: 0.9rem 0 0;
+  text-align: center;
+  font-size: 0.85rem;
+  color: #8a7f9c;
+}
+
+.verificar-reenvio .login-olvidar[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

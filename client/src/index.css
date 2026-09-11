@@ -717,6 +717,24 @@ body {
   border-color: #eceaf3;
 }
 
+.user-menu-eliminar {
+  color: #e0556f !important;
+}
+
+.user-menu-eliminar .material-symbols-outlined {
+  color: #e0556f !important;
+}
+
+.user-menu-eliminar:hover,
+.user-menu-eliminar:focus {
+  background: rgba(224, 85, 111, 0.08) !important;
+  color: #c9445f !important;
+}
+
+.user-menu-eliminar:hover .material-symbols-outlined {
+  color: #c9445f !important;
+}
+
 .user-menu-cerrar {
   color: #b91c1c !important;
 }

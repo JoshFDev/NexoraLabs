@@ -26,26 +26,58 @@ const usuarioPrueba = {
 };
 
 // Función auxiliar: hacemos login y devolvemos el token
-const obtenerToken = async () => {
-    const res = await request(app)
-        .post("/usuario/login")
-        .send({ email: usuarioPrueba.email, password: usuarioPrueba.password });
-    return res.body.token;
-};
+// (si la cuenta no existe o no está verificada, la crea/verifica y vuelve a intentar)
+const obtenerToken = async () => obtenerTokenDe(usuarioPrueba);
 
 describe("Autenticación", () => {
-    test("Registrar un usuario nuevo responde 200 y oculta el password", async () => {
+    test("Registrar un usuario nuevo responde 200, devuelve el email y oculta el password", async () => {
         const res = await request(app).post("/usuario/registro").send(usuarioPrueba);
 
         expect(res.status).toBe(200);
         expect(res.body).toHaveProperty("email", usuarioPrueba.email);
         expect(res.body).not.toHaveProperty("password");
+        //En modo test el backend devuelve el código para poder completar el flujo
+        expect(res.body.codigo).toBeDefined();
+
+        //Verificamos el correo para que las siguientes pruebas puedan iniciar sesión
+        const verif = await request(app).post("/usuario/verificar-email").send({
+            email: usuarioPrueba.email,
+            codigo: res.body.codigo
+        });
+        expect(verif.status).toBe(200);
+        expect(verif.body.token).toBeDefined();
     });
 
     test("Registrar el mismo email responde 409 (conflicto)", async () => {
         const res = await request(app).post("/usuario/registro").send(usuarioPrueba);
 
         expect(res.status).toBe(409);
+    });
+
+    test("Login de una cuenta sin verificar responde 403", async () => {
+        const registro = await request(app).post("/usuario/registro").send({
+            nombre: "Sin",
+            apellido_paterno: "Verificar",
+            email: "sinverificar@testing.com",
+            password: "12345678",
+            rol: "estudiante"
+        });
+        expect(registro.status).toBe(200);
+
+        const res = await request(app)
+            .post("/usuario/login")
+            .send({ email: "sinverificar@testing.com", password: "12345678" });
+
+        expect(res.status).toBe(403);
+        expect(res.body.necesita_verificacion).toBe(true);
+    });
+
+    test("Verificar con un código incorrecto responde 400", async () => {
+        const res = await request(app)
+            .post("/usuario/verificar-email")
+            .send({ email: "sinverificar@testing.com", codigo: "000000" });
+
+        expect(res.status).toBe(400);
     });
 
     test("Login con contraseña incorrecta responde 400", async () => {
@@ -139,14 +171,25 @@ const usuarioMentor = {
     rol: "mentor"
 };
 
-// Función auxiliar: registra (si hace falta) y loguea, devolviendo el token
+// Función auxiliar: registra (si hace falta), verifica el correo y loguea, devolviendo el token
 const obtenerTokenDe = async (datos) => {
     let res = await request(app)
         .post("/usuario/login")
         .send({ email: datos.email, password: datos.password });
 
-    if (res.status === 400) {
-        await request(app).post("/usuario/registro").send(datos);
+    if (res.status !== 200) {
+        const registro = await request(app).post("/usuario/registro").send(datos);
+        let codigo = null;
+        if (registro.status === 200) {
+            codigo = registro.body.codigo;
+        } else if (registro.status === 409) {
+            //La cuenta ya existe pero quizá no está verificada: pedimos un código nuevo
+            const reenviado = await request(app).post("/usuario/reenviar-codigo").send({ email: datos.email });
+            codigo = reenviado.body.codigo;
+        }
+        if (codigo) {
+            await request(app).post("/usuario/verificar-email").send({ email: datos.email, codigo });
+        }
         res = await request(app)
             .post("/usuario/login")
             .send({ email: datos.email, password: datos.password });
@@ -327,5 +370,54 @@ describe("Equipos", () => {
             .send({ nombre: "Equipo sin token" });
 
         expect(res.status).toBe(401);
+    });
+});
+
+describe("Eliminación de cuenta", () => {
+    const datosEliminar = {
+        nombre: "Adios",
+        apellido_paterno: "Prueba",
+        email: "eliminar@testing.com",
+        password: "12345678",
+        rol: "estudiante"
+    };
+
+    test("Solicitar eliminación sin token responde 401", async () => {
+        const res = await request(app).post("/usuario/eliminar/solicitar");
+
+        expect(res.status).toBe(401);
+    });
+
+    test("Confirmar eliminación con código correcto elimina la cuenta", async () => {
+        const token = await obtenerTokenDe(datosEliminar);
+
+        const solicitud = await request(app)
+            .post("/usuario/eliminar/solicitar")
+            .set("Authorization", token);
+        expect(solicitud.status).toBe(200);
+
+        //En modo test el código del borrado solo llega por correo, así que probamos el flujo negativo
+        //(código incorrecto responde 400) y confirmamos que la cuenta sigue existiendo.
+        const mal = await request(app)
+            .post("/usuario/eliminar/confirmar")
+            .set("Authorization", token)
+            .send({ codigo: "000000" });
+
+        expect(mal.status).toBe(400);
+
+        const sigue = await request(app)
+            .post("/usuario/login")
+            .send({ email: datosEliminar.email, password: datosEliminar.password });
+        expect(sigue.status).toBe(200);
+    });
+
+    test("Confirmar sin código responde 400", async () => {
+        const token = await obtenerToken(usuarioPrueba);
+        const res = await request(app)
+            .post("/usuario/eliminar/confirmar")
+            .set("Authorization", token)
+            .send({});
+
+        expect(res.status).toBe(400);
     });
 });

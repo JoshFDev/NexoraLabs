@@ -216,6 +216,11 @@
   color: rgba(237, 233, 255, 0.75);
 }
 
+.login-encabezado p strong {
+  color: #ffffff;
+  font-weight: 700;
+}
+
 .login-label {
   font-weight: 600;
   font-size: 0.84rem;
