@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --runInBand",
-    "dev": "nodemon src/index.js --exec babel-node"
+    "dev": "nodemon src/index.js --exec babel-node",
+    "seed": "babel-node src/tests/seedDemo.js"
   },
   "jest": {
     "testEnvironment": "node",
