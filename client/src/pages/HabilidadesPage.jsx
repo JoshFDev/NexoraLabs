@@ -214,7 +214,7 @@ function HabilidadesPage() {
   return (
     <div className="proyectos-pagina">
       <Container fluid className="pt-4 px-lg-5">
-        <div className="d-flex align-items-center justify-content-between mb-1">
+        <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-1">
           <h2 className="proyectos-titulo mb-0">Habilidades</h2>
           {puedeGestionar && (
             <Button className="proyectos-boton" onClick={() => abrirModal()}>

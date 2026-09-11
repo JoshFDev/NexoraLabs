@@ -247,7 +247,7 @@ function OfertasEmpleoPage() {
   return (
     <div className="proyectos-pagina">
       <Container fluid className="pt-4 px-lg-5">
-        <div className="d-flex align-items-end justify-content-between mb-4">
+        <div className="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-4">
           <div>
             <h2 className="proyectos-titulo mb-0">Ofertas y oportunidades</h2>
             <p className="proyectos-subtitulo mb-0">

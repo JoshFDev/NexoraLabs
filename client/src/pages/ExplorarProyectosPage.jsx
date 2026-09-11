@@ -515,7 +515,7 @@ function ExplorarProyectosPage() {
           </Col>
 
           <Col xl={8} xxl={6}>
-            <div className="d-flex align-items-center justify-content-between mb-3">
+            <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
               <h3 className="proyectos-titulo mb-0" style={{ fontSize: '1.1rem' }}>
                 Todos los proyectos
               </h3>
