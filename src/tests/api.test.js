@@ -129,3 +129,203 @@ describe("Estadísticas", () => {
         expect(res.body).toHaveProperty("proyectos_por_estado");
     });
 });
+
+// Usuario con rol mentor: puede crear recursos, ofertas y equipos
+const usuarioMentor = {
+    nombre: "Mentor",
+    apellido_paterno: "Prueba",
+    email: "mentor@testing.com",
+    password: "12345678",
+    rol: "mentor"
+};
+
+// Función auxiliar: registra (si hace falta) y loguea, devolviendo el token
+const obtenerTokenDe = async (datos) => {
+    let res = await request(app)
+        .post("/usuario/login")
+        .send({ email: datos.email, password: datos.password });
+
+    if (res.status === 400) {
+        await request(app).post("/usuario/registro").send(datos);
+        res = await request(app)
+            .post("/usuario/login")
+            .send({ email: datos.email, password: datos.password });
+    }
+
+    expect(res.status).toBe(200);
+    return res.body.token;
+};
+
+describe("Perfiles públicos y logros", () => {
+    test("GET /usuario/:id devuelve el perfil público sin password", async () => {
+        const token = await obtenerToken();
+        const perfil = await request(app).get("/usuario/perfil").set("Authorization", token);
+
+        const res = await request(app).get(`/usuario/${perfil.body._id}`);
+
+        expect(res.status).toBe(200);
+        expect(res.body.email).toBe(usuarioPrueba.email);
+        expect(res.body).not.toHaveProperty("password");
+    });
+
+    test("GET /logros/usuario/:id responde 200 con lista", async () => {
+        const token = await obtenerToken();
+        const perfil = await request(app).get("/usuario/perfil").set("Authorization", token);
+        const res = await request(app).get(`/logros/usuario/${perfil.body._id}`);
+
+        expect(res.status).toBe(200);
+        expect(Array.isArray(res.body.logros)).toBe(true);
+    });
+});
+
+describe("Recursos de aprendizaje", () => {
+    test("Crear un recurso sin token responde 401", async () => {
+        const res = await request(app)
+            .post("/recurso-aprendizaje/agregar")
+            .send({ titulo: "Curso sin token" });
+
+        expect(res.status).toBe(401);
+    });
+
+    test("Un mentor crea un recurso y responde 201", async () => {
+        const token = await obtenerTokenDe(usuarioMentor);
+        const res = await request(app)
+            .post("/recurso-aprendizaje/agregar")
+            .set("Authorization", token)
+            .send({
+                titulo: "Curso práctico de Node.js",
+                descripcion: "Aprende Express, MongoDB y buenas prácticas desde cero.",
+                tipo: "curso",
+                nivel: "intermedio"
+            });
+
+        expect(res.status).toBe(201);
+        expect(res.body.titulo).toBe("Curso práctico de Node.js");
+    });
+
+    test("Listar recursos devuelve paginación", async () => {
+        const res = await request(app).get("/recursos-aprendizaje?pagina=1&limite=5");
+
+        expect(res.status).toBe(200);
+        expect(res.body).toHaveProperty("total_paginas");
+        expect(Array.isArray(res.body.recursos)).toBe(true);
+    });
+
+    test("Calificar con valor fuera de 1-5 responde 400", async () => {
+        const token = await obtenerTokenDe(usuarioMentor);
+        const creado = await request(app)
+            .post("/recurso-aprendizaje/agregar")
+            .set("Authorization", token)
+            .send({ titulo: "Recurso para calificación", tipo: "video", nivel: "avanzado" });
+
+        const res = await request(app)
+            .post(`/recurso-aprendizaje/${creado.body._id}/calificar`)
+            .set("Authorization", token)
+            .send({ calificacion: 9 });
+
+        expect(res.status).toBe(400);
+    });
+
+    test("Calificar un recurso actualiza su promedio", async () => {
+        const tokenMentor = await obtenerTokenDe(usuarioMentor);
+        const creado = await request(app)
+            .post("/recurso-aprendizaje/agregar")
+            .set("Authorization", tokenMentor)
+            .send({ titulo: "Curso calificable", tipo: "curso", nivel: "intermedio" });
+
+        const tokenDev = await obtenerToken();
+        const res = await request(app)
+            .post(`/recurso-aprendizaje/${creado.body._id}/calificar`)
+            .set("Authorization", tokenDev)
+            .send({ calificacion: 5, texto: "Excelente material" });
+
+        expect(res.status).toBe(200);
+        expect(res.body.valoracion_promedio).toBe(5);
+        expect(res.body.num_valoraciones).toBe(1);
+    });
+});
+
+describe("Ofertas de empleo", () => {
+    test("Listar ofertas públicas devuelve lista con paginación", async () => {
+        const res = await request(app).get("/ofertas?pagina=1&limite=5");
+
+        expect(res.status).toBe(200);
+        expect(Array.isArray(res.body.ofertas)).toBe(true);
+        expect(res.body).toHaveProperty("paginas");
+    });
+
+    test("Un mentor crea una oferta y responde 201", async () => {
+        const token = await obtenerTokenDe(usuarioMentor);
+        const res = await request(app)
+            .post("/oferta/agregar")
+            .set("Authorization", token)
+            .send({
+                titulo: "Desarrollador backend junior",
+                descripcion: "Buscamos una persona motivada para el equipo de backend creado en el curso.",
+                tipo: "empleo",
+                modalidad: "remoto",
+                nivel: "intermedio",
+                estado: "abierta"
+            });
+
+        expect(res.status).toBe(201);
+        expect(res.body.titulo).toBe("Desarrollador backend junior");
+    });
+
+    test("Crear una oferta con título corto responde 400", async () => {
+        const token = await obtenerTokenDe(usuarioMentor);
+        const res = await request(app)
+            .post("/oferta/agregar")
+            .set("Authorization", token)
+            .send({
+                titulo: "Vac",
+                descripcion: "Descripción suficientemente larga para superar la validación de veinte caracteres.",
+                tipo: "empleo",
+                modalidad: "remoto"
+            });
+
+        expect(res.status).toBe(400);
+    });
+
+    test("Un desarrollador puede postularse a una oferta ajena", async () => {
+        const tokenMentor = await obtenerTokenDe(usuarioMentor);
+        const oferta = await request(app)
+            .post("/oferta/agregar")
+            .set("Authorization", tokenMentor)
+            .send({
+                titulo: "Oferta para postularse",
+                descripcion: "Una descripción larga y suficientemente completa para poder crear esta oferta de prueba.",
+                tipo: "practica",
+                modalidad: "remoto",
+                nivel: "principiante",
+                estado: "abierta"
+            });
+
+        const tokenDev = await obtenerToken();
+        const res = await request(app)
+            .post(`/oferta/${oferta.body._id}/postular`)
+            .set("Authorization", tokenDev)
+            .send({ mensaje: "Me interesa esta oportunidad" });
+
+        expect(res.status).toBe(201);
+        expect(res.body.oferta_id).toBeDefined();
+    });
+});
+
+describe("Equipos", () => {
+    test("Listar equipos devuelve lista con paginación", async () => {
+        const res = await request(app).get("/equipos?pagina=1&limite=5");
+
+        expect(res.status).toBe(200);
+        expect(res.body).toHaveProperty("total_paginas");
+        expect(Array.isArray(res.body.equipos)).toBe(true);
+    });
+
+    test("Crear un equipo sin token responde 401", async () => {
+        const res = await request(app)
+            .post("/equipo/agregar")
+            .send({ nombre: "Equipo sin token" });
+
+        expect(res.status).toBe(401);
+    });
+});
