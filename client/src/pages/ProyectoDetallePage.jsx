@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Container, Row, Col, Spinner, Alert, Button } from 'react-bootstrap';
+import { Container, Row, Col, Spinner, Alert, Button, Form } from 'react-bootstrap';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import api from '../api';
 import IconoHabilidad from '../components/IconoHabilidad';
@@ -181,7 +181,7 @@ function ProyectoDetallePage() {
 
   return (
     <div className="proyectos-pagina">
-      <Container fluid className="pt-4 px-lg-5" style={{ maxWidth: 1100 }}>
+      <Container fluid className="pt-4 px-lg-5">
         <button type="button" className="volver-pagina mb-3" onClick={() => navigate(-1)}>
           ← Volver
         </button>
@@ -362,10 +362,10 @@ function ProyectoDetallePage() {
               </h4>
 
               {usuario && (
-                <div className="proyecto-postulacion-form mb-4" style={{ maxWidth: 640 }}>
+                <div className="proyecto-postulacion-form mb-4">
                   <Form.Control
                     as="textarea"
-                    rows={2}
+                    rows={3}
                     className="proyecto-post-mensaje"
                     placeholder="Deja tu retroalimentación…"
                     value={nuevoComentario}
@@ -391,42 +391,50 @@ function ProyectoDetallePage() {
                   Aún no hay comentarios{usuario ? '. ¡Sé el primero!' : '.'}
                 </p>
               ) : (
-                <div className="equipo-miembros" style={{ maxWidth: 760 }}>
+                <div className="proyecto-comentarios">
                   {comentarios.map((c) => {
-                    const autor = c.usuario_id;
+                    const autor = c.usuario_id || {};
+                    const inicial = (autor.nombre || 'U').charAt(0).toUpperCase();
                     const puedeBorrar =
                       (autor && String(autor._id || autor) === String(idUsuario)) ||
                       esCreador ||
                       usuario?.rol === 'admin';
                     return (
-                      <div className="equipo-miembro" key={String(c._id)}>
-                        <div>
-                          <strong>
-                            {autor?._id ? (
-                              <Link to={`/usuario/${autor._id}`} className="perfil-publico-enlace">
-                                {autor.nombre || 'Anónimo'} {autor.apellido_paterno || ''}
-                              </Link>
-                            ) : (
-                              <>{(autor?.nombre || 'Usuario')} {autor?.apellido_paterno || ''}</>
-                            )}
-                            {' · '}
-                            <span className="proyecto-creador" style={{ fontSize: '0.72rem', display: 'inline' }}>
+                      <div className="proyecto-comentario" key={String(c._id)}>
+                        <span className="proyecto-comentario-avatar">
+                          {autor.foto ? (
+                            <img src={autor.foto} alt={`Foto de ${autor.nombre || 'usuario'}`} />
+                          ) : (
+                            inicial
+                          )}
+                        </span>
+                        <div className="proyecto-comentario-cuerpo">
+                          <div className="proyecto-comentario-cabeza">
+                            <strong>
+                              {autor?._id ? (
+                                <Link to={`/usuario/${autor._id}`} className="perfil-publico-enlace">
+                                  {autor.nombre || 'Anónimo'} {autor.apellido_paterno || ''}
+                                </Link>
+                              ) : (
+                                <>{autor?.nombre || 'Usuario'} {autor?.apellido_paterno || ''}</>
+                              )}
+                            </strong>
+                            <span className="proyecto-comentario-fecha">
                               {new Date(c.fecha).toLocaleString('es')}
                             </span>
-                          </strong>
-                          <div className="proyecto-detalle-texto" style={{ whiteSpace: 'pre-wrap' }}>
-                            {c.contenido}
                           </div>
+                          <div className="proyecto-comentario-texto">{c.contenido}</div>
                         </div>
                         {puedeBorrar && (
-                          <Button
-                            size="sm"
-                            variant="outline-light"
-                            className="proyectos-boton"
+                          <button
+                            type="button"
+                            title="Eliminar comentario"
+                            aria-label="Eliminar comentario"
+                            className="proyecto-comentario-borrar"
                             onClick={() => borrarComentario(c)}
                           >
-                            Eliminar
-                          </Button>
+                            <span className="material-symbols-outlined">delete</span>
+                          </button>
                         )}
                       </div>
                     );
