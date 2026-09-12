@@ -70,11 +70,6 @@ function PerfilEditar() {
       en_curso: almacenado?.educacion?.en_curso || false,
     },
     foto: almacenado?.foto || '',
-    preferencias_notificaciones: almacenado?.preferencias_notificaciones || {
-      correo: true,
-      correo_aceptaciones: true,
-      correo_intereses: true,
-    },
     habilidades: [],
   });
   const [misHabilidades, setMisHabilidades] = useState([]);
@@ -115,11 +110,6 @@ function PerfilEditar() {
             en_curso: p.educacion?.en_curso || false,
           },
           foto: p.foto || '',
-          preferencias_notificaciones: p.preferencias_notificaciones || {
-            correo: true,
-            correo_aceptaciones: true,
-            correo_intereses: true,
-          },
           habilidades: (mis.data || []).map((r) => ({
             habilidad_id: String(r.habilidad_id?._id || r.habilidad_id),
             nivel: r.nivel || 'principiante',
@@ -150,14 +140,6 @@ function PerfilEditar() {
   const setEducacion = (campo) => (e) => {
     const valor = campo === 'en_curso' ? e.target.checked : e.target.value;
     setDatos((p) => ({ ...p, educacion: { ...p.educacion, [campo]: valor } }));
-  };
-
-  const setPreferencia = (campo) => (e) => {
-    const valor = e.target.checked;
-    setDatos((p) => ({
-      ...p,
-      preferencias_notificaciones: { ...p.preferencias_notificaciones, [campo]: valor },
-    }));
   };
 
   const alternar = (lista, item) => {
@@ -335,7 +317,6 @@ function PerfilEditar() {
         idiomas: datos.idiomas,
         educacion: datos.educacion,
         foto: datos.foto,
-        preferencias_notificaciones: datos.preferencias_notificaciones,
       };
       const perfil = (await api.put('/usuario/perfil', payload)).data;
       guardarUsuario(perfil);
@@ -674,47 +655,6 @@ function PerfilEditar() {
 
               <Col xs={12}>
                 <section className="proyecto-panel perfil-panel">
-                  <h2 className="perfil-card-titulo">Notificaciones por correo</h2>
-                  <div className="perfil-campo perfil-chequeo">
-                    <label className="perfil-check">
-                      <input
-                        type="checkbox"
-                        checked={datos.preferencias_notificaciones.correo}
-                        onChange={setPreferencia('correo')}
-                      />
-                      Recibir avisos por correo electrónico
-                    </label>
-                  </div>
-                  <div className="perfil-campo perfil-chequeo">
-                    <label className={`perfil-check${!datos.preferencias_notificaciones.correo ? ' perfil-check-inactivo' : ''}`}>
-                      <input
-                        type="checkbox"
-                        checked={datos.preferencias_notificaciones.correo_aceptaciones}
-                        onChange={setPreferencia('correo_aceptaciones')}
-                        disabled={!datos.preferencias_notificaciones.correo}
-                      />
-                      Aceptaciones y rechazos (postulaciones, equipos)
-                    </label>
-                  </div>
-                  <div className="perfil-campo perfil-chequeo">
-                    <label className={`perfil-check${!datos.preferencias_notificaciones.correo ? ' perfil-check-inactivo' : ''}`}>
-                      <input
-                        type="checkbox"
-                        checked={datos.preferencias_notificaciones.correo_intereses}
-                        onChange={setPreferencia('correo_intereses')}
-                        disabled={!datos.preferencias_notificaciones.correo}
-                      />
-                      Recomendaciones según tus intereses
-                    </label>
-                  </div>
-                  <p className="perfil-nota">
-                    Estas opciones solo afectan a los correos. Las notificaciones dentro de la plataforma seguirán llegando.
-                  </p>
-                </section>
-              </Col>
-
-              <Col xs={12}>
-                <section className="proyecto-panel perfil-panel">
                   <h2 className="perfil-card-titulo">Habilidades que dominas</h2>
                   <div className="perfil-campo">
                     <label className="login-label">Buscar en el catálogo</label>
@@ -802,18 +742,16 @@ function PerfilEditar() {
         </Row>
       </Container>
 
-      <div className="perfil-peligro-wrap">
-        <div className="perfil-peligro-titulo">
+      <div className="perfil-peligro">
+        <span className="perfil-peligro-texto">
           <span className="material-symbols-outlined">delete_forever</span>
-          <div>
-            <h2 className="proyectos-titulo">Eliminar mi cuenta</h2>
-            <p className="proyectos-subtitulo">
-              Esta acción borra tu cuenta y todo tu contenido (proyectos, postulaciones, comentarios, etc.) de forma permanente.
-            </p>
-          </div>
-        </div>
-        <Button variant="outline-danger" className="perfil-peligro-boton" onClick={() => setEliminarAbierto(true)}>
-          Eliminar mi cuenta
+          <span>
+            <strong>Eliminar mi cuenta</strong>
+            <small>Se borrará tu cuenta y todo tu contenido de forma permanente.</small>
+          </span>
+        </span>
+        <Button variant="outline-danger" size="sm" className="perfil-peligro-boton" onClick={() => setEliminarAbierto(true)}>
+          Eliminar
         </Button>
       </div>
 

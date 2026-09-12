@@ -567,6 +567,20 @@
   border-top: 1px solid #efeff5;
 }
 
+.proyecto-fila-pie {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding-top: 0.65rem;
+  border-top: 1px solid #efeff5;
+}
+
+.proyecto-fila-pie .proyectos-boton {
+  white-space: nowrap;
+}
+
 /* ---------- Mini tarjeta de recomendados ---------- */
 .recomendado-mini {
   background: #ffffff;
@@ -598,6 +612,14 @@
   margin: 0 0 0.5rem;
   min-width: 0;
   overflow-wrap: anywhere;
+}
+
+.recomendado-mini-ver {
+  display: inline-block;
+  margin-top: 0.55rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--nx-morado);
 }
 
 /* ---------- Tarjetas de proyecto ---------- */

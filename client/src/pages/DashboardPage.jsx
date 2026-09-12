@@ -2,7 +2,6 @@ import { useCallback, useEffect, useState } from 'react';
 import { Container, Row, Col, Spinner, Alert, Button, Modal } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../api';
-import IconoHabilidad from '../components/IconoHabilidad';
 import { leerUsuario, esPerfilCompleto } from '../utils/perfil';
 import './ProyectosPage.css';
 
@@ -28,7 +27,6 @@ function DashboardPage() {
   const [misLogros, setMisLogros] = useState(null);
   const [error, setError] = useState('');
   const [cargando, setCargando] = useState(true);
-  const [expandido, setExpandido] = useState(null);
   const [proyectoAEliminar, setProyectoAEliminar] = useState(null);
   const navigate = useNavigate();
 
@@ -68,53 +66,25 @@ function DashboardPage() {
 
   const rendDetalle = useCallback(
     (p) => (
-      <section className="proyecto-fila-detalle">
-        <div className="proyecto-detalle-bloque">
-          <span className="proyecto-detalle-etiqueta">Habilidades requeridas</span>
-          <div className="proyecto-detalle-chips">
-            {p.habilidades_requeridas?.length ? (
-              p.habilidades_requeridas.map((h) => (
-                <span key={String(h._id || h)} className="proyecto-detalle-chip">
-                  <IconoHabilidad nombre={h.nombre || h} />
-                  {h.nombre || h}
-                </span>
-              ))
-            ) : (
-              <span className="proyecto-detalle-texto">Sin habilidades específicas.</span>
-            )}
-          </div>
-        </div>
-        <div className="proyecto-detalle-bloque">
-          <span className="proyecto-detalle-etiqueta">Equipo</span>
-          <span className="proyecto-detalle-texto">
-            {p.integrantes_maximos || 1} integrante(s) máximo
-          </span>
-        </div>
-        {p.fecha_limite && (
-          <div className="proyecto-detalle-bloque">
-            <span className="proyecto-detalle-etiqueta">Fecha límite</span>
-            <span className="proyecto-detalle-texto">
-              {new Date(p.fecha_limite).toLocaleDateString('es')}
-            </span>
-          </div>
-        )}
-        <div className="proyecto-detalle-bloque">
-          <span className="proyecto-detalle-etiqueta">Publicado</span>
-          <span className="proyecto-detalle-texto">
-            {new Date(p.fecha_creacion).toLocaleDateString('es')}
-          </span>
-        </div>
-        <div className="proyecto-detalle-acciones">
-          <Button
-            variant="primary"
-            size="sm"
-            className="proyectos-boton"
-            onClick={() => navigate(`/proyecto/${p._id}`)}
-          >
-            Ver proyecto
-          </Button>
-        </div>
-      </section>
+      <footer className="proyecto-fila-pie">
+        <span className="proyecto-fila-creador-meta">
+          · {p.integrantes_maximos || 1} integrante(s)
+          {p.coincidencias > 0
+            ? ` · ${p.coincidencias} coincidencia${p.coincidencias !== 1 ? 's' : ''}`
+            : ''}
+        </span>
+        <Button
+          variant="primary"
+          size="sm"
+          className="proyectos-boton"
+          onClick={(e) => {
+            e.stopPropagation();
+            navigate(`/proyecto/${p._id}`);
+          }}
+        >
+          Ver proyecto <span aria-hidden="true">→</span>
+        </Button>
+      </footer>
     ),
     [navigate]
   );
@@ -122,9 +92,9 @@ function DashboardPage() {
   const rendCarjeta = useCallback(
     (p) => (
       <article
-        className={`proyecto-fila${expandido === p._id ? ' abierto' : ''}`}
+        className="proyecto-fila"
         key={p._id}
-        onClick={() => alternar(p._id)}
+        onClick={() => navigate(`/proyecto/${p._id}`)}
       >
         <div className="proyecto-fila-cabecera">
           <div>
@@ -134,9 +104,7 @@ function DashboardPage() {
             </span>
           </div>
           <span className="proyecto-fila-flecha" aria-hidden="true">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="6 9 12 15 18 9" />
-            </svg>
+            →
           </span>
         </div>
         <div className="proyecto-meta mb-2">
@@ -145,16 +113,10 @@ function DashboardPage() {
           {p.categoria && <span className="proyecto-badge">{p.categoria}</span>}
         </div>
         <p className="proyecto-descripcion">{p.descripcion}</p>
-        <footer className="proyecto-creador">
-          · {p.integrantes_maximos || 1} integrante(s)
-          {p.coincidencias ? ` · ${p.coincidencias} coincidencia${p.coincidencias !== 1 ? 's' : ''}` : ''}
-        </footer>
-        <div className={`proyecto-fila-contenido${expandido === p._id ? ' abierto' : ''}`}>
-          {rendDetalle(p)}
-        </div>
+        {rendDetalle(p)}
       </article>
     ),
-    [expandido, rendDetalle]
+    [navigate, rendDetalle]
   );
 
   const eliminarProyecto = async (id) => {
@@ -170,19 +132,15 @@ function DashboardPage() {
   const rendMini = useCallback(
     (p, esMio = false) => (
       <div
-        className={`recomendado-mini${expandido === p._id ? ' abierto' : ''}`}
+        className="recomendado-mini"
         key={p._id}
-        onClick={() => alternar(p._id)}
+        onClick={() => navigate(`/proyecto/${p._id}`)}
       >
         <div className="recomendado-mini-cabecera">
           <h6>{p.titulo}</h6>
-          <span className="recomendado-mini-posicion" aria-hidden="true">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="6 9 12 15 18 9" />
-            </svg>
-          </span>
+          <span className="recomendado-mini-posicion" aria-hidden="true">→</span>
         </div>
-        <p>{p.descripcion.length > 90 ? `${p.descripcion.slice(0, 90)}…` : p.descripcion}</p>
+        <p>{(p.descripcion || '').length > 90 ? `${(p.descripcion || '').slice(0, 90)}…` : (p.descripcion || '')}</p>
         <div className="recomendado-badges">
           <span className="proyecto-badge">{ETIQUETAS_ESTADO[p.estado] || p.estado}</span>
           {p.coincidencias > 0 && (
@@ -191,10 +149,7 @@ function DashboardPage() {
             </span>
           )}
         </div>
-        <div className={`proyecto-fila-contenido${expandido === p._id ? ' abierto' : ''}`}>
-          {rendDetalle(p)}
-        </div>
-        {esMio && (
+        {esMio ? (
           <div className="recomendado-mini-acciones" onClick={(ev) => ev.stopPropagation()}>
             <Button
               variant="primary"
@@ -213,10 +168,14 @@ function DashboardPage() {
               Dar de baja
             </Button>
           </div>
+        ) : (
+          <span className="recomendado-mini-ver" aria-hidden="true">
+            Ver proyecto →
+          </span>
         )}
       </div>
     ),
-    [expandido, rendDetalle, navigate]
+    [navigate]
   );
 
   const estadisticas = [

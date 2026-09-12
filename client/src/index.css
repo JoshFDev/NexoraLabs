@@ -518,6 +518,148 @@ body {
   margin-top: 0.2rem;
 }
 
+/* Preferencias de notificación dentro de la campanita */
+.notif-menu-acciones {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.notif-engranaje {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  color: #e9d5ff;
+  background: rgba(237, 233, 255, 0.14);
+  border: 1px solid rgba(237, 233, 255, 0.3);
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.notif-engranaje:hover {
+  background: rgba(168, 85, 247, 0.5);
+  color: #ffffff;
+}
+
+.notif-volver {
+  background: rgba(237, 233, 255, 0.14);
+  border: 1px solid rgba(237, 233, 255, 0.3);
+  color: #e9d5ff;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.notif-volver:hover {
+  background: rgba(237, 233, 255, 0.24);
+  color: #ffffff;
+}
+
+.notif-preferencias {
+  padding: 0.9rem 1rem 1rem;
+  max-height: 380px;
+  overflow-y: auto;
+}
+
+.notif-preferencias-intro {
+  font-size: 0.74rem;
+  color: #7c7790;
+  margin: 0 0 0.7rem;
+  line-height: 1.4;
+}
+
+.notif-preferencia {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0.6rem 0.7rem;
+  margin-bottom: 0.5rem;
+  border: 1px solid #eceaf3;
+  border-radius: 0.4rem;
+  background: #fcfaff;
+  cursor: pointer;
+  transition: border-color 0.12s ease;
+}
+
+.notif-preferencia:hover {
+  border-color: rgba(168, 85, 247, 0.5);
+}
+
+.notif-preferencia input {
+  width: 17px;
+  height: 17px;
+  margin-top: 2px;
+  accent-color: var(--nx-morado);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.notif-preferencia span {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.notif-preferencia strong {
+  font-size: 0.82rem;
+  color: #231d3d;
+  font-weight: 700;
+}
+
+.notif-preferencia small {
+  font-size: 0.72rem;
+  color: #8a83a5;
+  line-height: 1.3;
+}
+
+.notif-preferencia.inactiva {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.notif-preferencia.inactiva input {
+  cursor: not-allowed;
+}
+
+.notif-preferencias-aviso {
+  font-size: 0.75rem;
+  color: #dc2626;
+  margin: 0.4rem 0 0.5rem;
+}
+
+.notif-preferencias-aviso.ok {
+  color: #15803d;
+}
+
+.notif-preferencias-guardar {
+  width: 100%;
+  padding: 0.5rem 0.8rem;
+  border: none;
+  border-radius: 0.4rem;
+  background: linear-gradient(135deg, #A855F7, #6D28D9);
+  color: #ffffff;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.12s ease;
+}
+
+.notif-preferencias-guardar:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.notif-preferencias-guardar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 /* Animaciones de notificaciones */
 .notif-campana.vibrando {
   animation: notif-timbre 0.45s ease-in-out infinite;
