@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import api from '../api';
 import Chispas from '../components/Chispas';
 import VerificarCorreo from '../components/VerificarCorreo';
+import RecuperarPasswordModal from '../components/RecuperarPasswordModal';
 import { guardarUsuario, esPerfilCompleto } from '../utils/perfil';
 import './LoginPage.css';
 
@@ -88,6 +89,7 @@ function LoginPage() {
   const [agitar, setAgitar] = useState(false);
   const [cerrando, setCerrando] = useState(false);
   const [verificando, setVerificando] = useState(false);
+  const [recuperando, setRecuperando] = useState(false);
   const [errores, setErrores] = useState({ email: '', password: '' });
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
@@ -182,7 +184,7 @@ function LoginPage() {
   };
 
   const olvidar = () => {
-    setNota('La recuperación de contraseña estará disponible próximamente.');
+    setRecuperando(true);
   };
 
   const irARegistro = (e) => {
@@ -381,6 +383,12 @@ function LoginPage() {
       </main>
 
       <footer className="login-pie">© 2026 NexoraLabs · Plataforma de proyectos colaborativos</footer>
+
+      <RecuperarPasswordModal
+        mostrar={recuperando}
+        onCerrar={() => setRecuperando(false)}
+        emailInicial={email}
+      />
     </div>
   );
 }

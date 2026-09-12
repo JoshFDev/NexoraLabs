@@ -106,6 +106,17 @@ const usuarioEsquema = new Schema(
         },
         codigo_eliminacion_expira: {
             type: Date
+        },
+        codigo_recuperacion: {
+            type: String
+        },
+        codigo_recuperacion_expira: {
+            type: Date
+        },
+        preferencias_notificaciones: {
+            correo: { type: Boolean, default: true },
+            correo_aceptaciones: { type: Boolean, default: true },
+            correo_intereses: { type: Boolean, default: true }
         }
     },
     {

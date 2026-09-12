@@ -421,3 +421,105 @@ describe("Eliminación de cuenta", () => {
         expect(res.status).toBe(400);
     });
 });
+
+describe("Recuperación de contraseña", () => {
+    const datosRecuperable = {
+        nombre: "Recupera",
+        apellido_paterno: "Prueba",
+        email: "recuperable@testing.com",
+        password: "12345678",
+        rol: "estudiante"
+    };
+
+    test("Solicitar recuperación de un correo inexistente responde 200 sin código", async () => {
+        const res = await request(app)
+            .post("/usuario/recuperar/solicitar")
+            .send({ email: "nadie@testing.com" });
+
+        expect(res.status).toBe(200);
+        expect(res.body.codigo).toBeUndefined();
+    });
+
+    test("Cambiar la contraseña con el código y poder iniciar sesión con la nueva", async () => {
+        const registro = await request(app).post("/usuario/registro").send(datosRecuperable);
+        expect(registro.status).toBe(200);
+
+        const solicitud = await request(app)
+            .post("/usuario/recuperar/solicitar")
+            .send({ email: datosRecuperable.email });
+        expect(solicitud.status).toBe(200);
+
+        const codigo = solicitud.body.codigo;
+        expect(codigo).toBeDefined();
+
+        const confirmar = await request(app)
+            .post("/usuario/recuperar/confirmar")
+            .send({ email: datosRecuperable.email, codigo, nueva_password: "nueva12345" });
+        expect(confirmar.status).toBe(200);
+
+        //La contraseña anterior deja de funcionar y la nueva sí
+        const vieja = await request(app)
+            .post("/usuario/login")
+            .send({ email: datosRecuperable.email, password: datosRecuperable.password });
+        expect(vieja.status).toBe(400);
+
+        const nueva = await request(app)
+            .post("/usuario/login")
+            .send({ email: datosRecuperable.email, password: "nueva12345" });
+        expect(nueva.status).toBe(200);
+    });
+
+    test("Confirmar con código incorrecto responde 400", async () => {
+        const res = await request(app)
+            .post("/usuario/recuperar/confirmar")
+            .send({ email: datosRecuperable.email, codigo: "000000", nueva_password: "nueva12345" });
+
+        expect(res.status).toBe(400);
+    });
+});
+
+describe("Preferencias de notificación e intereses", () => {
+    const datosInteresado = {
+        nombre: "Interes",
+        apellido_paterno: "Prueba",
+        email: "interesado@testing.com",
+        password: "12345678",
+        rol: "estudiante"
+    };
+
+    test("Guardar las preferencias de notificación en el perfil", async () => {
+        const token = await obtenerTokenDe(datosInteresado);
+        const perfil = await request(app)
+            .put("/usuario/perfil")
+            .set("Authorization", token)
+            .send({ preferencias_notificaciones: { correo: false, correo_intereses: false } });
+
+        expect(perfil.status).toBe(200);
+        expect(perfil.body.preferencias_notificaciones).toMatchObject({ correo: false, correo_intereses: false });
+        expect(perfil.body.preferencias_notificaciones.correo_aceptaciones).toBe(true);
+    });
+
+    test("Crear un proyecto crea una notificación para quien tenga intereses que coincidan", async () => {
+        const tokenInteresado = await obtenerTokenDe(datosInteresado);
+        await request(app)
+            .put("/usuario/perfil")
+            .set("Authorization", tokenInteresado)
+            .send({ intereses: ["Desarrollo Web"] });
+
+        const tokenCreador = await obtenerToken(usuarioPrueba);
+        const proyecto = await request(app)
+            .post("/proyecto/agregar")
+            .set("Authorization", tokenCreador)
+            .send({
+                titulo: "Curso Desarrollo Web con React",
+                descripcion: "Proyecto para construir una app web moderna con React y Node.",
+                categoria: "web",
+                estado: "buscando_equipo"
+            });
+        expect(proyecto.status).toBe(201);
+
+        const notificaciones = await request(app).get("/notificaciones").set("Authorization", tokenInteresado);
+        expect(notificaciones.status).toBe(200);
+        expect(notificaciones.body.notificaciones.some((n) => n.titulo === "Nuevo proyecto para ti")).toBe(true);
+    });
+});

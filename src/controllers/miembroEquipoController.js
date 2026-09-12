@@ -160,7 +160,8 @@ export const eliminarMiembroDeEquipo = async (req, res) => {
                 tipo: "equipo",
                 titulo: "Fuiste removido del equipo",
                 mensaje: `${nombreMiembro} ya no forma parte del equipo del proyecto "${datosProyecto.titulo}".`,
-                enlace: `/equipos`
+                enlace: `/equipos`,
+                email: "aceptaciones"
             });
         }
 
@@ -351,7 +352,8 @@ export const cambiarEstadoSolicitud = async (req, res) => {
                 : `Tu solicitud para unirte al equipo "${
                     solicitudConDatos?.equipo_id?.nombre || ''
                   }" no fue aprobada.`,
-            enlace: `/equipos`
+            enlace: `/equipos`,
+            email: "aceptaciones"
         });
 
         res.json(solicitudConDatos);

@@ -10,7 +10,7 @@ const notificacionEsquema = new Schema(
         },
         tipo: {
             type: String,
-            enum: ["postulacion", "equipo", "sistema"],
+            enum: ["postulacion", "equipo", "sistema", "proyecto", "oferta", "recurso"],
             default: "sistema"
         },
         titulo: {

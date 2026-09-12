@@ -1,6 +1,7 @@
 import RecursoAprendizaje from "../models/RecursoAprendizaje";
 import { serverError, notFound, badRequest } from "../shared/errors/errorHandler";
 import httpStatus from "../shared/errors/httpStatus";
+import { notificarInteresados } from "../shared/recomendaciones";
 
 //GET /recursos-aprendizaje → listar con filtros, paginación y ordenamiento
 //ej: /recursos-aprendizaje?buscar=javascript&tipo=video&nivel=intermedio&orden=a-z
@@ -79,6 +80,17 @@ export const crearRecurso = async (req, res) => {
         }
         const recurso = new RecursoAprendizaje(req.body);
         const recursoRegistrado = await recurso.save();
+
+        //Avisar a quienes tengan intereses que coincidan con este recurso
+        await notificarInteresados({
+            tipo: "recurso",
+            titulo: recursoRegistrado.titulo,
+            descripcion: recursoRegistrado.descripcion,
+            coincidencias: [recursoRegistrado.tipo, recursoRegistrado.nivel],
+            enlace: `/recursos`,
+            creadorExcluido: req.usuario.id
+        });
+
         res.status(httpStatus.CREATED).json(recursoRegistrado);
     } catch (error) {
         console.log(error);

@@ -3,7 +3,7 @@ import Usuario from "../models/Usuario";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { httpStatus, badRequest, serverError, notFound, conflict } from "../shared/errors/errorHandler";
-import { enviarBienvenida, enviarCodigoVerificacion, enviarCodigoEliminacion } from "../shared/mailer";
+import { enviarBienvenida, enviarCodigoVerificacion, enviarCodigoEliminacion, enviarCodigoRecuperacion } from "../shared/mailer";
 import Comentario from "../models/Comentario";
 import LogroUsuario from "../models/LogroUsuario";
 import MiembroEquipo from "../models/MiembroEquipo";
@@ -28,6 +28,10 @@ const codigoValido = (codigo, email, uso, firma, expira) => {
     const almacenada = Buffer.from(firma);
     return esperada.length === almacenada.length && crypto.timingSafeEqual(esperada, almacenada);
 };
+
+// Cuentas de demostración: no tienen correo real, así que nunca piden código de verificación
+const CUENTAS_DEMO = new Set(["joshua@test.com", "admin@test.com"]);
+const esCuentaDemo = (email) => CUENTAS_DEMO.has(String(email || "").toLowerCase());
 
 //GET /usuarios → listar con filtros, paginación y ordenamiento
 //ej: /usuarios?buscar=josh&rol=mentor&nivel=intermedio&orden=a-z
@@ -217,7 +221,8 @@ export const actualizarMiPerfil = async (req, res) => {
             "intereses",
             "idiomas",
             "educacion",
-            "foto"
+            "foto",
+            "preferencias_notificaciones"
         ];
         const datos = {};
         for (const campo of camposPermitidos) {
@@ -396,6 +401,72 @@ export const confirmarEliminarCuenta = async (req, res) => {
         await Usuario.findByIdAndDelete(usuario._id);
 
         res.json({ mensaje: "Tu cuenta fue eliminada. Esperamos volver a verte." });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json(serverError(error));
+    }
+};
+
+//POST /usuario/recuperar/solicitar → enviar código al correo para restablecer la contraseña
+export const solicitarRecuperacion = async (req, res) => {
+    try {
+        const { email } = req.body;
+        if (!email) {
+            return res.status(httpStatus.BAD_REQUEST).json(badRequest("El correo es requerido"));
+        }
+
+        const usuario = await Usuario.findOne({ email: email.toLowerCase() });
+        //No revelar si el correo existe: siempre responder lo mismo
+        if (!usuario) {
+            return res.json({ mensaje: "Si el correo existe, te enviamos un código para restablecer tu contraseña." });
+        }
+
+        const codigo = generarCodigo();
+        usuario.codigo_recuperacion = firmarCodigo(codigo, usuario.email, "recuperacion");
+        usuario.codigo_recuperacion_expira = new Date(Date.now() + 10 * 60 * 1000);
+        await usuario.save();
+
+        void enviarCodigoRecuperacion(usuario, codigo);
+
+        res.json({
+            mensaje: "Te enviamos un código a tu correo para restablecer tu contraseña.",
+            ...(process.env.NODE_ENV === "test" ? { codigo } : {})
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json(serverError(error));
+    }
+};
+
+//POST /usuario/recuperar/confirmar → validar código y guardar la nueva contraseña
+export const confirmarRecuperacion = async (req, res) => {
+    try {
+        const { email, codigo, nueva_password } = req.body;
+
+        if (!email || !codigo || !nueva_password) {
+            return res.status(httpStatus.BAD_REQUEST).json(badRequest("Correo, código y nueva contraseña son requeridos"));
+        }
+        if (nueva_password.length < 8) {
+            return res.status(httpStatus.BAD_REQUEST).json(badRequest("La contraseña debe tener al menos 8 caracteres"));
+        }
+
+        const usuario = await Usuario.findOne({ email: email.toLowerCase() });
+        if (!usuario) {
+            return res.status(httpStatus.NOT_FOUND).json(notFound("Usuario no encontrado"));
+        }
+
+        if (!codigoValido(codigo, usuario.email, "recuperacion", usuario.codigo_recuperacion, usuario.codigo_recuperacion_expira)) {
+            return res.status(httpStatus.BAD_REQUEST).json(badRequest("Código inválido o expirado"));
+        }
+
+        const salt = await bcrypt.genSalt(10);
+        usuario.password = await bcrypt.hash(nueva_password, salt);
+        usuario.codigo_recuperacion = undefined;
+        usuario.codigo_recuperacion_expira = undefined;
+        if (usuario.email_verificado === false) usuario.email_verificado = true;
+        await usuario.save();
+
+        res.json({ mensaje: "Contraseña actualizada. Ya puedes iniciar sesión con tu nueva contraseña." });
     } catch (error) {
         console.log(error);
         res.status(500).json(serverError(error));

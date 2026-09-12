@@ -136,7 +136,8 @@ export const cambiarEstadoPostulacion = async (req, res) => {
                 mensaje: estado === "aceptada"
                     ? `Tu postulación para "${tituloProyecto}" fue aceptada.`
                     : `Tu postulación para "${tituloProyecto}" no fue seleccionada.`,
-                enlace: `/postulaciones`
+                enlace: `/postulaciones`,
+                email: "aceptaciones"
             });
         }
 

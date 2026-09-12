@@ -106,6 +106,27 @@ export const enviarCodigoVerificacion = async (usuario, codigo) => {
     });
 };
 
+// Código para restablecer la contraseña.
+export const enviarCodigoRecuperacion = async (usuario, codigo) => {
+    const correoSoporte = SMTP_USER || "soporte@nexoralabs.com";
+    return enviarCorreo({
+        para: usuario.email,
+        asunto: "Recupera tu contraseña en NexoraLabs",
+        texto: cuerpoConCodigo({
+            mensaje: `Hola ${usuario.nombre}, recibimos una solicitud para restablecer tu contraseña. Ingresa este código:`,
+            codigo,
+            pie: "El código expira en 10 minutos. Si no lo solicitaste tú, ignora este correo."
+        }),
+        html: plantillaConCodigo({
+            titulo: "Recuperar contraseña",
+            mensaje: `Hola <strong>${usuario.nombre}</strong>, ingresaste una solicitud para restablecer tu contraseña. Usa este código para continuar:`,
+            codigo,
+            pie: "El código expira en 10 minutos. Si no lo solicitaste tú, ignora este correo.",
+            correoSoporte
+        })
+    });
+};
+
 // Código para confirmar la eliminación de la cuenta.
 export const enviarCodigoEliminacion = async (usuario, codigo) => {
     const correoSoporte = SMTP_USER || "soporte@nexoralabs.com";
@@ -191,6 +212,58 @@ export const enviarBienvenida = async (usuario) => {
     </table>
 </body>
 </html>`,
+    });
+};
+
+// Correo genérico de aviso (aceptaciones, recomendaciones, etc.)
+export const enviarAvisoCorreo = async ({ para, nombre, asunto, mensaje, enlace = "" }) => {
+    const correoSoporte = SMTP_USER || "soporte@nexoralabs.com";
+    const url = enlace ? (enlace.startsWith("http") ? enlace : `${FRONTEND_URL}${enlace}`) : FRONTEND_URL;
+    return enviarCorreo({
+        para,
+        asunto,
+        texto: `${mensaje}\n\nVer en NexoraLabs: ${url}`,
+        html: `<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#f4f0f8;font-family:Arial,Helvetica,sans-serif;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f0f8;padding:32px 12px;">
+        <tr>
+            <td align="center">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#ffffff;border-radius:14px;overflow:hidden;border:1px solid #e6def0;">
+                    <tr>
+                        <td style="padding:24px 32px;background:#120722;text-align:center;">
+                            <div style="font-size:11px;letter-spacing:3px;color:#c4b5fd;text-transform:uppercase;margin-bottom:4px;">NexoraLabs</div>
+                            <div style="color:#ffffff;font-size:20px;font-weight:bold;">${asunto}</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:28px 32px;">
+                            <p style="margin:0 0 16px;color:#5b4b6e;font-size:15px;line-height:1.6;">${mensaje}</p>
+                            ${enlace ? `
+                            <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 20px;">
+                                <tr>
+                                    <td style="border-radius:8px;background:#7c3aed;">
+                                        <a href="${url}" target="_blank" style="display:inline-block;padding:12px 28px;color:#ffffff;font-size:15px;font-weight:bold;text-decoration:none;border-radius:8px;">Ver en NexoraLabs</a>
+                                    </td>
+                                </tr>
+                            </table>` : ""}
+                            <p style="margin:0;color:#8a7f9c;font-size:12px;">Recibes este correo porque tienes activadas las notificaciones en tu perfil. Puedes apagarlas desde tus preferencias.</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:16px 32px;border-top:1px solid #efe8f7;text-align:center;">
+                            <span style="color:#9b8fb0;font-size:12px;">© 2026 NexoraLabs</span>
+                            <span style="color:#cbbfdc;font-size:12px;">&nbsp;·&nbsp;</span>
+                            <a href="mailto:${correoSoporte}" style="color:#7c3aed;font-size:12px;text-decoration:none;">Soporte</a>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>`
     });
 };
 

@@ -2,6 +2,7 @@ import Oferta from "../models/Oferta";
 import PostulacionOferta from "../models/PostulacionOferta";
 import Usuario from "../models/Usuario";
 import { registrarNotificacion } from "../shared/notificaciones";
+import { notificarInteresados } from "../shared/recomendaciones";
 import { serverError, notFound, badRequest, forbidden, conflict } from "../shared/errors/errorHandler";
 import httpStatus from "../shared/errors/httpStatus";
 
@@ -105,6 +106,17 @@ export const crearOferta = async (req, res) => {
         });
 
         const registrada = await oferta.save();
+
+        //Avisar a quienes tengan intereses que coincidan con esta oferta
+        await notificarInteresados({
+            tipo: "oferta",
+            titulo: oferta.titulo,
+            descripcion: oferta.descripcion,
+            coincidencias: [oferta.empresa, oferta.ubicacion, oferta.nivel],
+            enlace: `/ofertas`,
+            creadorExcluido: req.usuario.id
+        });
+
         const conDatos = await Oferta.findById(registrada._id)
             .populate("habilidades_requeridas", "nombre")
             .populate("publicado_por", "nombre apellido_paterno rol");

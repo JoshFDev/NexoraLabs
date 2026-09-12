@@ -10,6 +10,8 @@ import {
     iniciarSesion,
     verificarEmail,
     reenviarCodigoVerificacion,
+    solicitarRecuperacion,
+    confirmarRecuperacion,
     solicitarEliminarCuenta,
     confirmarEliminarCuenta,
     actualizarMiPerfil,
@@ -72,6 +74,12 @@ router.post('/usuario/verificar-email', limitadorCodigosActivo, verificarEmail);
 
 //Reenviar el código de verificación (público)
 router.post('/usuario/reenviar-codigo', limitadorCodigosActivo, reenviarCodigoVerificacion);
+
+//Pedir el código para restablecer la contraseña (público)
+router.post('/usuario/recuperar/solicitar', limitadorCodigosActivo, solicitarRecuperacion);
+
+//Validar el código y guardar la nueva contraseña (público)
+router.post('/usuario/recuperar/confirmar', confirmarRecuperacion);
 
 //Pedir el código para eliminar la cuenta (autenticado)
 router.post('/usuario/eliminar/solicitar', verifyToken, limitadorCodigosActivo, solicitarEliminarCuenta);

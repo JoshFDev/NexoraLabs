@@ -2,6 +2,7 @@ import Proyecto from "../models/Proyecto";
 import UsuarioHabilidad from "../models/UsuarioHabilidad";
 import { serverError, notFound, badRequest, forbidden } from "../shared/errors/errorHandler";
 import httpStatus from "../shared/errors/httpStatus";
+import { notificarInteresados } from "../shared/recomendaciones";
 
 //Recibe (req, res) = misma firma que un callback de ruta de Express.
 //El controlador SÓLO tiene lógica: las rutas solo dirigen.
@@ -67,6 +68,17 @@ export const crearProyecto = async (req, res) => {
         }
         const proyecto = new Proyecto({ ...req.body, creador_id });
         const proyectoRegistrado = await proyecto.save();
+
+        //Avisar a quienes tengan intereses que coincidan con este proyecto
+        await notificarInteresados({
+            tipo: "proyecto",
+            titulo: proyectoRegistrado.titulo,
+            descripcion: proyectoRegistrado.descripcion,
+            coincidencias: [proyectoRegistrado.categoria],
+            enlace: `/proyecto/${proyectoRegistrado._id}`,
+            creadorExcluido: creador_id
+        });
+
         res.status(httpStatus.CREATED).json(proyectoRegistrado);
     } catch (error) {
         console.log(error);
