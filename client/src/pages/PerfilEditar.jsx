@@ -456,6 +456,25 @@ function PerfilEditar() {
                   'Guardar cambios'
                 )}
               </Button>
+
+              <hr className="perfil-resumen-sep" />
+              <div className="perfil-peligro-aside">
+                <span className="perfil-peligro-texto">
+                  <span className="material-symbols-outlined">delete_forever</span>
+                  <span>
+                    <strong>Eliminar mi cuenta</strong>
+                    <small>Requiere confirmación y borra todo tu contenido.</small>
+                  </span>
+                </span>
+                <Button
+                  variant="outline-danger"
+                  size="sm"
+                  className="perfil-peligro-boton w-100"
+                  onClick={() => setEliminarAbierto(true)}
+                >
+                  Eliminar
+                </Button>
+              </div>
             </aside>
           </Col>
 
@@ -741,19 +760,6 @@ function PerfilEditar() {
           </Col>
         </Row>
       </Container>
-
-      <div className="perfil-peligro">
-        <span className="perfil-peligro-texto">
-          <span className="material-symbols-outlined">delete_forever</span>
-          <span>
-            <strong>Eliminar mi cuenta</strong>
-            <small>Se borrará tu cuenta y todo tu contenido de forma permanente.</small>
-          </span>
-        </span>
-        <Button variant="outline-danger" size="sm" className="perfil-peligro-boton" onClick={() => setEliminarAbierto(true)}>
-          Eliminar
-        </Button>
-      </div>
 
       <EliminarCuentaModal mostrar={eliminarAbierto} onCerrar={() => setEliminarAbierto(false)} />
 

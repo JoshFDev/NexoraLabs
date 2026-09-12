@@ -1665,8 +1665,11 @@
 .dash-seccion .recomendado-mini {
   display: flex;
   flex-direction: column;
-  height: 100%;
   min-width: 0;
+}
+
+.dash-seccion .col .recomendado-mini {
+  height: 100%;
 }
 
 .recomendado-mini-cabecera {

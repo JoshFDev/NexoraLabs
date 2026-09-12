@@ -7,34 +7,38 @@ import './EliminarCuentaModal.css';
 // Modal que pide el código enviado al correo para eliminar la cuenta.
 // Al abrirse, solicita el código automáticamente (POST /usuario/eliminar/solicitar).
 function EliminarCuentaModal({ mostrar, onCerrar }) {
+  const [paso, setPaso] = useState('confirmar');
   const [codigo, setCodigo] = useState('');
   const [msj, setMsj] = useState('');
   const [error, setError] = useState('');
   const [enviado, setEnviado] = useState(false);
-  const [cargando, setCargando] = useState(false);
+  const [enviando, setEnviando] = useState(false);
   const [confirmando, setConfirmando] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!mostrar) return;
+    setPaso('confirmar');
     setCodigo('');
     setMsj('');
     setError('');
     setEnviado(false);
-    const pedir = async () => {
-      setCargando(true);
-      try {
-        await api.post('/usuario/eliminar/solicitar');
-        setMsj('Te enviamos un código de confirmación a tu correo.');
-        setEnviado(true);
-      } catch (err) {
-        setError(err.response?.data?.error || 'No pudimos enviar el código. Inténtalo de nuevo.');
-      } finally {
-        setCargando(false);
-      }
-    };
-    pedir();
   }, [mostrar]);
+
+  const enviarCodigo = async () => {
+    setError('');
+    setEnviando(true);
+    try {
+      await api.post('/usuario/eliminar/solicitar');
+      setMsj('Te enviamos un código de confirmación a tu correo.');
+      setEnviado(true);
+      setPaso('codigo');
+    } catch (err) {
+      setError(err.response?.data?.error || 'No pudimos enviar el código. Inténtalo de nuevo.');
+    } finally {
+      setEnviando(false);
+    }
+  };
 
   const confirmar = async () => {
     if (codigo.length !== 6) return;
@@ -59,21 +63,30 @@ function EliminarCuentaModal({ mostrar, onCerrar }) {
         <Modal.Title className="proyectos-titulo">Eliminar mi cuenta</Modal.Title>
       </Modal.Header>
       <Modal.Body className="px-4 pb-4">
-        <p className="proyectos-subtitulo">
-          Esta acción es permanente: se borran tu cuenta y todo tu contenido (proyectos, postulaciones,
-          comentarios, membresías, etc.).
-        </p>
-        {cargando && (
-          <div className="eliminar-cargando">
-            <Spinner as="span" animation="border" size="sm" className="me-2" />
-            Enviando código...
-          </div>
-        )}
-        {enviado && <Alert variant="success" className="eliminar-aviso">{msj}</Alert>}
-        {error && <Alert variant="danger" className="eliminar-aviso">{error}</Alert>}
-
-        {enviado && (
+        {paso === 'confirmar' ? (
           <>
+            <p className="proyectos-subtitulo">
+              Esta acción es <strong>permanente e irreversible</strong>: se borran tu cuenta y todo tu
+              contenido (proyectos, postulaciones, comentarios, membresías, etc.).
+            </p>
+            <p className="proyectos-subtitulo mb-0">
+              Para continuar te enviaremos un código de confirmación a tu correo.
+            </p>
+            {error && <Alert variant="danger" className="eliminar-aviso">{error}</Alert>}
+            <div className="d-flex justify-content-center gap-3 mt-4">
+              <Button variant="danger" className="proyectos-boton" onClick={enviarCodigo} disabled={enviando}>
+                {enviando && <Spinner as="span" animation="border" size="sm" className="me-2" />}
+                Sí, estoy seguro. Enviar código
+              </Button>
+              <Button variant="outline-light" className="proyectos-boton" onClick={onCerrar}>
+                Cancelar
+              </Button>
+            </div>
+          </>
+        ) : (
+          <>
+            {enviado && <Alert variant="success" className="eliminar-aviso">{msj}</Alert>}
+            {error && <Alert variant="danger" className="eliminar-aviso">{error}</Alert>}
             <Form.Control
               type="text"
               inputMode="numeric"

@@ -721,53 +721,50 @@
   accent-color: var(--nx-morado);
 }
 
-.perfil-peligro {
+.perfil-peligro-aside {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
+  flex-direction: column;
+  gap: 0.6rem;
   width: 100%;
-  max-width: 720px;
-  margin: 1.5rem auto 2rem;
-  padding: 0.55rem 0.9rem;
-  border: 1px solid rgba(224, 85, 111, 0.35);
-  border-radius: 10px;
-  background: rgba(224, 85, 111, 0.045);
+  padding-top: 0.15rem;
 }
 
-.perfil-peligro-texto {
+.perfil-peligro-aside .perfil-peligro-texto {
   display: flex;
-  align-items: center;
-  gap: 0.6rem;
+  align-items: flex-start;
+  gap: 0.55rem;
   min-width: 0;
 }
 
-.perfil-peligro-texto > .material-symbols-outlined {
+.perfil-peligro-aside .perfil-peligro-texto > .material-symbols-outlined {
   color: #e0556f;
   flex-shrink: 0;
   font-size: 22px;
 }
 
-.perfil-peligro-texto span {
+.perfil-peligro-aside .perfil-peligro-texto span {
   display: flex;
   flex-direction: column;
+  gap: 0.1rem;
   line-height: 1.25;
   min-width: 0;
 }
 
-.perfil-peligro-texto strong {
-  font-size: 0.86rem;
+.perfil-peligro-aside .perfil-peligro-texto strong {
+  font-size: 0.84rem;
   color: #e0556f;
+  font-weight: 700;
 }
 
-.perfil-peligro-texto small {
+.perfil-peligro-aside .perfil-peligro-texto small {
   font-size: 0.72rem;
   color: #8a7080;
+  line-height: 1.3;
 }
 
 .perfil-peligro-boton {
   border-radius: 8px;
-  padding: 0.35rem 0.85rem;
+  padding: 0.4rem 0.85rem;
   border-color: #e0556f !important;
   color: #e0556f !important;
   font-size: 0.8rem;
