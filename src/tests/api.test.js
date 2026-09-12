@@ -523,3 +523,392 @@ describe("Preferencias de notificación e intereses", () => {
         expect(notificaciones.body.notificaciones.some((n) => n.titulo === "Nuevo proyecto para ti")).toBe(true);
     });
 });
+
+describe("Notificaciones", () => {
+    const datosNotif = {
+        nombre: "Notif",
+        apellido_paterno: "Prueba",
+        email: "notif@testing.com",
+        password: "12345678",
+        rol: "estudiante"
+    };
+
+    test("Listar notificaciones sin token responde 401", async () => {
+        const res = await request(app).get("/notificaciones");
+
+        expect(res.status).toBe(401);
+    });
+
+    test("Marcar como leída una notificación inexistente o ajena responde 404", async () => {
+        const token = await obtenerToken();
+        const res = await request(app)
+            .put(`/notificacion/${new mongoose.Types.ObjectId()}/leida`)
+            .set("Authorization", token);
+
+        expect(res.status).toBe(404);
+    });
+
+    test("Marcar todas como leídas, verificar el contador y eliminar una notificación", async () => {
+        const token = await obtenerTokenDe(datosNotif);
+        await request(app)
+            .put("/usuario/perfil")
+            .set("Authorization", token)
+            .send({ intereses: ["Machine Learning"] });
+
+        const tokenCreador = await obtenerToken();
+        const proyecto = await request(app)
+            .post("/proyecto/agregar")
+            .set("Authorization", tokenCreador)
+            .send({
+                titulo: "Proyecto Machine Learning para tests",
+                descripcion: "Proyecto recomendable con intereses de IA.",
+                categoria: "ia",
+                estado: "buscando_equipo"
+            });
+        expect(proyecto.status).toBe(201);
+
+        const lista = await request(app).get("/notificaciones").set("Authorization", token);
+        expect(lista.status).toBe(200);
+
+        const notif = (lista.body.notificaciones || []).find((n) => n.titulo === "Nuevo proyecto para ti");
+        expect(notif).toBeDefined();
+        expect(notif.leida).toBe(false);
+
+        const marcadas = await request(app)
+            .post("/notificaciones/marcar-todas")
+            .set("Authorization", token);
+        expect(marcadas.status).toBe(200);
+
+        const despues = await request(app).get("/notificaciones").set("Authorization", token);
+        expect(despues.status).toBe(200);
+        expect(despues.body.no_leidas).toBe(0);
+
+        const borrar = await request(app)
+            .delete(`/notificacion/${notif._id}`)
+            .set("Authorization", token);
+        expect(borrar.status).toBe(200);
+    });
+});
+
+describe("Postulaciones a proyectos", () => {
+    const datosPostulante = {
+        nombre: "Postu",
+        apellido_paterno: "Lante",
+        email: "postulante@testing.com",
+        password: "12345678",
+        rol: "estudiante"
+    };
+
+    test("Postular a un proyecto ajeno, repetir da conflicto y retirar funciona", async () => {
+        const tokenCreador = await obtenerToken();
+        const perfil = await request(app).get("/usuario/perfil").set("Authorization", tokenCreador);
+        const proyecto = await request(app)
+            .post("/proyecto/agregar")
+            .set("Authorization", tokenCreador)
+            .send({
+                creador_id: perfil.body._id,
+                titulo: "Proyecto para postular",
+                descripcion: "Proyecto de prueba para el flujo de postulaciones.",
+                categoria: "web",
+                estado: "buscando_equipo"
+            });
+        expect(proyecto.status).toBe(201);
+
+        const tokenPostulante = await obtenerTokenDe(datosPostulante);
+        const postular = await request(app)
+            .post(`/proyecto/${proyecto.body._id}/postular`)
+            .set("Authorization", tokenPostulante)
+            .send({ mensaje: "Quiero participar" });
+        expect(postular.status).toBe(201);
+        expect(postular.body.estado).toBe("pendiente");
+
+        const repetir = await request(app)
+            .post(`/proyecto/${proyecto.body._id}/postular`)
+            .set("Authorization", tokenPostulante)
+            .send({ mensaje: "Otra vez" });
+        expect(repetir.status).toBe(409);
+
+        const misPost = await request(app).get("/mis-postulaciones").set("Authorization", tokenPostulante);
+        expect(misPost.status).toBe(200);
+        const miPostulacion = (misPost.body || []).find(
+            (po) => String(po.proyecto_id?._id || po.proyecto_id) === String(proyecto.body._id)
+        );
+        expect(miPostulacion).toBeDefined();
+
+        const retirar = await request(app)
+            .delete(`/postulacion-own/${miPostulacion._id}`)
+            .set("Authorization", tokenPostulante);
+        expect(retirar.status).toBe(200);
+    });
+
+    test("Solo el creador (o admin) cambia el estado y valida el estado nuevo", async () => {
+        const tokenCreador = await obtenerToken();
+        const perfil = await request(app).get("/usuario/perfil").set("Authorization", tokenCreador);
+        const proyecto = await request(app)
+            .post("/proyecto/agregar")
+            .set("Authorization", tokenCreador)
+            .send({
+                creador_id: perfil.body._id,
+                titulo: "Proyecto para cambiar estados",
+                descripcion: "Proyecto de prueba para el cambio de estado de una postulación.",
+                estado: "buscando_equipo"
+            });
+        expect(proyecto.status).toBe(201);
+
+        const tokenPostulante = await obtenerTokenDe(datosPostulante);
+        const postulacion = await request(app)
+            .post(`/proyecto/${proyecto.body._id}/postular`)
+            .set("Authorization", tokenPostulante)
+            .send({ mensaje: "Aceptenme" });
+        expect(postulacion.status).toBe(201);
+
+        const tokenAjeno = await obtenerTokenDe({
+            nombre: "Ajena",
+            apellido_paterno: "Prueba",
+            email: "ajena@testing.com",
+            password: "12345678",
+            rol: "estudiante"
+        });
+
+        const prohibido = await request(app)
+            .put(`/postulacion/${postulacion.body._id}/estado`)
+            .set("Authorization", tokenAjeno)
+            .send({ estado: "aceptada" });
+        expect(prohibido.status).toBe(403);
+
+        const invalido = await request(app)
+            .put(`/postulacion/${postulacion.body._id}/estado`)
+            .set("Authorization", tokenCreador)
+            .send({ estado: "fantasma" });
+        expect(invalido.status).toBe(400);
+
+        const aceptar = await request(app)
+            .put(`/postulacion/${postulacion.body._id}/estado`)
+            .set("Authorization", tokenCreador)
+            .send({ estado: "aceptada" });
+        expect(aceptar.status).toBe(200);
+        expect(aceptar.body.estado).toBe("aceptada");
+    });
+});
+
+describe("Comentarios de proyectos", () => {
+    const datosComentarista = {
+        nombre: "Coment",
+        apellido_paterno: "Aria",
+        email: "comentarista@testing.com",
+        password: "12345678",
+        rol: "desarrollador"
+    };
+
+    test("Crear comentarios requiere token y un contenido no vacío", async () => {
+        const tokenAutor = await obtenerTokenDe(datosComentarista);
+        const perfil = await request(app).get("/usuario/perfil").set("Authorization", tokenAutor);
+        const proyecto = await request(app)
+            .post("/proyecto/agregar")
+            .set("Authorization", tokenAutor)
+            .send({
+                creador_id: perfil.body._id,
+                titulo: "Proyecto comentado",
+                descripcion: "Proyecto de prueba para los comentarios.",
+                estado: "buscando_equipo"
+            });
+        expect(proyecto.status).toBe(201);
+
+        const lista = await request(app).get(`/proyecto/${proyecto.body._id}/comentarios`);
+        expect(lista.status).toBe(200);
+        expect(Array.isArray(lista.body)).toBe(true);
+
+        const sinToken = await request(app)
+            .post(`/proyecto/${proyecto.body._id}/comentar`)
+            .send({ contenido: "Hola" });
+        expect(sinToken.status).toBe(401);
+
+        const vacio = await request(app)
+            .post(`/proyecto/${proyecto.body._id}/comentar`)
+            .set("Authorization", tokenAutor)
+            .send({ contenido: "   " });
+        expect(vacio.status).toBe(400);
+    });
+
+    test("El autor puede eliminar su comentario, un ajeno no", async () => {
+        const tokenAutor = await obtenerTokenDe(datosComentarista);
+        const perfil = await request(app).get("/usuario/perfil").set("Authorization", tokenAutor);
+        const proyecto = await request(app)
+            .post("/proyecto/agregar")
+            .set("Authorization", tokenAutor)
+            .send({
+                creador_id: perfil.body._id,
+                titulo: "Proyecto con comentario",
+                descripcion: "Proyecto de prueba para eliminar comentarios.",
+                estado: "buscando_equipo"
+            });
+        expect(proyecto.status).toBe(201);
+
+        const crear = await request(app)
+            .post(`/proyecto/${proyecto.body._id}/comentar`)
+            .set("Authorization", tokenAutor)
+            .send({ contenido: "¡Muy buen proyecto!" });
+        expect(crear.status).toBe(201);
+        expect(crear.body.contenido).toBe("¡Muy buen proyecto!");
+
+        const tokenAjeno = await obtenerTokenDe({
+            nombre: "Otro",
+            apellido_paterno: "Usuario",
+            email: "otrocoment@testing.com",
+            password: "12345678",
+            rol: "estudiante"
+        });
+        const prohibido = await request(app)
+            .delete(`/comentario/${crear.body._id}`)
+            .set("Authorization", tokenAjeno);
+        expect(prohibido.status).toBe(403);
+
+        const borrar = await request(app)
+            .delete(`/comentario/${crear.body._id}`)
+            .set("Authorization", tokenAutor);
+        expect(borrar.status).toBe(200);
+    });
+});
+
+describe("Equipos y solicitudes", () => {
+    const datosMentorEquipo = {
+        nombre: "Mentor",
+        apellido_paterno: "Equipo",
+        email: "mentorequipo@testing.com",
+        password: "12345678",
+        rol: "mentor"
+    };
+
+    test("Un mentor crea un equipo y no se puede repetir la solicitud de ingreso", async () => {
+        const tokenMentor = await obtenerTokenDe(datosMentorEquipo);
+        const proyecto = await request(app)
+            .post("/proyecto/agregar")
+            .set("Authorization", tokenMentor)
+            .send({
+                titulo: "Proyecto con equipo",
+                descripcion: "Proyecto de prueba que tendrá un equipo.",
+                estado: "buscando_equipo"
+            });
+        expect(proyecto.status).toBe(201);
+
+        const equipo = await request(app)
+            .post("/equipo/agregar")
+            .set("Authorization", tokenMentor)
+            .send({ proyecto_id: proyecto.body._id, nombre: "Equipo Prueba" });
+        expect(equipo.status).toBe(201);
+        expect(equipo.body.estado).toBe("activo");
+
+        const tokenInteresado = await obtenerTokenDe({
+            nombre: "Interes",
+            apellido_paterno: "Equipo",
+            email: "interesadoequipo@testing.com",
+            password: "12345678",
+            rol: "estudiante"
+        });
+
+        const solicitud = await request(app)
+            .post(`/equipo/${equipo.body._id}/solicitar`)
+            .set("Authorization", tokenInteresado);
+        expect(solicitud.status).toBe(201);
+
+        const repetida = await request(app)
+            .post(`/equipo/${equipo.body._id}/solicitar`)
+            .set("Authorization", tokenInteresado);
+        expect(repetida.status).toBe(409);
+    });
+});
+
+describe("Recomendaciones de proyectos", () => {
+    test("Recomendados sin token responde 401", async () => {
+        const res = await request(app).get("/proyecto/recomendados");
+
+        expect(res.status).toBe(401);
+    });
+
+    test("Recomendados para un usuario sin habilidades devuelve lista vacía", async () => {
+        const token = await obtenerTokenDe({
+            nombre: "Nueva",
+            apellido_paterno: "Cuenta",
+            email: "nuevacuentarecom@testing.com",
+            password: "12345678",
+            rol: "estudiante"
+        });
+
+        const res = await request(app).get("/proyecto/recomendados").set("Authorization", token);
+
+        expect(res.status).toBe(200);
+        expect(res.body.total).toBe(0);
+        expect(Array.isArray(res.body.proyectos)).toBe(true);
+    });
+});
+
+describe("Estadísticas de administración", () => {
+    test("GET /admin/stats sin token responde 401", async () => {
+        const res = await request(app).get("/admin/stats");
+
+        expect(res.status).toBe(401);
+    });
+
+    test("GET /admin/stats con rol no-admin responde 403", async () => {
+        const token = await obtenerToken();
+        const res = await request(app).get("/admin/stats").set("Authorization", token);
+
+        expect(res.status).toBe(403);
+    });
+
+    test("GET /admin/stats con admin responde 200 con métricas", async () => {
+        const token = await obtenerTokenDe({
+            nombre: "Admon",
+            apellido_paterno: "Prueba",
+            email: "admonstats@testing.com",
+            password: "12345678",
+            rol: "admin"
+        });
+
+        const res = await request(app).get("/admin/stats").set("Authorization", token);
+
+        expect(res.status).toBe(200);
+        expect(res.body.total_usuarios).toBeGreaterThanOrEqual(1);
+        expect(res.body).toHaveProperty("total_comentarios");
+        expect(res.body).toHaveProperty("recursos_por_tipo");
+    });
+});
+
+describe("Validaciones y permisos", () => {
+    test("Crear proyecto con campos obligatorios faltantes responde 400", async () => {
+        const token = await obtenerToken();
+        const res = await request(app)
+            .post("/proyecto/agregar")
+            .set("Authorization", token)
+            .send({ titulo: "Sin descripcion" });
+
+        expect(res.status).toBe(400);
+    });
+
+    test("Un estudiante no puede crear proyectos y responde 403", async () => {
+        const token = await obtenerTokenDe({
+            nombre: "Estudia",
+            apellido_paterno: "Nte",
+            email: "estudianteproy@testing.com",
+            password: "12345678",
+            rol: "estudiante"
+        });
+
+        const res = await request(app)
+            .post("/proyecto/agregar")
+            .set("Authorization", token)
+            .send({
+                titulo: "Estudiante crea proyecto",
+                descripcion: "No debería poder crear proyectos con rol estudiante.",
+                estado: "buscando_equipo"
+            });
+
+        expect(res.status).toBe(403);
+    });
+
+    test("Obtener un proyecto inexistente responde 404", async () => {
+        const res = await request(app).get(`/proyecto/${new mongoose.Types.ObjectId()}`);
+
+        expect(res.status).toBe(404);
+    });
+});
