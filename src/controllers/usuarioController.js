@@ -141,8 +141,18 @@ export const registrarUsuario = async (req, res) => {
         const passwordHasheado = await bcrypt.hash(password, salt);
 
         //Reemplazar el password original por el hasheado
-        const usuario = new Usuario({ ...req.body, password: passwordHasheado, email_verificado: false });
+        const demo = esCuentaDemo(req.body.email);
+        const usuario = new Usuario({ ...req.body, password: passwordHasheado, email_verificado: demo });
         const usuarioRegistrado = await usuario.save();
+
+        //Las cuentas demo no piden verificación (no tienen correo real)
+        if (demo) {
+            return res.json({
+                mensaje: "Cuenta demo creada. Ya puedes iniciar sesión.",
+                email: usuarioRegistrado.email,
+                verificado: true
+            });
+        }
 
         //Generar código de verificación de correo (como firma, expira en 10 min)
         const codigo = generarCodigo();
@@ -188,8 +198,15 @@ export const iniciarSesion = async (req, res) => {
         }
 
         //No permitir el login hasta verificar el correo (solo cuentas nuevas; las antiguas no tienen el campo)
-        if (usuario.email_verificado === false) {
+        //Las cuentas de demostración quedan exentas porque no tienen correo real
+        if (usuario.email_verificado === false && !esCuentaDemo(usuario.email)) {
             return res.status(httpStatus.FORBIDDEN).json({ error: "Verifica tu correo para poder iniciar sesión", necesita_verificacion: true });
+        }
+
+        //Si es una cuenta demo que quedó pendiente, la marcamos como verificada
+        if (usuario.email_verificado === false && esCuentaDemo(usuario.email)) {
+            usuario.email_verificado = true;
+            await usuario.save();
         }
 
         //Generar token con los datos del usuario (expira en 24h)
