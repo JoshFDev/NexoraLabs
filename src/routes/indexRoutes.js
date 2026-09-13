@@ -1,4 +1,5 @@
 import { Router } from "express";
+import mongoose from "mongoose";
 
 const router = Router();
 
@@ -93,6 +94,16 @@ const rutas = [
     { metodo: "GET", ruta: "/oferta/:id/postulaciones", descripcion: "Postulaciones de una oferta (admin/mentor o publicador)" },
     { metodo: "PUT", ruta: "/postulacion-oferta/:id/estado", descripcion: "Responder postulación de oferta (admin/mentor o publicador)" }
 ];
+
+router.get("/health", (req, res) => {
+    const conectado = mongoose.connection.readyState === 1;
+    res.status(conectado ? 200 : 503).json({
+        estado: conectado ? "ok" : "degradado",
+        base_de_datos: conectado ? "conectada" : "desconectada",
+        uptime: Math.round(process.uptime()),
+        timestamp: new Date().toISOString()
+    });
+});
 
 router.get('/', (req, res) => {
     res.json({

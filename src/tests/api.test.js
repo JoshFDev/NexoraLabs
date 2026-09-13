@@ -912,3 +912,16 @@ describe("Validaciones y permisos", () => {
         expect(res.status).toBe(404);
     });
 });
+
+describe("Health check", () => {
+    test("GET /health responde 200 con estado ok cuando la BD está conectada", async () => {
+        expect(mongoose.connection.readyState).toBe(1);
+
+        const res = await request(app).get("/health");
+
+        expect(res.status).toBe(200);
+        expect(res.body).toHaveProperty("estado", "ok");
+        expect(res.body).toHaveProperty("base_de_datos", "conectada");
+        expect(res.body).toHaveProperty("timestamp");
+    });
+});

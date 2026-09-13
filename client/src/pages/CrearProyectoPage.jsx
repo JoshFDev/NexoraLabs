@@ -5,6 +5,7 @@ import api from '../api';
 import Chispas from '../components/Chispas';
 import IconoHabilidad from '../components/IconoHabilidad';
 import { leerUsuario } from '../utils/perfil';
+import { useToast } from '../components/ToastContext';
 import './ProyectosPage.css';
 
 const ROLES_CREADOR = ['admin', 'mentor', 'desarrollador', 'ingeniero'];
@@ -25,6 +26,7 @@ function CrearProyectoPage() {
   const usuario = leerUsuario();
   const puedeCrear = ROLES_CREADOR.includes(usuario?.rol);
   const navigate = useNavigate();
+  const { mostrar } = useToast();
   const [searchParams] = useSearchParams();
   const editId = searchParams.get('editar');
   const esEdicion = Boolean(editId);
@@ -133,6 +135,11 @@ function CrearProyectoPage() {
       }
       setExito(true);
       setCargando(false);
+      mostrar(
+        'exito',
+        esEdicion ? 'Tus cambios quedaron guardados.' : 'Tu proyecto ya está en la plataforma.',
+        esEdicion ? 'Proyecto actualizado' : 'Proyecto publicado'
+      );
       setTimeout(() => (esEdicion ? navigate(`/proyecto/${editId}`) : navigate('/explorar')), 750);
     } catch (err) {
       setError(err.response?.data?.error || 'No pudimos guardar el proyecto.');

@@ -3,6 +3,7 @@ import { Container, Row, Col, Spinner, Alert, Button, Modal } from 'react-bootst
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../api';
 import { leerUsuario, esPerfilCompleto } from '../utils/perfil';
+import { useToast } from '../components/ToastContext';
 import './ProyectosPage.css';
 
 const ETIQUETAS_ESTADO = {
@@ -29,6 +30,7 @@ function DashboardPage() {
   const [cargando, setCargando] = useState(true);
   const [proyectoAEliminar, setProyectoAEliminar] = useState(null);
   const navigate = useNavigate();
+  const { mostrar } = useToast();
 
   const usuario = leerUsuario();
   const perfilCompleto = esPerfilCompleto(usuario);
@@ -124,6 +126,7 @@ function DashboardPage() {
     try {
       await api.delete(`/proyecto/${id}`);
       setMisProyectos((prev) => (prev || []).filter((p) => String(p._id) !== String(id)));
+      mostrar('exito', 'El proyecto se dio de baja correctamente.', 'Proyecto eliminado');
     } catch (err) {
       setError(err.response?.data?.error || 'No pudimos eliminar el proyecto.');
     }

@@ -3,6 +3,7 @@ import { Container, Row, Col, Button, Alert, Spinner, Modal, Form } from 'react-
 import { useNavigate } from 'react-router-dom';
 import api from '../api';
 import EliminarCuentaModal from '../components/EliminarCuentaModal';
+import { useToast } from '../components/ToastContext';
 import {
   leerUsuario,
   guardarUsuario,
@@ -43,6 +44,7 @@ function PerfilEditar() {
   const inputFotoRef = useRef(null);
   const arrastreRef = useRef(null);
   const navigate = useNavigate();
+  const { mostrar } = useToast();
 
   const [verFoto, setVerFoto] = useState(false);
   const [cropAbierto, setCropAbierto] = useState(false);
@@ -80,7 +82,6 @@ function PerfilEditar() {
   const [nuevoInteres, setNuevoInteres] = useState('');
   const [nuevoIdioma, setNuevoIdioma] = useState('');
   const [guardando, setGuardando] = useState(false);
-  const [guardado, setGuardado] = useState(false);
   const [error, setError] = useState('');
   const [errorFoto, setErrorFoto] = useState('');
 
@@ -301,7 +302,6 @@ function PerfilEditar() {
   const guardar = async () => {
     if (guardando) return;
     setError('');
-    setGuardado(false);
     setGuardando(true);
     try {
       const payload = {
@@ -338,8 +338,7 @@ function PerfilEditar() {
       );
       const misActualizadas = (await api.get('/mis-habilidades')).data;
       setMisHabilidades(misActualizadas || []);
-      setGuardado(true);
-      setTimeout(() => setGuardado(false), 3000);
+      mostrar('exito', 'Tus cambios se guardaron correctamente.', 'Perfil actualizado');
     } catch (err) {
       setError(err.response?.data?.error || 'No pudimos guardar tu perfil. Inténtalo de nuevo.');
     } finally {
@@ -367,7 +366,6 @@ function PerfilEditar() {
         </p>
 
         {error && <Alert variant="danger">{error}</Alert>}
-        {guardado && <Alert variant="success">✓ ¡Perfil guardado correctamente!</Alert>}
 
         <Row className="g-4">
           <Col xl={4} xxl={3}>

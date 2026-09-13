@@ -17,6 +17,7 @@ import AdminPanelPage from './pages/AdminPanelPage';
 import LogrosPage from './pages/LogrosPage';
 import OfertasEmpleoPage from './pages/OfertasEmpleoPage';
 import RutaProtegida from './components/RutaProtegida';
+import ErrorBoundary from './components/ErrorBoundary';
 
 function App() {
   const { pathname, key } = useLocation();
@@ -26,7 +27,8 @@ function App() {
     <>
       {!esPaginaAuth && <NavBar />}
       <main key={key} className="app-pagina">
-        <Routes>
+        <ErrorBoundary key={pathname}>
+          <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/registro" element={<RegistroPage />} />
         <Route
@@ -134,6 +136,7 @@ function App() {
           }
         />
       </Routes>
+        </ErrorBoundary>
       </main>
       {!esPaginaAuth && <Footer />}
     </>
