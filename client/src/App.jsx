@@ -1,3 +1,4 @@
+import { useLayoutEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import NavBar from './components/NavBar';
 import Footer from './components/Footer';
@@ -22,6 +23,11 @@ import ErrorBoundary from './components/ErrorBoundary';
 function App() {
   const { pathname, key } = useLocation();
   const esPaginaAuth = pathname === '/login' || pathname === '/registro';
+
+  useLayoutEffect(() => {
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+  }, [pathname]);
 
   return (
     <>
