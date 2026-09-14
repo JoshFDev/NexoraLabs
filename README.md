@@ -18,6 +18,7 @@ Frontend:
 - React Router DOM
 - React-Bootstrap + Bootstrap 5
 - Axios
+- Vitest + React Testing Library para pruebas de componentes
 
 ## Estructura
 
@@ -131,5 +132,6 @@ En la raiz:
 En el cliente:
 
 - `pnpm dev`: servidor de desarrollo Vite.
+- `pnpm test`: ejecuta las pruebas del frontend (Vitest).
 - `pnpm build`: compila el frontend para produccion.
 - `pnpm preview`: previsualiza el build de produccion.
