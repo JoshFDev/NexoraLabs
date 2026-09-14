@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Container, Row, Col, Button, Alert, Spinner, Modal } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import api from '../api';
 import EliminarCuentaModal from '../components/EliminarCuentaModal';
 import { useToast } from '../components/ToastContext';
@@ -37,6 +37,33 @@ const DISP_LABEL = {
   medio_tiempo: 'Medio tiempo',
   fines_de_semana: 'Fines de semana',
   bajo_demanda: 'Bajo demanda'
+};
+
+const ETIQUETAS_ESTADO_PROYECTO = {
+  borrador: 'Borrador',
+  buscando_equipo: 'Buscando equipo',
+  en_desarrollo: 'En desarrollo',
+  finalizado: 'Finalizado',
+  cancelado: 'Cancelado'
+};
+
+const ETIQUETAS_NIVEL_PROYECTO = {
+  principiante: 'Principiante',
+  intermedio: 'Intermedio',
+  avanzado: 'Avanzado',
+  experto: 'Experto'
+};
+
+const ETIQUETAS_ESTADO_EQUIPO = {
+  activo: 'Activo',
+  finalizado: 'Finalizado',
+  disuelto: 'Disuelto'
+};
+
+const ROL_EQUIPO_LABEL = {
+  lider: 'Líder',
+  colaborador: 'Colaborador',
+  miembro: 'Miembro'
 };
 
 function PerfilEditar() {
@@ -84,6 +111,8 @@ function PerfilEditar() {
   const [guardando, setGuardando] = useState(false);
   const [error, setError] = useState('');
   const [errorFoto, setErrorFoto] = useState('');
+  const [misEquipos, setMisEquipos] = useState([]);
+  const [misPostulaciones, setMisPostulaciones] = useState([]);
 
   useEffect(() => {
     const cargar = async () => {
@@ -129,6 +158,17 @@ function PerfilEditar() {
       .then((res) => setHabilidadesCatalogo(res.data.habilidades || []))
       .catch(() => setHabilidadesCatalogo([]))
       .finally(() => setCargandoCatalogo(false));
+  }, []);
+
+  useEffect(() => {
+    api
+      .get('/mis-equipos')
+      .then((res) => setMisEquipos(res.data || []))
+      .catch(() => setMisEquipos([]));
+    api
+      .get('/mis-postulaciones')
+      .then((res) => setMisPostulaciones(res.data || []))
+      .catch(() => setMisPostulaciones([]));
   }, []);
 
   const set = (campo) => (e) => {
@@ -349,6 +389,8 @@ function PerfilEditar() {
     );
   }
 
+  const proyectosAceptados = (misPostulaciones || []).filter((p) => p.estado === 'aceptada');
+
   return (
     <div className="proyectos-pagina perfil-editar-pagina">
       <Container fluid className="pt-1 px-lg-5">
@@ -471,6 +513,114 @@ function PerfilEditar() {
           </Col>
 
           <Col xl={8} xxl={9}>
+            <section className="proyecto-panel perfil-panel mb-4">
+              <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
+                <h2 className="perfil-card-titulo mb-0">Mis equipos y proyectos</h2>
+                <Link to="/equipos" className="dash-ver-todo">
+                  Ver equipos
+                </Link>
+              </div>
+
+              <h3 className="perfil-subseccion">Equipos en los que participo</h3>
+              {misEquipos.length === 0 ? (
+                <p className="perfil-vacio">
+                  Aún no formas parte de un equipo. Explora los equipos y envía tu solicitud para unirte.
+                </p>
+              ) : (
+                <Row className="g-3">
+                  {misEquipos.map((eq) => {
+                    const pry = eq.proyecto_id;
+                    return (
+                      <Col md={6} xl={4} key={String(eq._id)}>
+                        <div className="perfil-item">
+                          <h4 className="perfil-item-titulo">{eq.nombre}</h4>
+                          <div className="perfil-item-badges">
+                            <span className="proyecto-badge">{ETIQUETAS_ESTADO_EQUIPO[eq.estado] || eq.estado}</span>
+                            <span className="proyecto-badge">{ROL_EQUIPO_LABEL[eq.rol] || eq.rol}</span>
+                            <span className="proyecto-badge">{eq.n_miembros || 1} integrante(s)</span>
+                          </div>
+                          {pry?.titulo && (
+                            <p className="proyecto-detalle-texto">
+                              Proyecto:{' '}
+                              <Link to={`/proyecto/${pry._id || pry}`} className="perfil-publico-enlace">
+                                {pry.titulo}
+                              </Link>
+                            </p>
+                          )}
+                          {eq.descripcion && (
+                            <p className="proyecto-descripcion">
+                              {eq.descripcion.length > 100 ? `${eq.descripcion.slice(0, 100)}…` : eq.descripcion}
+                            </p>
+                          )}
+                          <div className="perfil-item-meta">
+                            <span className="material-symbols-outlined">group</span> Desde{' '}
+                            {new Date(eq.fecha_creacion).toLocaleDateString('es')}
+                          </div>
+                        </div>
+                      </Col>
+                    );
+                  })}
+                </Row>
+              )}
+
+              <hr className="perfil-resumen-sep" />
+
+              <h3 className="perfil-subseccion">Proyectos donde fuiste aceptado</h3>
+              {proyectosAceptados.length === 0 ? (
+                <p className="perfil-vacio">
+                  Aún no has sido aceptado en ningún proyecto. Las postulaciones en revisión aparecerán aquí cuando el
+                  creador las apruebe.
+                </p>
+              ) : (
+                <Row className="g-3">
+                  {proyectosAceptados.map((po) => {
+                    const pry = po.proyecto_id;
+                    if (!pry) return null;
+                    return (
+                      <Col md={6} xl={4} key={String(pry._id || po._id)}>
+                        <div className="perfil-item">
+                          <h4 className="perfil-item-titulo">
+                            <Link to={`/proyecto/${pry._id || pry}`} className="perfil-publico-enlace">
+                              {pry.titulo}
+                            </Link>
+                          </h4>
+                          <div className="perfil-item-badges">
+                            <span className="proyecto-badge">
+                              {ETIQUETAS_ESTADO_PROYECTO[pry.estado] || pry.estado}
+                            </span>
+                            <span className="proyecto-badge">
+                              {ETIQUETAS_NIVEL_PROYECTO[pry.nivel_dificultad] || pry.nivel_dificultad}
+                            </span>
+                            {pry.categoria && <span className="proyecto-badge">{pry.categoria}</span>}
+                          </div>
+                          <div className="perfil-item-detalle">
+                            {pry.creador_id?.nombre && (
+                              <span>
+                                Creador:{' '}
+                                <Link
+                                  to={`/usuario/${pry.creador_id._id || pry.creador_id}`}
+                                  className="perfil-publico-enlace"
+                                >
+                                  {pry.creador_id.nombre}
+                                  {pry.creador_id.apellido_paterno ? ` ${pry.creador_id.apellido_paterno}` : ''}
+                                </Link>
+                              </span>
+                            )}
+                            {pry.fecha_limite && (
+                              <span>Fecha límite: {new Date(pry.fecha_limite).toLocaleDateString('es')}</span>
+                            )}
+                          </div>
+                          <div className="perfil-item-meta">
+                            <span className="material-symbols-outlined">check_circle</span> Postulación aceptada
+                          </div>
+                        </div>
+                      </Col>
+                    );
+                  })}
+                </Row>
+              )}
+            </section>
+
             <Row className="g-4">
               <Col md={6}>
                 <section className="proyecto-panel perfil-panel h-100">

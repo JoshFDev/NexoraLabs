@@ -407,7 +407,12 @@ function ExplorarProyectosPage() {
           · {p.integrantes_maximos || 1} integrante(s)
           {p.coincidencias ? ` · ${p.coincidencias} coincidencia${p.coincidencias !== 1 ? 's' : ''}` : ''}
         </footer>
-        <div className={`proyecto-fila-contenido${expandido === p._id ? ' abierto' : ''}`}>{rendDetalle(p)}</div>
+        <div
+          className={`proyecto-fila-contenido${expandido === p._id ? ' abierto' : ''}`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {rendDetalle(p)}
+        </div>
       </article>
     ),
     [expandido, rendDetalle]

@@ -89,13 +89,27 @@ export const eliminarMiembro = async (req, res) => {
   }
 };
 
-//GET /mis-equipos → equipos donde soy miembro
+//GET /mis-equipos → equipos donde soy miembro (incluye mi rol y nº de integrantes)
 export const misEquipos = async (req, res) => {
   try {
     const misMiembros = await MiembroEquipo.find({ usuario_id: req.usuario.id });
     const idsEquipos = misMiembros.map((m) => m.equipo_id);
-    const equipos = await Equipo.find({ _id: { $in: idsEquipos } }).populate("proyecto_id", "titulo");
-    res.json(equipos);
+    const equipos = await Equipo.find({ _id: { $in: idsEquipos } }).populate("proyecto_id", "titulo estado creador_id");
+
+    const rolPorEquipo = Object.fromEntries(misMiembros.map((m) => [String(m.equipo_id), m.rol]));
+    const grupos = await MiembroEquipo.aggregate([
+      { $match: { equipo_id: { $in: idsEquipos } } },
+      { $group: { _id: "$equipo_id", n: { $sum: 1 } } }
+    ]);
+    const nPorEquipo = Object.fromEntries(grupos.map((g) => [String(g._id), g.n]));
+
+    res.json(
+      equipos.map((e) => ({
+        ...e.toObject(),
+        rol: rolPorEquipo[String(e._id)] || "miembro",
+        n_miembros: nPorEquipo[String(e._id)] || 0
+      }))
+    );
   } catch (error) {
     console.log(error);
     res.status(500).json(serverError(error));

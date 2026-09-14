@@ -775,3 +775,81 @@
   background: #e0556f !important;
   color: #fff !important;
 }
+
+/* Mis equipos y proyectos */
+.perfil-subseccion {
+  font-size: 0.84rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--nx-morado-oscuro);
+  margin: 0 0 0.7rem;
+}
+
+.perfil-vacio {
+  font-size: 0.9rem;
+  color: #8b84a3;
+  background: #fbfaff;
+  border: 1px dashed rgba(109, 40, 217, 0.3);
+  border-radius: 0.35rem;
+  padding: 0.8rem 0.95rem;
+  margin: 0;
+}
+
+.perfil-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background: #fbfbff;
+  border: 1px solid #e7e5ef;
+  border-radius: 0.4rem;
+  padding: 0.9rem 1rem;
+  height: 100%;
+}
+
+.perfil-item-titulo {
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: #2b2840;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.perfil-item-titulo a {
+  font-weight: 700;
+}
+
+.perfil-item-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.perfil-item-detalle {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+  font-size: 0.84rem;
+  color: #4c4770;
+}
+
+.perfil-item-detalle .perfil-publico-enlace {
+  font-weight: 700;
+}
+
+.perfil-item-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: auto;
+  font-size: 0.78rem;
+  color: #7c7790;
+  padding-top: 0.4rem;
+  border-top: 1px solid #eceaf3;
+}
+
+.perfil-item-meta .material-symbols-outlined {
+  font-size: 16px;
+  color: var(--nx-morado);
+}

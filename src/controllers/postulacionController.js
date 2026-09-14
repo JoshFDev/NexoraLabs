@@ -14,7 +14,11 @@ const nombreDeUsuario = async (usuarioId) => {
 export const misPostulaciones = async (req, res) => {
   try {
     const postulaciones = await Postulacion.find({ usuario_id: req.usuario.id })
-      .populate("proyecto_id", "titulo estado")
+      .populate({
+        path: "proyecto_id",
+        select: "titulo estado categoria nivel_dificultad fecha_limite integrantes_maximos creador_id",
+        populate: { path: "creador_id", select: "nombre apellido_paterno" }
+      })
       .populate("habilidades_ofrecidas", "nombre");
     res.json(postulaciones);
   } catch (error) {
