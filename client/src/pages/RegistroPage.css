@@ -15,7 +15,7 @@
 
 /* Header con la marca (LogoOrden) */
 .registro-firma {
-  width: 340px;
+  width: min(340px, 72vw);
   aspect-ratio: 423 / 286;
   margin: 0 auto 1.2rem;
   background-image: url('../assets/LogoOrden.png');
@@ -37,6 +37,7 @@
 
 .registro-fila {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.75rem;
 }
 
@@ -99,6 +100,7 @@
   height: 100vh;
   overflow-y: auto;
   overflow-x: hidden;
+  justify-content: safe center;
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
@@ -109,13 +111,17 @@
   height: 0;
 }
 
-@media (max-width: 420px) {
+@media (max-width: 520px) {
+  .login-tarjeta {
+    padding: 1.25rem 1rem 1rem;
+  }
+
   .registro-fila {
     flex-direction: column;
     gap: 0;
   }
 
   .registro-firma {
-    width: 250px;
+    width: min(340px, 64vw);
   }
 }
