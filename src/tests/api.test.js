@@ -755,6 +755,210 @@ describe("Equipos y solicitudes", () => {
   });
 });
 
+describe("Chat de equipo", () => {
+  const datosMentorChat = {
+    nombre: "Mentor",
+    apellido_paterno: "Chat",
+    email: "mentorchat@testing.com",
+    password: "12345678",
+    rol: "mentor"
+  };
+
+  test("Solo los integrantes pueden ver y escribir en el chat", async () => {
+    const tokenMentor = await obtenerTokenDe(datosMentorChat);
+    const proyecto = await request(app).post("/proyecto/agregar").set("Authorization", tokenMentor).send({
+      titulo: "Proyecto con chat",
+      descripcion: "Proyecto de prueba para el chat del equipo.",
+      estado: "buscando_equipo"
+    });
+    expect(proyecto.status).toBe(201);
+
+    const equipo = await request(app)
+      .post("/equipo/agregar")
+      .set("Authorization", tokenMentor)
+      .send({ proyecto_id: proyecto.body._id, nombre: "Equipo Chat" });
+    expect(equipo.status).toBe(201);
+
+    //Al crear el equipo, su creador queda como líder y por tanto aparece en "Mis equipos"
+    const misEquipos = await request(app).get("/mis-equipos").set("Authorization", tokenMentor);
+    expect(misEquipos.status).toBe(200);
+    const miEquipo = misEquipos.body.find((e) => String(e._id) === String(equipo.body._id));
+    expect(miEquipo).toBeDefined();
+    expect(miEquipo.rol).toBe("lider");
+
+    const tokenIntegrante = await obtenerTokenDe({
+      nombre: "Integrante",
+      apellido_paterno: "Chat",
+      email: "integrantechat@testing.com",
+      password: "12345678",
+      rol: "desarrollador"
+    });
+
+    const solicitud = await request(app)
+      .post(`/equipo/${equipo.body._id}/solicitar`)
+      .set("Authorization", tokenIntegrante);
+    expect(solicitud.status).toBe(201);
+
+    const aprobada = await request(app)
+      .put(`/solicitud-equipo/${solicitud.body._id}/estado`)
+      .set("Authorization", tokenMentor)
+      .send({ estado: "aprobada" });
+    expect(aprobada.status).toBe(200);
+
+    //Un mensaje vacío responde 400
+    const vacio = await request(app)
+      .post(`/equipo/${equipo.body._id}/mensajes`)
+      .set("Authorization", tokenIntegrante)
+      .send({ contenido: "   " });
+    expect(vacio.status).toBe(400);
+
+    //El integrante publica un mensaje
+    const enviado = await request(app)
+      .post(`/equipo/${equipo.body._id}/mensajes`)
+      .set("Authorization", tokenIntegrante)
+      .send({ contenido: "Hola equipo, probando el chat." });
+    expect(enviado.status).toBe(201);
+    expect(enviado.body.contenido).toBe("Hola equipo, probando el chat.");
+
+    //El líder ve el mensaje en el historial
+    const historial = await request(app).get(`/equipo/${equipo.body._id}/mensajes`).set("Authorization", tokenMentor);
+    expect(historial.status).toBe(200);
+    expect(historial.body.some((m) => m.contenido === "Hola equipo, probando el chat.")).toBe(true);
+
+    //Un usuario ajeno no puede leer ni escribir
+    const tokenAjeno = await obtenerTokenDe({
+      nombre: "Ajeno",
+      apellido_paterno: "Chat",
+      email: "ajenochat@testing.com",
+      password: "12345678",
+      rol: "estudiante"
+    });
+    const lecturaAjena = await request(app).get(`/equipo/${equipo.body._id}/mensajes`).set("Authorization", tokenAjeno);
+    expect(lecturaAjena.status).toBe(403);
+
+    const escrituraAjena = await request(app)
+      .post(`/equipo/${equipo.body._id}/mensajes`)
+      .set("Authorization", tokenAjeno)
+      .send({ contenido: "Soy ajeno" });
+    expect(escrituraAjena.status).toBe(403);
+
+    //Sin token responde 401
+    const sinToken = await request(app).get(`/equipo/${equipo.body._id}/mensajes`);
+    expect(sinToken.status).toBe(401);
+  });
+
+  test("El chat notifica a los integrantes y se puede silenciar", async () => {
+    const tokenLider = await obtenerTokenDe({
+      nombre: "Lider",
+      apellido_paterno: "Notif",
+      email: "lidernotif@testing.com",
+      password: "12345678",
+      rol: "mentor"
+    });
+
+    const proyectoNotif = await request(app).post("/proyecto/agregar").set("Authorization", tokenLider).send({
+      titulo: "Proyecto con notificaciones",
+      descripcion: "Proyecto de prueba para las notificaciones del chat.",
+      estado: "buscando_equipo"
+    });
+    expect(proyectoNotif.status).toBe(201);
+
+    const equipo = await request(app)
+      .post("/equipo/agregar")
+      .set("Authorization", tokenLider)
+      .send({ proyecto_id: proyectoNotif.body._id, nombre: "Equipo Notificación" });
+    expect(equipo.status).toBe(201);
+
+    const tokenMiembro = await obtenerTokenDe({
+      nombre: "Miembro",
+      apellido_paterno: "Notif",
+      email: "miembronotif@testing.com",
+      password: "12345678",
+      rol: "desarrollador"
+    });
+
+    const solicitud = await request(app)
+      .post(`/equipo/${equipo.body._id}/solicitar`)
+      .set("Authorization", tokenMiembro);
+    expect(solicitud.status).toBe(201);
+    const aprobada = await request(app)
+      .put(`/solicitud-equipo/${solicitud.body._id}/estado`)
+      .set("Authorization", tokenLider)
+      .send({ estado: "aprobada" });
+    expect(aprobada.status).toBe(200);
+
+    //Inicialmente el chat no está silenciado
+    const misEquipos = await request(app).get("/mis-equipos").set("Authorization", tokenLider);
+    const miEquipo = misEquipos.body.find((e) => String(e._id) === String(equipo.body._id));
+    expect(miEquipo.silenciado).toBe(false);
+
+    //Un ajeno no puede silenciar y un valor inválido responde 400
+    const tokenAjeno = await obtenerTokenDe({
+      nombre: "Ajeno",
+      apellido_paterno: "Notif",
+      email: "ajenonotif@testing.com",
+      password: "12345678",
+      rol: "estudiante"
+    });
+    const ajeno = await request(app)
+      .put(`/equipo/${equipo.body._id}/silenciar`)
+      .set("Authorization", tokenAjeno)
+      .send({ silenciado: true });
+    expect(ajeno.status).toBe(403);
+    const invalido = await request(app)
+      .put(`/equipo/${equipo.body._id}/silenciar`)
+      .set("Authorization", tokenLider)
+      .send({ silenciado: "si" });
+    expect(invalido.status).toBe(400);
+
+    //Con el chat silenciado, el líder no recibe la notificación del mensaje
+    const silenciar = await request(app)
+      .put(`/equipo/${equipo.body._id}/silenciar`)
+      .set("Authorization", tokenLider)
+      .send({ silenciado: true });
+    expect(silenciar.status).toBe(200);
+    expect(silenciar.body.silenciado).toBe(true);
+
+    const misEquiposSilenciado = await request(app).get("/mis-equipos").set("Authorization", tokenLider);
+    const miEquipoSilenciado = misEquiposSilenciado.body.find((e) => String(e._id) === String(equipo.body._id));
+    expect(miEquipoSilenciado.silenciado).toBe(true);
+
+    const primerMensaje = await request(app)
+      .post(`/equipo/${equipo.body._id}/mensajes`)
+      .set("Authorization", tokenMiembro)
+      .send({ contenido: "Hola con chat silenciado" });
+    expect(primerMensaje.status).toBe(201);
+
+    const notifSilenciado = await request(app).get("/notificaciones?limite=50").set("Authorization", tokenLider);
+    const hayMientrasSilenciado = notifSilenciado.body.notificaciones.some(
+      (n) => n.titulo === "Nuevo mensaje en Equipo Notificación"
+    );
+    expect(hayMientrasSilenciado).toBe(false);
+
+    //Al reactivarlo, el próximo mensaje sí llega como notificación al líder
+    const activar = await request(app)
+      .put(`/equipo/${equipo.body._id}/silenciar`)
+      .set("Authorization", tokenLider)
+      .send({ silenciado: false });
+    expect(activar.status).toBe(200);
+
+    const segundoMensaje = await request(app)
+      .post(`/equipo/${equipo.body._id}/mensajes`)
+      .set("Authorization", tokenMiembro)
+      .send({ contenido: "Hola con chat reactivado" });
+    expect(segundoMensaje.status).toBe(201);
+
+    const notifActivo = await request(app).get("/notificaciones?limite=50").set("Authorization", tokenLider);
+    const notifMensaje = notifActivo.body.notificaciones.find(
+      (n) => n.titulo === "Nuevo mensaje en Equipo Notificación"
+    );
+    expect(notifMensaje).toBeDefined();
+    expect(notifMensaje.tipo).toBe("equipo");
+    expect(notifMensaje.mensaje).toContain("Hola con chat reactivado");
+    expect(notifMensaje.enlace).toBe("/mi-equipo");
+  });
+});
+
 describe("Recomendaciones de proyectos", () => {
   test("Recomendados sin token responde 401", async () => {
     const res = await request(app).get("/proyecto/recomendados");

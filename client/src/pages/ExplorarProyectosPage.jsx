@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Container, Row, Col, Form, Spinner, Alert, Button } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import api from '../api';
 import IconoHabilidad from '../components/IconoHabilidad';
 import './ProyectosPage.css';
@@ -48,6 +48,8 @@ function ExplorarProyectosPage() {
   const [formPostulacion, setFormPostulacion] = useState(null);
   const [editForm, setEditForm] = useState(null);
   const [cargandoPost, setCargandoPost] = useState(false);
+
+  const navigate = useNavigate();
 
   const alternar = (id) => setExpandido((x) => (x === id ? null : id));
 
@@ -263,7 +265,17 @@ function ExplorarProyectosPage() {
         )}
         <div className="proyecto-detalle-acciones">
           {p.creador_id && usuario && String(p.creador_id._id || p.creador_id) === String(usuario._id || usuario.id) ? (
-            <span className="proyecto-postulado-badge">Eres el creador de este proyecto</span>
+            <div className="d-flex flex-wrap align-items-center gap-2">
+              <span className="proyecto-postulado-badge">Eres el creador de este proyecto</span>
+              <Button
+                variant="primary"
+                className="proyectos-boton"
+                size="sm"
+                onClick={() => navigate(`/proyecto/${p._id}`)}
+              >
+                Ver mi proyecto
+              </Button>
+            </div>
           ) : misPostulaciones[String(p._id)] ? (
             <div className="d-flex flex-wrap align-items-center gap-2">
               <span className="proyecto-postulado-badge">
@@ -425,6 +437,44 @@ function ExplorarProyectosPage() {
         <p className="proyectos-subtitulo mb-4">Encuentra el siguiente reto y súmate a un equipo.</p>
 
         {error && <Alert variant="danger">{error}</Alert>}
+
+        {usuario?._id && misProyectos && misProyectos.length > 0 && (
+          <section className="mb-4">
+            <div className="d-flex align-items-center justify-content-between gap-2 mb-3">
+              <h4 className="proyectos-titulo mb-0" style={{ fontSize: '1.1rem' }}>
+                Mis proyectos
+              </h4>
+              <Link to="/mis-proyectos" className="dash-ver-todo">
+                Ver todos
+              </Link>
+            </div>
+            <div className="d-flex flex-column gap-2">
+              {misProyectos.slice(0, 5).map((p) => (
+                <div className="proyecto-fila" key={String(p._id)}>
+                  <div className="proyecto-fila-cabecera">
+                    <h3 className="proyecto-titulo-tarjeta mb-0" style={{ fontSize: '1rem' }}>
+                      {p.titulo}
+                    </h3>
+                    <div className="d-flex flex-wrap gap-2">
+                      <span className="proyecto-badge">{ETIQUETAS_ESTADO[p.estado] || p.estado}</span>
+                      {ETIQUETAS_NIVEL[p.nivel_dificultad] && (
+                        <span className="proyecto-badge">{ETIQUETAS_NIVEL[p.nivel_dificultad]}</span>
+                      )}
+                    </div>
+                  </div>
+                  <p className="proyecto-descripcion mb-2">
+                    {p.descripcion.length > 120 ? `${p.descripcion.slice(0, 120)}…` : p.descripcion}
+                  </p>
+                  <div className="equipo-acciones">
+                    <Button size="sm" className="proyectos-boton" onClick={() => navigate(`/proyecto/${p._id}`)}>
+                      Ir a mi proyecto
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
         <Form onSubmit={alBuscar} className="proyectos-toolbar mb-4">
           <div className="proyectos-buscar-wrap">

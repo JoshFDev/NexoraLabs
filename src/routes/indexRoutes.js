@@ -68,6 +68,17 @@ const rutas = [
 
   { metodo: "POST", ruta: "/proyecto/:id/postular", descripcion: "Postular a un proyecto (autenticado)" },
   { metodo: "POST", ruta: "/equipo/:id/solicitar", descripcion: "Solicitar unirse a un equipo (autenticado)" },
+  { metodo: "GET", ruta: "/equipo/:id/mensajes", descripcion: "Historial de chat de un equipo (solo integrantes)" },
+  {
+    metodo: "POST",
+    ruta: "/equipo/:id/mensajes",
+    descripcion: "Enviar un mensaje al chat del equipo (solo integrantes)"
+  },
+  {
+    metodo: "PUT",
+    ruta: "/equipo/:id/silenciar",
+    descripcion: "Silenciar o activar las notificaciones del chat del equipo (solo integrantes)"
+  },
   { metodo: "GET", ruta: "/mis-solicitudes-enviadas", descripcion: "Solicitudes que envié a equipos" },
   {
     metodo: "GET",

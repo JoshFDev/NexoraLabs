@@ -10,6 +10,12 @@ const ETIQUETAS_ESTADO_EQUIPO = {
   disuelto: 'Disuelto'
 };
 
+const ROL_EQUIPO_LABEL = {
+  lider: 'Líder',
+  colaborador: 'Colaborador',
+  miembro: 'Miembro'
+};
+
 const ROLES_CREADOR_EQUIPO = ['admin', 'mentor'];
 
 function EquiposPage() {
@@ -28,6 +34,7 @@ function EquiposPage() {
   const [expandido, setExpandido] = useState(null);
   const [miembrosMap, setMiembrosMap] = useState({});
   const [misEquipos, setMisEquipos] = useState(null);
+  const [misEquiposDatos, setMisEquiposDatos] = useState([]);
   const [misSolicitudesEnviadas, setMisSolicitudesEnviadas] = useState([]);
   const [solicitudesEquipo, setSolicitudesEquipo] = useState([]);
   const [cargandoAccion, setCargandoAccion] = useState(null);
@@ -44,8 +51,15 @@ function EquiposPage() {
   const cargarMisEquipos = useCallback(() => {
     api
       .get('/mis-equipos')
-      .then((res) => setMisEquipos(new Set((res.data || []).map((e) => String(e._id)))))
-      .catch(() => setMisEquipos(new Set()));
+      .then((res) => {
+        const datos = res.data || [];
+        setMisEquiposDatos(datos);
+        setMisEquipos(new Set(datos.map((e) => String(e._id))));
+      })
+      .catch(() => {
+        setMisEquiposDatos([]);
+        setMisEquipos(new Set());
+      });
   }, []);
 
   const cargarMisSolicitudesEnviadas = useCallback(() => {
@@ -117,6 +131,20 @@ function EquiposPage() {
         .then((res) => setMiembrosMap((m) => ({ ...m, [id]: res.data || [] })))
         .catch(() => setMiembrosMap((m) => ({ ...m, [id]: [] })));
     }
+  };
+
+  const irAEquipo = (id) => {
+    setExpandido(String(id));
+    if (!miembrosMap[String(id)]) {
+      api
+        .get(`/equipo/${id}/miembros`)
+        .then((res) => setMiembrosMap((m) => ({ ...m, [String(id)]: res.data || [] })))
+        .catch(() => setMiembrosMap((m) => ({ ...m, [String(id)]: [] })));
+    }
+    setTimeout(
+      () => document.getElementById(`equipo-${String(id)}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' }),
+      150
+    );
   };
 
   const solicitar = async (e) => {
@@ -251,10 +279,12 @@ function EquiposPage() {
 
   const soyMiembro = (id) => misEquipos?.has(String(id));
 
+  const soyLider = (id) => misEquiposDatos.some((e) => String(e._id) === String(id) && e.rol === 'lider');
+
   const soyCreadorDelEquipo = (e) =>
     !!usuario?._id && !!e.proyecto_id?.creador_id && String(e.proyecto_id.creador_id) === String(usuario._id);
 
-  const puedeGestionar = (e) => soyCreadorDelEquipo(e) || puedeCrear;
+  const puedeGestionar = (e) => soyCreadorDelEquipo(e) || puedeCrear || soyLider(String(e._id));
 
   const solicitudPendienteDe = (id) => misSolicitudesEnviadas[String(id)] || null;
 
@@ -329,6 +359,59 @@ function EquiposPage() {
           </section>
         )}
 
+        {usuario?._id && misEquiposDatos.length > 0 && (
+          <section className="mb-4">
+            <h4 className="proyectos-titulo" style={{ fontSize: '1.1rem', marginBottom: '0.75rem' }}>
+              Mis equipos
+            </h4>
+            <div className="d-flex flex-column gap-2">
+              {misEquiposDatos.map((me) => (
+                <div className="proyecto-fila" key={String(me._id)}>
+                  <div className="proyecto-fila-cabecera">
+                    <h3 className="proyecto-titulo-tarjeta mb-0" style={{ fontSize: '1rem' }}>
+                      {me.nombre}
+                    </h3>
+                    <span className="proyecto-fila-flecha" aria-hidden="true">
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.4"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <polyline points="6 9 12 15 18 9" />
+                      </svg>
+                    </span>
+                  </div>
+                  <div className="proyecto-meta mb-2">
+                    <span className="proyecto-badge">{ETIQUETAS_ESTADO_EQUIPO[me.estado] || me.estado}</span>
+                    <span className="proyecto-badge">{ROL_EQUIPO_LABEL[me.rol] || me.rol}</span>
+                    <span className="proyecto-badge">{me.n_miembros || 0} integrante(s)</span>
+                    {me.proyecto_id?.titulo && (
+                      <span className="proyecto-badge" title="Proyecto en el que trabajarán">
+                        Proyecto: {me.proyecto_id.titulo}
+                      </span>
+                    )}
+                  </div>
+                  {me.rol === 'lider' && (
+                    <p className="proyecto-descripcion mb-2" style={{ fontStyle: 'italic' }}>
+                      Tú organizas este equipo.
+                    </p>
+                  )}
+                  <div className="equipo-acciones">
+                    <Button size="sm" className="proyectos-boton" onClick={() => irAEquipo(me._id)}>
+                      Ir a mi equipo
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
         <Form
           className="proyectos-toolbar mb-4"
           onSubmit={(e) => {
@@ -393,10 +476,16 @@ function EquiposPage() {
                 <Col lg={6} key={String(e._id)}>
                   <article
                     className={`proyecto-fila h-100${expandido === String(e._id) ? ' abierto' : ''}`}
+                    id={`equipo-${String(e._id)}`}
                     onClick={() => alternar(String(e._id))}
                   >
                     <div className="proyecto-fila-cabecera">
                       <h3 className="proyecto-titulo-tarjeta mb-1">{e.nombre}</h3>
+                      {soyLider(String(e._id)) && (
+                        <span className="proyecto-badge" title="Tú organizas este equipo">
+                          Líder
+                        </span>
+                      )}
                       <span className="proyecto-fila-flecha" aria-hidden="true">
                         <svg
                           width="18"

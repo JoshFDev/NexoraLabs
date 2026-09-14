@@ -55,6 +55,14 @@ function MenuUsuario({ usuario, onCerrarSesion }) {
           <span className="material-symbols-outlined">emoji_events</span>
           Logros
         </Dropdown.Item>
+        <Dropdown.Item as={Link} to="/mis-proyectos">
+          <span className="material-symbols-outlined">folder</span>
+          Mis proyectos
+        </Dropdown.Item>
+        <Dropdown.Item as={Link} to="/mi-equipo">
+          <span className="material-symbols-outlined">groups</span>
+          Mi equipo
+        </Dropdown.Item>
         <Dropdown.Divider className="user-menu-sep" />
         <Dropdown.Item className="user-menu-cerrar" onClick={onCerrarSesion}>
           <span className="material-symbols-outlined">logout</span>

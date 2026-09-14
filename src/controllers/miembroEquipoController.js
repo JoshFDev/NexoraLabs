@@ -19,9 +19,15 @@ const nombreDeUsuario = async (usuarioId) => {
   return usuario ? `${usuario.nombre}${usuario.apellido_paterno ? " " + usuario.apellido_paterno : ""}` : "Un usuario";
 };
 
-//¿Puede el usuario gestionar el equipo? (admin, mentor o creador del proyecto del equipo)
+//¿Puede el usuario gestionar el equipo? (admin, mentor, creador del proyecto del equipo o líder del equipo)
 const esResponsableDelEquipo = async (usuarioId, rol, equipo) => {
   if (rol === "admin" || rol === "mentor") return true;
+  const soyLider = await MiembroEquipo.findOne({
+    equipo_id: equipo._id,
+    usuario_id: usuarioId,
+    rol: "lider"
+  });
+  if (soyLider) return true;
   const datosProyecto = await creadorDelEquipo(equipo);
   return datosProyecto ? String(datosProyecto.creador) === String(usuarioId) : false;
 };
@@ -103,11 +109,15 @@ export const misEquipos = async (req, res) => {
     ]);
     const nPorEquipo = Object.fromEntries(grupos.map((g) => [String(g._id), g.n]));
 
+    const yo = await Usuario.findById(req.usuario.id).select("equipos_silenciados");
+    const silenciados = new Set((yo?.equipos_silenciados || []).map((x) => String(x)));
+
     res.json(
       equipos.map((e) => ({
         ...e.toObject(),
         rol: rolPorEquipo[String(e._id)] || "miembro",
-        n_miembros: nPorEquipo[String(e._id)] || 0
+        n_miembros: nPorEquipo[String(e._id)] || 0,
+        silenciado: silenciados.has(String(e._id))
       }))
     );
   } catch (error) {
@@ -289,7 +299,7 @@ export const misSolicitudesEnviadas = async (req, res) => {
   }
 };
 
-//GET /mis-solicitudes-equipo → solicitudes pendientes en los equipos de mis proyectos (creador aprueba); admins ven todas
+//GET /mis-solicitudes-equipo → solicitudes pendientes en equipos que gestiono (creador del proyecto o líder); admins ven todas
 export const misSolicitudesEquipo = async (req, res) => {
   try {
     let filtroEquipos = null;
@@ -298,8 +308,16 @@ export const misSolicitudesEquipo = async (req, res) => {
       const proyectos = await Proyecto.find({ creador_id: req.usuario.id }).select("_id");
       const idsProyectos = proyectos.map((p) => p._id);
       const equipos = await Equipo.find({ proyecto_id: { $in: idsProyectos } }).select("_id");
-      filtroEquipos = { $in: equipos.map((e) => e._id) };
-      if (filtroEquipos.$in.length === 0) return res.json([]);
+      const idsGestionables = new Set(equipos.map((e) => e._id));
+
+      const liderazgos = await MiembroEquipo.find({
+        usuario_id: req.usuario.id,
+        rol: "lider"
+      }).select("equipo_id");
+      liderazgos.forEach((l) => idsGestionables.add(l.equipo_id));
+
+      if (idsGestionables.size === 0) return res.json([]);
+      filtroEquipos = { $in: [...idsGestionables] };
     }
 
     const solicitudes = await SolicitudEquipo.find({
@@ -332,7 +350,12 @@ export const cambiarEstadoSolicitud = async (req, res) => {
     const esAdmin = req.usuario.rol === "admin";
     const datosProyecto = await creadorDelEquipo(solicitud.equipo_id);
     const esCreador = datosProyecto && String(datosProyecto.creador) === String(req.usuario.id);
-    if (!esAdmin && !esCreador) {
+    const soyLider = await MiembroEquipo.findOne({
+      equipo_id: solicitud.equipo_id._id,
+      usuario_id: req.usuario.id,
+      rol: "lider"
+    });
+    if (!esAdmin && !esCreador && !soyLider) {
       return res.status(httpStatus.FORBIDDEN).json(forbidden());
     }
 

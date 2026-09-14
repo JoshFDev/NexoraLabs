@@ -11,6 +11,8 @@ import CrearProyectoPage from './pages/CrearProyectoPage';
 import ProyectoDetallePage from './pages/ProyectoDetallePage';
 import PostulacionesPage from './pages/PostulacionesPage';
 import EquiposPage from './pages/EquiposPage';
+import MisProyectosPage from './pages/MisProyectosPage';
+import MiEquipoPage from './pages/MiEquipoPage';
 import RecursosPage from './pages/RecursosPage';
 import HabilidadesPage from './pages/HabilidadesPage';
 import PerfilPublicoPage from './pages/PerfilPublicoPage';
@@ -82,6 +84,22 @@ function App() {
               element={
                 <RutaProtegida>
                   <EquiposPage />
+                </RutaProtegida>
+              }
+            />
+            <Route
+              path="/mis-proyectos"
+              element={
+                <RutaProtegida>
+                  <MisProyectosPage />
+                </RutaProtegida>
+              }
+            />
+            <Route
+              path="/mi-equipo"
+              element={
+                <RutaProtegida>
+                  <MiEquipoPage />
                 </RutaProtegida>
               }
             />

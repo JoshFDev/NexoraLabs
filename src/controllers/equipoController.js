@@ -85,7 +85,7 @@ export const miembrosDeEquipo = async (req, res) => {
   try {
     const miembros = await MiembroEquipo.find({ equipo_id: req.params.id }).populate(
       "usuario_id",
-      "nombre apellido_paterno email rol"
+      "nombre apellido_paterno email foto rol"
     );
     res.json(miembros);
   } catch (error) {
@@ -105,6 +105,14 @@ export const crearEquipo = async (req, res) => {
     }
     const equipo = new Equipo(req.body);
     const equipoRegistrado = await equipo.save();
+
+    //El creador del equipo queda como líder para que pueda gestionar y aparecer en "Mi equipo"
+    await MiembroEquipo.create({
+      equipo_id: equipoRegistrado._id,
+      usuario_id: req.usuario.id,
+      rol: "lider"
+    });
+
     res.status(httpStatus.CREATED).json(equipoRegistrado);
   } catch (error) {
     console.log(error);

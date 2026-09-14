@@ -117,6 +117,10 @@ const usuarioEsquema = new Schema(
       correo: { type: Boolean, default: true },
       correo_aceptaciones: { type: Boolean, default: true },
       correo_intereses: { type: Boolean, default: true }
+    },
+    equipos_silenciados: {
+      type: [{ type: Schema.Types.ObjectId, ref: "Equipo" }],
+      default: []
     }
   },
   {
