@@ -1,1 +1,1 @@
-style(ui): soften auth card transitions and remove white glow flash
+chore: remove temp commit message file
