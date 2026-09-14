@@ -10,7 +10,7 @@ import {
   niveles,
   disponibilidades,
   interesesSugeridos,
-  idiomasSugeridos,
+  idiomasSugeridos
 } from '../utils/perfil';
 import './LoginPage.css';
 import './PerfilPage.css';
@@ -34,13 +34,13 @@ function PerfilPage() {
     educacion: {
       institucion: almacenado?.educacion?.institucion || '',
       titulo: almacenado?.educacion?.titulo || '',
-      en_curso: almacenado?.educacion?.en_curso || false,
+      en_curso: almacenado?.educacion?.en_curso || false
     },
-    habilidades: [],
+    habilidades: []
   });
   const [paso, setPaso] = useState(0);
   const [erroresPaso, setErroresPaso] = useState({});
-  const [validando, setValidando] = useState(false);
+  const [, setValidando] = useState(false);
   const [cargando, setCargando] = useState(true);
   const [guardando, setGuardando] = useState(false);
   const [listo, setListo] = useState(false);
@@ -57,10 +57,7 @@ function PerfilPage() {
   useEffect(() => {
     const cargar = async () => {
       try {
-        const [perfil, mis] = await Promise.all([
-          api.get('/usuario/perfil'),
-          api.get('/mis-habilidades'),
-        ]);
+        const [perfil, mis] = await Promise.all([api.get('/usuario/perfil'), api.get('/mis-habilidades')]);
         const p = perfil.data;
         guardarUsuario(p);
         setMisHabilidades(mis.data || []);
@@ -78,12 +75,12 @@ function PerfilPage() {
           educacion: {
             institucion: p.educacion?.institucion || '',
             titulo: p.educacion?.titulo || '',
-            en_curso: p.educacion?.en_curso || false,
+            en_curso: p.educacion?.en_curso || false
           },
           habilidades: (mis.data || []).map((r) => ({
             habilidad_id: String(r.habilidad_id?._id || r.habilidad_id),
-            nivel: r.nivel || 'principiante',
-          })),
+            nivel: r.nivel || 'principiante'
+          }))
         });
       } catch (err) {
         setError(err.response?.data?.error || 'No pudimos cargar tu perfil.');
@@ -116,7 +113,7 @@ function PerfilPage() {
   const alternar = (lista, item) => {
     setDatos((p) => ({
       ...p,
-      [lista]: p[lista].includes(item) ? p[lista].filter((i) => i !== item) : [...p[lista], item],
+      [lista]: p[lista].includes(item) ? p[lista].filter((i) => i !== item) : [...p[lista], item]
     }));
     setErroresPaso({});
   };
@@ -137,7 +134,7 @@ function PerfilPage() {
         ...p,
         habilidades: yaExiste
           ? p.habilidades.filter((s) => String(s.habilidad_id) !== String(h._id))
-          : [...p.habilidades, { habilidad_id: String(h._id), nivel: 'principiante' }],
+          : [...p.habilidades, { habilidad_id: String(h._id), nivel: 'principiante' }]
       };
     });
     setErroresPaso({});
@@ -146,9 +143,7 @@ function PerfilPage() {
   const cambiarNivel = (id, nivel) => {
     setDatos((p) => ({
       ...p,
-      habilidades: p.habilidades.map((s) =>
-        String(s.habilidad_id) === String(id) ? { ...s, nivel } : s
-      ),
+      habilidades: p.habilidades.map((s) => (String(s.habilidad_id) === String(id) ? { ...s, nivel } : s))
     }));
     setErroresPaso({});
   };
@@ -224,7 +219,7 @@ function PerfilPage() {
         disponibilidad: datos.disponibilidad,
         intereses: datos.intereses,
         idiomas: datos.idiomas,
-        educacion: datos.educacion,
+        educacion: datos.educacion
       };
       const perfil = (await api.put('/usuario/perfil', payload)).data;
       guardarUsuario(perfil);
@@ -235,7 +230,7 @@ function PerfilPage() {
           api.post('/usuario-habilidad/agregar', {
             usuario_id: miId,
             habilidad_id: s.habilidad_id,
-            nivel: s.nivel,
+            nivel: s.nivel
           })
         )
       );
@@ -277,7 +272,9 @@ function PerfilPage() {
       <div className="login-tarjeta perfil-tarjeta">
         <div className="login-encabezado perfil-encabezado">
           <div className="perfil-titulo" style={{ marginBottom: '0.4rem' }}>
-            <span className="perfil-badge">Paso {paso + 1} de {pasos.length}</span>
+            <span className="perfil-badge">
+              Paso {paso + 1} de {pasos.length}
+            </span>
             <h1>Completa tu perfil</h1>
             <p>Desbloquea toda la plataforma</p>
           </div>
@@ -309,7 +306,9 @@ function PerfilPage() {
                   onChange={set('apellido_materno')}
                   autoFocus
                 />
-                {faltaActual.apellido_materno && <small className="login-error-campo">✕ {faltaActual.apellido_materno}</small>}
+                {faltaActual.apellido_materno && (
+                  <small className="login-error-campo">✕ {faltaActual.apellido_materno}</small>
+                )}
               </div>
               <div className="perfil-campo">
                 <label className="login-label">Teléfono (opcional)</label>
@@ -367,22 +366,36 @@ function PerfilPage() {
                   value={datos.especialidad_principal}
                   onChange={set('especialidad_principal')}
                 />
-                {faltaActual.especialidad_principal && <small className="login-error-campo">✕ {faltaActual.especialidad_principal}</small>}
+                {faltaActual.especialidad_principal && (
+                  <small className="login-error-campo">✕ {faltaActual.especialidad_principal}</small>
+                )}
               </div>
               <div className="perfil-fila">
                 <div className="perfil-campo">
                   <label className="login-label">Nivel de experiencia</label>
-                  <select className="perfil-input perfil-select" value={datos.nivel_experiencia} onChange={set('nivel_experiencia')}>
+                  <select
+                    className="perfil-input perfil-select"
+                    value={datos.nivel_experiencia}
+                    onChange={set('nivel_experiencia')}
+                  >
                     {niveles.map((n) => (
-                      <option key={n} value={n}>{n.charAt(0).toUpperCase() + n.slice(1)}</option>
+                      <option key={n} value={n}>
+                        {n.charAt(0).toUpperCase() + n.slice(1)}
+                      </option>
                     ))}
                   </select>
                 </div>
                 <div className="perfil-campo">
                   <label className="login-label">Disponibilidad</label>
-                  <select className="perfil-input perfil-select" value={datos.disponibilidad} onChange={set('disponibilidad')}>
+                  <select
+                    className="perfil-input perfil-select"
+                    value={datos.disponibilidad}
+                    onChange={set('disponibilidad')}
+                  >
                     {disponibilidades.map((d) => (
-                      <option key={d} value={d}>{d.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}</option>
+                      <option key={d} value={d}>
+                        {d.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -405,25 +418,35 @@ function PerfilPage() {
                       {i}
                     </button>
                   ))}
-                  {datos.intereses.filter((i) => !interesesSugeridos.includes(i)).map((i) => (
-                    <button
-                      type="button"
-                      key={i}
-                      className="perfil-chip perfil-chip-activo"
-                      onClick={() => alternar('intereses', i)}
-                    >
-                      {i} ✕
-                    </button>
-                  ))}
+                  {datos.intereses
+                    .filter((i) => !interesesSugeridos.includes(i))
+                    .map((i) => (
+                      <button
+                        type="button"
+                        key={i}
+                        className="perfil-chip perfil-chip-activo"
+                        onClick={() => alternar('intereses', i)}
+                      >
+                        {i} ✕
+                      </button>
+                    ))}
                 </div>
-                <form className="perfil-agregar" onSubmit={(e) => { e.preventDefault(); agregar('intereses', nuevoInteres, setNuevoInteres); }}>
+                <form
+                  className="perfil-agregar"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    agregar('intereses', nuevoInteres, setNuevoInteres);
+                  }}
+                >
                   <input
                     className="perfil-input"
                     placeholder="Otro interés..."
                     value={nuevoInteres}
                     onChange={(e) => setNuevoInteres(e.target.value)}
                   />
-                  <Button type="submit" variant="outline-light" size="sm" className="perfil-agregar-btn">+</Button>
+                  <Button type="submit" variant="outline-light" size="sm" className="perfil-agregar-btn">
+                    +
+                  </Button>
                 </form>
                 {faltaActual.intereses && <small className="login-error-campo">✕ {faltaActual.intereses}</small>}
               </div>
@@ -441,25 +464,35 @@ function PerfilPage() {
                       {i}
                     </button>
                   ))}
-                  {datos.idiomas.filter((i) => !idiomasSugeridos.includes(i)).map((i) => (
-                    <button
-                      type="button"
-                      key={i}
-                      className="perfil-chip perfil-chip-activo"
-                      onClick={() => alternar('idiomas', i)}
-                    >
-                      {i} ✕
-                    </button>
-                  ))}
+                  {datos.idiomas
+                    .filter((i) => !idiomasSugeridos.includes(i))
+                    .map((i) => (
+                      <button
+                        type="button"
+                        key={i}
+                        className="perfil-chip perfil-chip-activo"
+                        onClick={() => alternar('idiomas', i)}
+                      >
+                        {i} ✕
+                      </button>
+                    ))}
                 </div>
-                <form className="perfil-agregar" onSubmit={(e) => { e.preventDefault(); agregar('idiomas', nuevoIdioma, setNuevoIdioma); }}>
+                <form
+                  className="perfil-agregar"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    agregar('idiomas', nuevoIdioma, setNuevoIdioma);
+                  }}
+                >
                   <input
                     className="perfil-input"
                     placeholder="Otro idioma..."
                     value={nuevoIdioma}
                     onChange={(e) => setNuevoIdioma(e.target.value)}
                   />
-                  <Button type="submit" variant="outline-light" size="sm" className="perfil-agregar-btn">+</Button>
+                  <Button type="submit" variant="outline-light" size="sm" className="perfil-agregar-btn">
+                    +
+                  </Button>
                 </form>
                 {faltaActual.idiomas && <small className="login-error-campo">✕ {faltaActual.idiomas}</small>}
               </div>
@@ -491,11 +524,7 @@ function PerfilPage() {
               </div>
               <div className="perfil-campo perfil-chequeo">
                 <label className="perfil-check">
-                  <input
-                    type="checkbox"
-                    checked={datos.educacion.en_curso}
-                    onChange={setEducacion('en_curso')}
-                  />
+                  <input type="checkbox" checked={datos.educacion.en_curso} onChange={setEducacion('en_curso')} />
                   Actualmente cursando
                 </label>
               </div>
@@ -512,9 +541,7 @@ function PerfilPage() {
                   value={buscarHabilidad}
                   onChange={(e) => setBuscarHabilidad(e.target.value)}
                 />
-                <p className="perfil-nota">
-                  Haz clic en una habilidad para agregarla a tu perfil.
-                </p>
+                <p className="perfil-nota">Haz clic en una habilidad para agregarla a tu perfil.</p>
                 {cargandoCatalogo ? (
                   <div className="perfil-cargando mt-2 text-center">
                     <Spinner animation="border" size="sm" />
@@ -525,9 +552,7 @@ function PerfilPage() {
                   <div className="perfil-catalogo">
                     {habilidadesCatalogo
                       .filter((h) => !datos.habilidades.some((s) => String(s.habilidad_id) === String(h._id)))
-                      .filter((h) =>
-                        h.nombre.toLowerCase().includes(buscarHabilidad.trim().toLowerCase())
-                      )
+                      .filter((h) => h.nombre.toLowerCase().includes(buscarHabilidad.trim().toLowerCase()))
                       .map((h) => (
                         <button
                           type="button"
@@ -547,23 +572,17 @@ function PerfilPage() {
                     )}
                   </div>
                 )}
-                {faltaActual.habilidades && (
-                  <small className="login-error-campo">✕ {faltaActual.habilidades}</small>
-                )}
+                {faltaActual.habilidades && <small className="login-error-campo">✕ {faltaActual.habilidades}</small>}
               </div>
 
               <div className="perfil-campo">
                 <label className="login-label">Tus habilidades declaradas</label>
                 {datos.habilidades.length === 0 ? (
-                  <small className="proyectos-subtitulo">
-                    Selecciona arriba las habilidades con las que cuentas.
-                  </small>
+                  <small className="proyectos-subtitulo">Selecciona arriba las habilidades con las que cuentas.</small>
                 ) : (
                   <div className="perfil-habilidades-lista">
                     {datos.habilidades.map((s) => {
-                      const h = habilidadesCatalogo.find(
-                        (x) => String(x._id) === String(s.habilidad_id)
-                      );
+                      const h = habilidadesCatalogo.find((x) => String(x._id) === String(s.habilidad_id));
                       return (
                         <div className="perfil-habilidad" key={s.habilidad_id}>
                           <button
@@ -601,7 +620,13 @@ function PerfilPage() {
         ) : (
           <div className="perfil-acciones">
             {paso > 0 && (
-              <Button type="button" variant="outline-light" className="perfil-atras" onClick={atras} disabled={guardando}>
+              <Button
+                type="button"
+                variant="outline-light"
+                className="perfil-atras"
+                onClick={atras}
+                disabled={guardando}
+              >
                 Atrás
               </Button>
             )}
@@ -611,9 +636,14 @@ function PerfilPage() {
               </Button>
             ) : (
               <Button type="button" className="login-boton perfil-siguiente" onClick={guardar} disabled={guardando}>
-                {guardando
-                  ? (<><Spinner as="span" animation="border" size="sm" className="me-2" />Guardando...</>)
-                  : 'Guardar y terminar'}
+                {guardando ? (
+                  <>
+                    <Spinner as="span" animation="border" size="sm" className="me-2" />
+                    Guardando...
+                  </>
+                ) : (
+                  'Guardar y terminar'
+                )}
               </Button>
             )}
           </div>

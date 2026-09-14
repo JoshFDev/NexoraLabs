@@ -6,10 +6,12 @@ function Footer() {
       <div className="container-fluid px-lg-4">
         <div className="pie-grid">
           <div className="pie-bloque pie-marca">
-            <span className="pie-logo">Nexora<span>Labs</span></span>
+            <span className="pie-logo">
+              Nexora<span>Labs</span>
+            </span>
             <p className="pie-descripcion">
-              Comunidad para estudiantes, desarrolladores e ingenieros. Crea proyectos,
-              forma tu equipo, aprende con recursos y encuentra oportunidades reales.
+              Comunidad para estudiantes, desarrolladores e ingenieros. Crea proyectos, forma tu equipo, aprende con
+              recursos y encuentra oportunidades reales.
             </p>
           </div>
 

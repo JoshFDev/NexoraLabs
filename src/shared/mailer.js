@@ -11,30 +11,30 @@ let transporter = null;
 
 // Solo se crea el transporter si hay credenciales y no estamos en tests.
 const obtenerTransporter = () => {
-    if (transporter) return transporter;
-    if (!SMTP_USER || !SMTP_PASS) return null;
-    if (process.env.NODE_ENV === "test") return null;
-    transporter = nodemailer.createTransport({
-        host: SMTP_HOST,
-        port: SMTP_PORT,
-        secure: SMTP_PORT === 465,
-        auth: { user: SMTP_USER, pass: SMTP_PASS },
-    });
-    return transporter;
+  if (transporter) return transporter;
+  if (!SMTP_USER || !SMTP_PASS) return null;
+  if (process.env.NODE_ENV === "test") return null;
+  transporter = nodemailer.createTransport({
+    host: SMTP_HOST,
+    port: SMTP_PORT,
+    secure: SMTP_PORT === 465,
+    auth: { user: SMTP_USER, pass: SMTP_PASS }
+  });
+  return transporter;
 };
 
 // Envía un correo. Nunca lanza error: si falla o no está configurado,
 // lo registra en consola para no romper el flujo principal.
 export const enviarCorreo = async ({ para, asunto, html = "", texto = "" }) => {
-    try {
-        const t = obtenerTransporter();
-        if (!t) return false;
-        await t.sendMail({ from: MAIL_FROM, to: para, subject: asunto, text: texto, html });
-        return true;
-    } catch (error) {
-        console.log("Error al enviar correo:", error);
-        return false;
-    }
+  try {
+    const t = obtenerTransporter();
+    if (!t) return false;
+    await t.sendMail({ from: MAIL_FROM, to: para, subject: asunto, text: texto, html });
+    return true;
+  } catch (error) {
+    console.log("Error al enviar correo:", error);
+    return false;
+  }
 };
 
 // Plantilla base para correos que piden ingresar un código.
@@ -82,92 +82,96 @@ const plantillaConCodigo = ({ titulo, mensaje, codigo, pie, correoSoporte }) => 
 </body>
 </html>`;
 
-const cuerpoConCodigo = ({ mensaje, codigo, pie }) =>
-    `${mensaje}\n\nTu código de verificación: ${codigo}\n\n${pie}`;
+const cuerpoConCodigo = ({ mensaje, codigo, pie }) => `${mensaje}\n\nTu código de verificación: ${codigo}\n\n${pie}`;
 
 // Código de verificación de correo (registro).
 export const enviarCodigoVerificacion = async (usuario, codigo) => {
-    const correoSoporte = SMTP_USER || "soporte@nexoralabs.com";
-    return enviarCorreo({
-        para: usuario.email,
-        asunto: "Verifica tu correo en NexoraLabs",
-        texto: cuerpoConCodigo({
-            mensaje: `Hola ${usuario.nombre}, para terminar de crear tu cuenta ingresa este código.`,
-            codigo,
-            pie: "El código expira en 10 minutos."
-        }),
-        html: plantillaConCodigo({
-            titulo: "Verifica tu correo",
-            mensaje: `Hola <strong>${usuario.nombre}</strong>, para terminar de crear tu cuenta en NexoraLabs ingresa este código:`,
-            codigo,
-            pie: "El código expira en 10 minutos.",
-            correoSoporte
-        })
-    });
+  const correoSoporte = SMTP_USER || "soporte@nexoralabs.com";
+  return enviarCorreo({
+    para: usuario.email,
+    asunto: "Verifica tu correo en NexoraLabs",
+    texto: cuerpoConCodigo({
+      mensaje: `Hola ${usuario.nombre}, para terminar de crear tu cuenta ingresa este código.`,
+      codigo,
+      pie: "El código expira en 10 minutos."
+    }),
+    html: plantillaConCodigo({
+      titulo: "Verifica tu correo",
+      mensaje: `Hola <strong>${usuario.nombre}</strong>, para terminar de crear tu cuenta en NexoraLabs ingresa este código:`,
+      codigo,
+      pie: "El código expira en 10 minutos.",
+      correoSoporte
+    })
+  });
 };
 
 // Código para restablecer la contraseña.
 export const enviarCodigoRecuperacion = async (usuario, codigo) => {
-    const correoSoporte = SMTP_USER || "soporte@nexoralabs.com";
-    return enviarCorreo({
-        para: usuario.email,
-        asunto: "Recupera tu contraseña en NexoraLabs",
-        texto: cuerpoConCodigo({
-            mensaje: `Hola ${usuario.nombre}, recibimos una solicitud para restablecer tu contraseña. Ingresa este código:`,
-            codigo,
-            pie: "El código expira en 10 minutos. Si no lo solicitaste tú, ignora este correo."
-        }),
-        html: plantillaConCodigo({
-            titulo: "Recuperar contraseña",
-            mensaje: `Hola <strong>${usuario.nombre}</strong>, ingresaste una solicitud para restablecer tu contraseña. Usa este código para continuar:`,
-            codigo,
-            pie: "El código expira en 10 minutos. Si no lo solicitaste tú, ignora este correo.",
-            correoSoporte
-        })
-    });
+  const correoSoporte = SMTP_USER || "soporte@nexoralabs.com";
+  return enviarCorreo({
+    para: usuario.email,
+    asunto: "Recupera tu contraseña en NexoraLabs",
+    texto: cuerpoConCodigo({
+      mensaje: `Hola ${usuario.nombre}, recibimos una solicitud para restablecer tu contraseña. Ingresa este código:`,
+      codigo,
+      pie: "El código expira en 10 minutos. Si no lo solicitaste tú, ignora este correo."
+    }),
+    html: plantillaConCodigo({
+      titulo: "Recuperar contraseña",
+      mensaje: `Hola <strong>${usuario.nombre}</strong>, ingresaste una solicitud para restablecer tu contraseña. Usa este código para continuar:`,
+      codigo,
+      pie: "El código expira en 10 minutos. Si no lo solicitaste tú, ignora este correo.",
+      correoSoporte
+    })
+  });
 };
 
 // Código para confirmar la eliminación de la cuenta.
 export const enviarCodigoEliminacion = async (usuario, codigo) => {
-    const correoSoporte = SMTP_USER || "soporte@nexoralabs.com";
-    return enviarCorreo({
-        para: usuario.email,
-        asunto: "Confirmación para eliminar tu cuenta en NexoraLabs",
-        texto: cuerpoConCodigo({
-            mensaje: "Recibimos una solicitud para eliminar tu cuenta. Si realmente deseas hacerlo, ingresa este código:",
-            codigo,
-            pie: "El código expira en 15 minutos. Si no fuiste tú, ignora este correo."
-        }),
-        html: plantillaConCodigo({
-            titulo: "Eliminar tu cuenta",
-            mensaje: "Recibimos una solicitud para eliminar tu cuenta de NexoraLabs. Si realmente deseas hacerlo, ingresa este código:",
-            codigo,
-            pie: "El código expira en 15 minutos. Si no fuiste tú, ignora este correo y nadie podrá eliminar tu cuenta sin este código.",
-            correoSoporte
-        })
-    });
+  const correoSoporte = SMTP_USER || "soporte@nexoralabs.com";
+  return enviarCorreo({
+    para: usuario.email,
+    asunto: "Confirmación para eliminar tu cuenta en NexoraLabs",
+    texto: cuerpoConCodigo({
+      mensaje: "Recibimos una solicitud para eliminar tu cuenta. Si realmente deseas hacerlo, ingresa este código:",
+      codigo,
+      pie: "El código expira en 15 minutos. Si no fuiste tú, ignora este correo."
+    }),
+    html: plantillaConCodigo({
+      titulo: "Eliminar tu cuenta",
+      mensaje:
+        "Recibimos una solicitud para eliminar tu cuenta de NexoraLabs. Si realmente deseas hacerlo, ingresa este código:",
+      codigo,
+      pie: "El código expira en 15 minutos. Si no fuiste tú, ignora este correo y nadie podrá eliminar tu cuenta sin este código.",
+      correoSoporte
+    })
+  });
 };
 
 // Correo de bienvenida al registrarse.
 export const enviarBienvenida = async (usuario) => {
-    const nombreCompleto = `${usuario.nombre} ${usuario.apellido_paterno || ""}`.trim();
-    const fechaRegistro = usuario.fecha_registro
-        ? new Date(usuario.fecha_registro).toLocaleString("es-MX", {
-              day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit"
-          })
-        : "";
-    const correoSoporte = SMTP_USER || "soporte@nexoralabs.com";
-    return enviarCorreo({
-        para: usuario.email,
-        asunto: "¡Bienvenido a NexoraLabs!",
-        texto:
-            `Hola ${nombreCompleto},\n\n` +
-            `Tu cuenta en NexoraLabs ha sido creada con el correo ${usuario.email}.\n` +
-            `Ya puedes iniciar sesión y explorar proyectos, recursos, ofertas de empleo y equipos.\n\n` +
-            `Explorar NexoraLabs: ${FRONTEND_URL}\n\n` +
-            `${fechaRegistro ? `Cuenta creada el ${fechaRegistro}.\n\n` : ""}` +
-            `© 2026 NexoraLabs. Soporte: ${correoSoporte}`,
-        html: `<!DOCTYPE html>
+  const nombreCompleto = `${usuario.nombre} ${usuario.apellido_paterno || ""}`.trim();
+  const fechaRegistro = usuario.fecha_registro
+    ? new Date(usuario.fecha_registro).toLocaleString("es-MX", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      })
+    : "";
+  const correoSoporte = SMTP_USER || "soporte@nexoralabs.com";
+  return enviarCorreo({
+    para: usuario.email,
+    asunto: "¡Bienvenido a NexoraLabs!",
+    texto:
+      `Hola ${nombreCompleto},\n\n` +
+      `Tu cuenta en NexoraLabs ha sido creada con el correo ${usuario.email}.\n` +
+      `Ya puedes iniciar sesión y explorar proyectos, recursos, ofertas de empleo y equipos.\n\n` +
+      `Explorar NexoraLabs: ${FRONTEND_URL}\n\n` +
+      `${fechaRegistro ? `Cuenta creada el ${fechaRegistro}.\n\n` : ""}` +
+      `© 2026 NexoraLabs. Soporte: ${correoSoporte}`,
+    html: `<!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"></head>
 <body style="margin:0;padding:0;background:#f4f0f8;font-family:Arial,Helvetica,sans-serif;">
@@ -211,19 +215,19 @@ export const enviarBienvenida = async (usuario) => {
         </tr>
     </table>
 </body>
-</html>`,
-    });
+</html>`
+  });
 };
 
 // Correo genérico de aviso (aceptaciones, recomendaciones, etc.)
-export const enviarAvisoCorreo = async ({ para, nombre, asunto, mensaje, enlace = "" }) => {
-    const correoSoporte = SMTP_USER || "soporte@nexoralabs.com";
-    const url = enlace ? (enlace.startsWith("http") ? enlace : `${FRONTEND_URL}${enlace}`) : FRONTEND_URL;
-    return enviarCorreo({
-        para,
-        asunto,
-        texto: `${mensaje}\n\nVer en NexoraLabs: ${url}`,
-        html: `<!DOCTYPE html>
+export const enviarAvisoCorreo = async ({ para, asunto, mensaje, enlace = "" }) => {
+  const correoSoporte = SMTP_USER || "soporte@nexoralabs.com";
+  const url = enlace ? (enlace.startsWith("http") ? enlace : `${FRONTEND_URL}${enlace}`) : FRONTEND_URL;
+  return enviarCorreo({
+    para,
+    asunto,
+    texto: `${mensaje}\n\nVer en NexoraLabs: ${url}`,
+    html: `<!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"></head>
 <body style="margin:0;padding:0;background:#f4f0f8;font-family:Arial,Helvetica,sans-serif;">
@@ -240,14 +244,18 @@ export const enviarAvisoCorreo = async ({ para, nombre, asunto, mensaje, enlace 
                     <tr>
                         <td style="padding:28px 32px;">
                             <p style="margin:0 0 16px;color:#5b4b6e;font-size:15px;line-height:1.6;">${mensaje}</p>
-                            ${enlace ? `
+                            ${
+                              enlace
+                                ? `
                             <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 20px;">
                                 <tr>
                                     <td style="border-radius:8px;background:#7c3aed;">
                                         <a href="${url}" target="_blank" style="display:inline-block;padding:12px 28px;color:#ffffff;font-size:15px;font-weight:bold;text-decoration:none;border-radius:8px;">Ver en NexoraLabs</a>
                                     </td>
                                 </tr>
-                            </table>` : ""}
+                            </table>`
+                                : ""
+                            }
                             <p style="margin:0;color:#8a7f9c;font-size:12px;">Recibes este correo porque tienes activadas las notificaciones en tu perfil. Puedes apagarlas desde tus preferencias.</p>
                         </td>
                     </tr>
@@ -264,7 +272,7 @@ export const enviarAvisoCorreo = async ({ para, nombre, asunto, mensaje, enlace 
     </table>
 </body>
 </html>`
-    });
+  });
 };
 
 export default enviarBienvenida;

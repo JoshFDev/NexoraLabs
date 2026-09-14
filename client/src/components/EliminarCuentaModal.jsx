@@ -66,13 +66,17 @@ function EliminarCuentaModal({ mostrar, onCerrar }) {
         {paso === 'confirmar' ? (
           <>
             <p className="proyectos-subtitulo">
-              Esta acción es <strong>permanente e irreversible</strong>: se borran tu cuenta y todo tu
-              contenido (proyectos, postulaciones, comentarios, membresías, etc.).
+              Esta acción es <strong>permanente e irreversible</strong>: se borran tu cuenta y todo tu contenido
+              (proyectos, postulaciones, comentarios, membresías, etc.).
             </p>
             <p className="proyectos-subtitulo mb-0">
               Para continuar te enviaremos un código de confirmación a tu correo.
             </p>
-            {error && <Alert variant="danger" className="eliminar-aviso">{error}</Alert>}
+            {error && (
+              <Alert variant="danger" className="eliminar-aviso">
+                {error}
+              </Alert>
+            )}
             <div className="d-flex justify-content-center gap-3 mt-4">
               <Button variant="danger" className="proyectos-boton" onClick={enviarCodigo} disabled={enviando}>
                 {enviando && <Spinner as="span" animation="border" size="sm" className="me-2" />}
@@ -85,8 +89,16 @@ function EliminarCuentaModal({ mostrar, onCerrar }) {
           </>
         ) : (
           <>
-            {enviado && <Alert variant="success" className="eliminar-aviso">{msj}</Alert>}
-            {error && <Alert variant="danger" className="eliminar-aviso">{error}</Alert>}
+            {enviado && (
+              <Alert variant="success" className="eliminar-aviso">
+                {msj}
+              </Alert>
+            )}
+            {error && (
+              <Alert variant="danger" className="eliminar-aviso">
+                {error}
+              </Alert>
+            )}
             <Form.Control
               type="text"
               inputMode="numeric"

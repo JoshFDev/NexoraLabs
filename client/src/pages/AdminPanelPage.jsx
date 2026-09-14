@@ -9,7 +9,7 @@ const ETIQUETAS_ROL = {
   mentor: 'Mentor',
   estudiante: 'Estudiante',
   desarrollador: 'Desarrollador',
-  ingeniero: 'Ingeniero',
+  ingeniero: 'Ingeniero'
 };
 
 const ETIQUETAS_ESTADO = {
@@ -17,13 +17,13 @@ const ETIQUETAS_ESTADO = {
   buscando_equipo: 'Buscando equipo',
   en_desarrollo: 'En desarrollo',
   finalizado: 'Finalizado',
-  cancelado: 'Cancelado',
+  cancelado: 'Cancelado'
 };
 
 const ETIQUETAS_ESTADO_EQUIPO = {
   activo: 'Activo',
   finalizado: 'Finalizado',
-  disuelto: 'Disuelto',
+  disuelto: 'Disuelto'
 };
 
 const ETIQUETAS_TIPO = {
@@ -31,7 +31,7 @@ const ETIQUETAS_TIPO = {
   documentación: 'Documentación',
   video: 'Video',
   artículo: 'Artículo',
-  libro: 'Libro',
+  libro: 'Libro'
 };
 
 const maxDe = (arr) => arr.reduce((m, x) => Math.max(m, x.cantidad), 0);
@@ -46,7 +46,12 @@ function Barra({ etiqueta, cantidad, tope, colores, color }) {
       </div>
       <div className="recurso-progreso" style={{ height: 8, background: '#2a2740', borderRadius: 4 }}>
         <div
-          style={{ height: '100%', borderRadius: 4, background: colores?.[etiqueta] || color || '#7c66e8', width: `${ancho}%` }}
+          style={{
+            height: '100%',
+            borderRadius: 4,
+            background: colores?.[etiqueta] || color || '#7c66e8',
+            width: `${ancho}%`
+          }}
         />
       </div>
     </div>
@@ -54,9 +59,7 @@ function Barra({ etiqueta, cantidad, tope, colores, color }) {
 }
 
 function AdminPanelPage() {
-  const usuario = JSON.parse(
-    localStorage.getItem('usuario') || sessionStorage.getItem('usuario') || 'null'
-  );
+  const usuario = JSON.parse(localStorage.getItem('usuario') || sessionStorage.getItem('usuario') || 'null');
   const [stats, setStats] = useState(null);
   const [error, setError] = useState('');
 
@@ -93,7 +96,7 @@ function AdminPanelPage() {
         { etiqueta: 'Habilidades', valor: stats.total_habilidades, color: '#a78bfa' },
         { etiqueta: 'Comentarios', valor: stats.total_comentarios, color: '#fb7185' },
         { etiqueta: 'Integrantes', valor: stats.total_miembros_equipos, color: '#4ade80' },
-        { etiqueta: 'Solicitudes', valor: stats.total_solicitudes_equipo, color: '#facc15' },
+        { etiqueta: 'Solicitudes', valor: stats.total_solicitudes_equipo, color: '#facc15' }
       ]
     : [];
 
@@ -116,7 +119,9 @@ function AdminPanelPage() {
                 <Col xxl={2} xl={3} lg={4} md={4} sm={6} key={k.etiqueta}>
                   <div className="proyectos-filtros-panel p-3 h-100">
                     <div style={{ fontSize: '1.5rem', fontWeight: 700, color: k.color }}>{k.valor}</div>
-                    <div className="proyectos-subtitulo mt-1" style={{ fontSize: '0.82rem' }}>{k.etiqueta}</div>
+                    <div className="proyectos-subtitulo mt-1" style={{ fontSize: '0.82rem' }}>
+                      {k.etiqueta}
+                    </div>
                   </div>
                 </Col>
               ))}
@@ -217,7 +222,13 @@ function AdminPanelPage() {
                   <strong className="d-block mb-3">Habilidades más pedidas</strong>
                   {stats.habilidades_mas_pedidas.length ? (
                     stats.habilidades_mas_pedidas.map((h) => (
-                      <Barra key={h._id} etiqueta={h.nombre} cantidad={h.cantidad} tope={maxDe(stats.habilidades_mas_pedidas)} color="#a78bfa" />
+                      <Barra
+                        key={h._id}
+                        etiqueta={h.nombre}
+                        cantidad={h.cantidad}
+                        tope={maxDe(stats.habilidades_mas_pedidas)}
+                        color="#a78bfa"
+                      />
                     ))
                   ) : (
                     <span className="proyecto-detalle-texto">Sin datos.</span>

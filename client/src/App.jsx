@@ -35,113 +35,113 @@ function App() {
       <main key={key} className="app-pagina">
         <ErrorBoundary key={pathname}>
           <Routes>
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/registro" element={<RegistroPage />} />
-        <Route
-          path="/perfil"
-          element={
-            <RutaProtegida>
-              <PerfilPage />
-            </RutaProtegida>
-          }
-        />
-        <Route
-          path="/explorar"
-          element={
-            <RutaProtegida>
-              <ExplorarProyectosPage />
-            </RutaProtegida>
-          }
-        />
-        <Route
-          path="/crear-proyecto"
-          element={
-            <RutaProtegida>
-              <CrearProyectoPage />
-            </RutaProtegida>
-          }
-        />
-        <Route
-          path="/proyecto/:id"
-          element={
-            <RutaProtegida>
-              <ProyectoDetallePage />
-            </RutaProtegida>
-          }
-        />
-        <Route
-          path="/postulaciones"
-          element={
-            <RutaProtegida>
-              <PostulacionesPage />
-            </RutaProtegida>
-          }
-        />
-        <Route
-          path="/equipos"
-          element={
-            <RutaProtegida>
-              <EquiposPage />
-            </RutaProtegida>
-          }
-        />
-        <Route
-          path="/recursos"
-          element={
-            <RutaProtegida>
-              <RecursosPage />
-            </RutaProtegida>
-          }
-        />
-        <Route
-          path="/habilidades"
-          element={
-            <RutaProtegida>
-              <HabilidadesPage />
-            </RutaProtegida>
-          }
-        />
-        <Route
-          path="/usuario/:id"
-          element={
-            <RutaProtegida>
-              <PerfilPublicoPage />
-            </RutaProtegida>
-          }
-        />
-        <Route
-          path="/admin"
-          element={
-            <RutaProtegida>
-              <AdminPanelPage />
-            </RutaProtegida>
-          }
-        />
-        <Route
-          path="/logros"
-          element={
-            <RutaProtegida>
-              <LogrosPage />
-            </RutaProtegida>
-          }
-        />
-        <Route
-          path="/ofertas"
-          element={
-            <RutaProtegida>
-              <OfertasEmpleoPage />
-            </RutaProtegida>
-          }
-        />
-        <Route
-          path="/"
-          element={
-            <RutaProtegida>
-              <DashboardPage />
-            </RutaProtegida>
-          }
-        />
-      </Routes>
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/registro" element={<RegistroPage />} />
+            <Route
+              path="/perfil"
+              element={
+                <RutaProtegida>
+                  <PerfilPage />
+                </RutaProtegida>
+              }
+            />
+            <Route
+              path="/explorar"
+              element={
+                <RutaProtegida>
+                  <ExplorarProyectosPage />
+                </RutaProtegida>
+              }
+            />
+            <Route
+              path="/crear-proyecto"
+              element={
+                <RutaProtegida>
+                  <CrearProyectoPage />
+                </RutaProtegida>
+              }
+            />
+            <Route
+              path="/proyecto/:id"
+              element={
+                <RutaProtegida>
+                  <ProyectoDetallePage />
+                </RutaProtegida>
+              }
+            />
+            <Route
+              path="/postulaciones"
+              element={
+                <RutaProtegida>
+                  <PostulacionesPage />
+                </RutaProtegida>
+              }
+            />
+            <Route
+              path="/equipos"
+              element={
+                <RutaProtegida>
+                  <EquiposPage />
+                </RutaProtegida>
+              }
+            />
+            <Route
+              path="/recursos"
+              element={
+                <RutaProtegida>
+                  <RecursosPage />
+                </RutaProtegida>
+              }
+            />
+            <Route
+              path="/habilidades"
+              element={
+                <RutaProtegida>
+                  <HabilidadesPage />
+                </RutaProtegida>
+              }
+            />
+            <Route
+              path="/usuario/:id"
+              element={
+                <RutaProtegida>
+                  <PerfilPublicoPage />
+                </RutaProtegida>
+              }
+            />
+            <Route
+              path="/admin"
+              element={
+                <RutaProtegida>
+                  <AdminPanelPage />
+                </RutaProtegida>
+              }
+            />
+            <Route
+              path="/logros"
+              element={
+                <RutaProtegida>
+                  <LogrosPage />
+                </RutaProtegida>
+              }
+            />
+            <Route
+              path="/ofertas"
+              element={
+                <RutaProtegida>
+                  <OfertasEmpleoPage />
+                </RutaProtegida>
+              }
+            />
+            <Route
+              path="/"
+              element={
+                <RutaProtegida>
+                  <DashboardPage />
+                </RutaProtegida>
+              }
+            />
+          </Routes>
         </ErrorBoundary>
       </main>
       {!esPaginaAuth && <Footer />}

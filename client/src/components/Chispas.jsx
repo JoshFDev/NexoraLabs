@@ -11,7 +11,7 @@ function Chispas({ cantidad = 26 }) {
       ty: Math.round(Math.sin(angulo) * distancia),
       retraso: (Math.random() * 0.03).toFixed(3),
       largo: Math.round(18 + Math.random() * 26),
-      color: colores[i % colores.length],
+      color: colores[i % colores.length]
     };
   });
 
@@ -28,7 +28,7 @@ function Chispas({ cantidad = 26 }) {
             '--retraso': `${p.retraso}s`,
             '--color': p.color,
             '--rot': `${p.rot}deg`,
-            '--largo': `${p.largo}px`,
+            '--largo': `${p.largo}px`
           }}
         />
       ))}

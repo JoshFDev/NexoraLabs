@@ -146,7 +146,7 @@ const ICONOS = {
   supabase: supabaseIcon,
   vercel: vercelIcon,
   netlify: netlifyIcon,
-  cloudflare: cloudflareIcon,
+  cloudflare: cloudflareIcon
 };
 
 const MARCAS = [
@@ -189,8 +189,18 @@ const MARCAS = [
   { claves: ['tensorflow'], slug: 'tensorflow', abrev: 'TF', fondo: '#ff6f00', letra: '#fff' },
   { claves: ['pytorch'], slug: 'pytorch', abrev: 'Pt', fondo: '#ee4c2c', letra: '#fff' },
   { claves: ['ia', 'inteligencia artificial', 'machine learning'], abrev: 'IA', fondo: '#7c3aed', letra: '#fff' },
-  { claves: ['microcontrolador', 'microcontroladores', 'pic', 'avr', 'firmware'], abrev: 'MC', fondo: '#525252', letra: '#fff' },
-  { claves: ['seguridad', 'cyberseguridad', 'ciberseguridad', 'pentest', 'hacking'], abrev: 'Sc', fondo: '#dc2626', letra: '#fff' },
+  {
+    claves: ['microcontrolador', 'microcontroladores', 'pic', 'avr', 'firmware'],
+    abrev: 'MC',
+    fondo: '#525252',
+    letra: '#fff'
+  },
+  {
+    claves: ['seguridad', 'cyberseguridad', 'ciberseguridad', 'pentest', 'hacking'],
+    abrev: 'Sc',
+    fondo: '#dc2626',
+    letra: '#fff'
+  },
   { claves: ['redes', 'network'], abrev: 'Rd', fondo: '#0e7490', letra: '#fff' },
   { claves: ['cisco'], slug: 'cisco', abrev: 'Ci', fondo: '#1ba0d7', letra: '#fff' },
   { claves: ['excel', 'office'], abrev: 'Of', fondo: '#107c41', letra: '#fff' },
@@ -219,7 +229,13 @@ const MARCAS = [
   { claves: ['github actions', 'githubactions'], slug: 'githubactions', abrev: 'GA', fondo: '#2088ff', letra: '#fff' },
   { claves: ['gitlab ci', 'gitlabci', 'gitlab-ci'], slug: 'gitlab', abrev: 'GC', fondo: '#fc6d26', letra: '#fff' },
   { claves: ['raspberry', 'raspberrypi'], slug: 'raspberrypi', abrev: 'Rp', fondo: '#a22846', letra: '#fff' },
-  { claves: ['esp32', 'esp8266', 'espressif', 'esp-idf'], slug: 'espressif', abrev: 'Es', fondo: '#4a4a4a', letra: '#fff' },
+  {
+    claves: ['esp32', 'esp8266', 'espressif', 'esp-idf'],
+    slug: 'espressif',
+    abrev: 'Es',
+    fondo: '#4a4a4a',
+    letra: '#fff'
+  },
   { claves: ['ubiquiti', 'unifi', 'ubnt'], slug: 'ubiquiti', abrev: 'Ub', fondo: '#0559c9', letra: '#fff' },
   { claves: ['pf sense', 'pfsense'], slug: 'pfsense', abrev: 'Pf', fondo: '#212121', letra: '#fff' },
   { claves: ['redis'], slug: 'redis', abrev: 'Rd', fondo: '#dc382d', letra: '#fff' },
@@ -232,7 +248,7 @@ const MARCAS = [
   { claves: ['supabase'], slug: 'supabase', abrev: 'Sb', fondo: '#3ecf8e', letra: '#0b2b38' },
   { claves: ['vercel'], slug: 'vercel', abrev: 'Vc', fondo: '#111', letra: '#fff' },
   { claves: ['netlify'], slug: 'netlify', abrev: 'Nt', fondo: '#00c7b7', letra: '#0b2b38' },
-  { claves: ['cloudflare'], slug: 'cloudflare', abrev: 'Cf', fondo: '#f38020', letra: '#fff' },
+  { claves: ['cloudflare'], slug: 'cloudflare', abrev: 'Cf', fondo: '#f38020', letra: '#fff' }
 ];
 
 function IconoHabilidad({ nombre }) {
@@ -258,7 +274,14 @@ function IconoHabilidad({ nombre }) {
 
   return (
     <span className="skill-ico skill-ico-def" aria-hidden="true">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
         <path d="M14.7 6.3a4.5 4.5 0 0 0-6.1 6.1L3 18l3 3 5.6-5.6a4.5 4.5 0 0 0 6.1-6.1l-2.9 2.9-2.1-2.1z" />
       </svg>
     </span>

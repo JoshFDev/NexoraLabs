@@ -89,7 +89,7 @@ function CampanaNotificaciones() {
       setPreferencias({
         correo: prefs.correo !== false,
         correo_aceptaciones: prefs.correo_aceptaciones !== false,
-        correo_intereses: prefs.correo_intereses !== false,
+        correo_intereses: prefs.correo_intereses !== false
       });
     } catch {
       setAvisoPrefs('No pudimos cargar tus preferencias.');
@@ -118,9 +118,7 @@ function CampanaNotificaciones() {
       if (!n.leida) {
         await api.put(`/notificacion/${n._id}/leida`);
         setNoLeidas((v) => Math.max(0, v - 1));
-        setNotificaciones((prev) =>
-          prev.map((x) => (String(x._id) === String(n._id) ? { ...x, leida: true } : x))
-        );
+        setNotificaciones((prev) => prev.map((x) => (String(x._id) === String(n._id) ? { ...x, leida: true } : x)));
       }
     } catch {
       // Si falla, igual navegamos
@@ -157,13 +155,30 @@ function CampanaNotificaciones() {
           <strong>{verPreferencias ? 'Preferencias' : 'Notificaciones'}</strong>
           <div className="notif-menu-acciones">
             {verPreferencias ? (
-              <button type="button" className="notif-volver" onClick={() => { setVerPreferencias(false); setAvisoPrefs(''); }}>
+              <button
+                type="button"
+                className="notif-volver"
+                onClick={() => {
+                  setVerPreferencias(false);
+                  setAvisoPrefs('');
+                }}
+              >
                 <span aria-hidden="true">←</span> Lista
               </button>
             ) : (
               <>
-                <span className="notif-engranaje" title="Preferencias de notificación" role="button" tabIndex={0} aria-label="Preferencias de notificación" onClick={abrirPreferencias} onKeyDown={(e) => e.key === 'Enter' && abrirPreferencias()}>
-                  <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>settings</span>
+                <span
+                  className="notif-engranaje"
+                  title="Preferencias de notificación"
+                  role="button"
+                  tabIndex={0}
+                  aria-label="Preferencias de notificación"
+                  onClick={abrirPreferencias}
+                  onKeyDown={(e) => e.key === 'Enter' && abrirPreferencias()}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>
+                    settings
+                  </span>
                 </span>
                 {noLeidas > 0 && (
                   <button type="button" className="notif-marcar-todas" onClick={marcarTodas}>
@@ -221,8 +236,17 @@ function CampanaNotificaciones() {
                     <small>Recomendaciones según tus intereses.</small>
                   </span>
                 </label>
-                {avisoPrefs && <p className={`notif-preferencias-aviso${avisoPrefs.includes('guardadas') ? ' ok' : ''}`}>{avisoPrefs}</p>}
-                <button type="button" className="notif-preferencias-guardar" onClick={guardarPreferencias} disabled={guardandoPrefs || !preferencias}>
+                {avisoPrefs && (
+                  <p className={`notif-preferencias-aviso${avisoPrefs.includes('guardadas') ? ' ok' : ''}`}>
+                    {avisoPrefs}
+                  </p>
+                )}
+                <button
+                  type="button"
+                  className="notif-preferencias-guardar"
+                  onClick={guardarPreferencias}
+                  disabled={guardandoPrefs || !preferencias}
+                >
                   {guardandoPrefs && <Spinner as="span" animation="border" size="sm" className="me-2" />}
                   Guardar preferencias
                 </button>

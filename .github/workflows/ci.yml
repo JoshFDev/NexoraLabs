@@ -32,6 +32,12 @@ jobs:
       - name: Instalar dependencias
         run: pnpm install --frozen-lockfile
 
+      - name: Lint (ESLint)
+        run: pnpm run lint
+
+      - name: Formato (Prettier)
+        run: pnpm run format:check
+
       - name: Pruebas de API (Jest + Supertest)
         run: pnpm test
         env:
@@ -60,6 +66,14 @@ jobs:
       - name: Instalar dependencias
         working-directory: client
         run: pnpm install --frozen-lockfile
+
+      - name: Lint (ESLint)
+        working-directory: client
+        run: pnpm run lint
+
+      - name: Formato (Prettier)
+        working-directory: client
+        run: pnpm run format:check
 
       - name: Pruebas del frontend (Vitest)
         working-directory: client

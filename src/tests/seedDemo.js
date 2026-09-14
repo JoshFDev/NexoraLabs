@@ -8,108 +8,269 @@ import Equipo from "../models/Equipo";
 import MiembroEquipo from "../models/MiembroEquipo";
 
 const HABILIDADES = [
-  { nombre: "Electrónica Básica", categoria: "Electrónica", descripcion: "Leyes de Ohm y Kirchhoff, componentes pasivos y activos, lectura de esquemas.", nivel_minimo: "principiante", tiempo_estimado: "40 h", etiquetas: ["electricidad", "componentes"] },
-  { nombre: "Circuitos Electrónicos", categoria: "Electrónica", descripcion: "Diseño y análisis de circuitos analógicos y digitales.", nivel_minimo: "intermedio", tiempo_estimado: "60 h", etiquetas: ["circuitos", "análisis"] },
-  { nombre: "Programación Embebida (C/C++)", categoria: "Electrónica", descripcion: "Firmware para microcontroladores como AVR, PIC y STM32.", nivel_minimo: "intermedio", tiempo_estimado: "80 h", etiquetas: ["firmware", "microcontroladores", "c"] },
-  { nombre: "Prototipado con Arduino", categoria: "IoT", descripcion: "Sensores, actuadores y proyectos interactivos con Arduino.", nivel_minimo: "principiante", tiempo_estimado: "30 h", etiquetas: ["arduino", "sensores", "iot"] },
-  { nombre: "Diseño de PCB", categoria: "Electrónica", descripcion: "Diseño de placas de circuito impreso con KiCad y Eagle.", nivel_minimo: "intermedio", tiempo_estimado: "50 h", etiquetas: ["pcb", "kicad"] },
-  { nombre: "Fundamentos de Redes", categoria: "Redes", descripcion: "Modelo OSI, TCP/IP, direccionamiento IP y topologías.", nivel_minimo: "principiante", tiempo_estimado: "35 h", etiquetas: ["osi", "tcp-ip", "ip"] },
-  { nombre: "Configuración de Routers y Switches", categoria: "Redes", descripcion: "Configuración de equipos Cisco, VLANs, STP y enrutamiento.", nivel_minimo: "intermedio", tiempo_estimado: "70 h", etiquetas: ["cisco", "vlan", "stp"] },
-  { nombre: "Redes Inalámbricas", categoria: "Redes", descripcion: "Wi-Fi, diseño de puntos de acceso y resolución de interferencias.", nivel_minimo: "intermedio", tiempo_estimado: "40 h", etiquetas: ["wifi", "access point"] },
-  { nombre: "Ciberseguridad de Redes", categoria: "Ciberseguridad", descripcion: "Firewalls, IDS/IPS, segmentación y monitoreo de tráfico.", nivel_minimo: "intermedio", tiempo_estimado: "65 h", etiquetas: ["firewall", "ids", "monitoreo"] },
-  { nombre: "Seguridad Informática", categoria: "Ciberseguridad", descripcion: "Principios de seguridad, hardening y gestión de vulnerabilidades.", nivel_minimo: "intermedio", tiempo_estimado: "55 h", etiquetas: ["hardening", "vulnerabilidades"] },
-  { nombre: "Linux para Redes", categoria: "Sistemas Operativos", descripcion: "Administración de servidores Linux y herramientas de red.", nivel_minimo: "intermedio", tiempo_estimado: "60 h", etiquetas: ["linux", "servidores"] },
+  {
+    nombre: "Electrónica Básica",
+    categoria: "Electrónica",
+    descripcion: "Leyes de Ohm y Kirchhoff, componentes pasivos y activos, lectura de esquemas.",
+    nivel_minimo: "principiante",
+    tiempo_estimado: "40 h",
+    etiquetas: ["electricidad", "componentes"]
+  },
+  {
+    nombre: "Circuitos Electrónicos",
+    categoria: "Electrónica",
+    descripcion: "Diseño y análisis de circuitos analógicos y digitales.",
+    nivel_minimo: "intermedio",
+    tiempo_estimado: "60 h",
+    etiquetas: ["circuitos", "análisis"]
+  },
+  {
+    nombre: "Programación Embebida (C/C++)",
+    categoria: "Electrónica",
+    descripcion: "Firmware para microcontroladores como AVR, PIC y STM32.",
+    nivel_minimo: "intermedio",
+    tiempo_estimado: "80 h",
+    etiquetas: ["firmware", "microcontroladores", "c"]
+  },
+  {
+    nombre: "Prototipado con Arduino",
+    categoria: "IoT",
+    descripcion: "Sensores, actuadores y proyectos interactivos con Arduino.",
+    nivel_minimo: "principiante",
+    tiempo_estimado: "30 h",
+    etiquetas: ["arduino", "sensores", "iot"]
+  },
+  {
+    nombre: "Diseño de PCB",
+    categoria: "Electrónica",
+    descripcion: "Diseño de placas de circuito impreso con KiCad y Eagle.",
+    nivel_minimo: "intermedio",
+    tiempo_estimado: "50 h",
+    etiquetas: ["pcb", "kicad"]
+  },
+  {
+    nombre: "Fundamentos de Redes",
+    categoria: "Redes",
+    descripcion: "Modelo OSI, TCP/IP, direccionamiento IP y topologías.",
+    nivel_minimo: "principiante",
+    tiempo_estimado: "35 h",
+    etiquetas: ["osi", "tcp-ip", "ip"]
+  },
+  {
+    nombre: "Configuración de Routers y Switches",
+    categoria: "Redes",
+    descripcion: "Configuración de equipos Cisco, VLANs, STP y enrutamiento.",
+    nivel_minimo: "intermedio",
+    tiempo_estimado: "70 h",
+    etiquetas: ["cisco", "vlan", "stp"]
+  },
+  {
+    nombre: "Redes Inalámbricas",
+    categoria: "Redes",
+    descripcion: "Wi-Fi, diseño de puntos de acceso y resolución de interferencias.",
+    nivel_minimo: "intermedio",
+    tiempo_estimado: "40 h",
+    etiquetas: ["wifi", "access point"]
+  },
+  {
+    nombre: "Ciberseguridad de Redes",
+    categoria: "Ciberseguridad",
+    descripcion: "Firewalls, IDS/IPS, segmentación y monitoreo de tráfico.",
+    nivel_minimo: "intermedio",
+    tiempo_estimado: "65 h",
+    etiquetas: ["firewall", "ids", "monitoreo"]
+  },
+  {
+    nombre: "Seguridad Informática",
+    categoria: "Ciberseguridad",
+    descripcion: "Principios de seguridad, hardening y gestión de vulnerabilidades.",
+    nivel_minimo: "intermedio",
+    tiempo_estimado: "55 h",
+    etiquetas: ["hardening", "vulnerabilidades"]
+  },
+  {
+    nombre: "Linux para Redes",
+    categoria: "Sistemas Operativos",
+    descripcion: "Administración de servidores Linux y herramientas de red.",
+    nivel_minimo: "intermedio",
+    tiempo_estimado: "60 h",
+    etiquetas: ["linux", "servidores"]
+  }
 ];
 
 const RECURSOS = [
-  { titulo: "Curso: Introducción a la Electrónica", descripcion: "Aprende desde cero los fundamentos de la electrónica con circuitos reales.", url: "https://www.coursera.org/learn/electronics", tipo: "curso", nivel: "principiante", habilidad: "Electrónica Básica" },
-  { titulo: "Guía oficial de Arduino", descripcion: "Documentación oficial con ejemplos de montaje y código.", url: "https://docs.arduino.cc/", tipo: "documentación", nivel: "principiante", habilidad: "Prototipado con Arduino" },
-  { titulo: "Video: Fundamentos de redes paso a paso", descripcion: "Serie de videos que explica el modelo OSI y TCP/IP con ejemplos.", url: "https://www.youtube.com/@powercert", tipo: "video", nivel: "principiante", habilidad: "Fundamentos de Redes" },
-  { titulo: "Artículo: Diseña tu primer PCB en 5 pasos", descripcion: "Guía práctica para diseñar y mandar a fabricar tu primera placa.", url: "https://learn.sparkfun.com/tutorials/pcb-basics", tipo: "artículo", nivel: "intermedio", habilidad: "Diseño de PCB" },
-  { titulo: "Libro: Redes de Computadoras (Tanenbaum)", descripcion: "Referencia clásica sobre redes de computadoras.", url: "https://www.pearson.com/store/p/computer-networks/GPROG_ASTD_ISBM9780136764052", tipo: "libro", nivel: "intermedio", habilidad: "Fundamentos de Redes" },
-  { titulo: "Curso: Ciberseguridad en redes", descripcion: "Estrategias de defensa perimetral y monitoreo de red.", url: "https://www.cisco.com/site/us/en/learn/training-certifications/training/index.html", tipo: "curso", nivel: "intermedio", habilidad: "Ciberseguridad de Redes" },
-  { titulo: "Documentación: Packet Tracer de Cisco", descripcion: "Simulador de redes para practicar topologías y configuración.", url: "https://www.netacad.com/courses/packet-tracer", tipo: "documentación", nivel: "principiante", habilidad: "Configuración de Routers y Switches" },
-  { titulo: "Libro: Aprendiendo Arduino con proyectos", descripcion: "Proyectos guiados de sensores, motores y pantallas con Arduino.", url: "https://www.amazon.com/Learning-Arduino-Programming-Richard-Shelby/dp/1782167126", tipo: "libro", nivel: "principiante", habilidad: "Prototipado con Arduino" },
+  {
+    titulo: "Curso: Introducción a la Electrónica",
+    descripcion: "Aprende desde cero los fundamentos de la electrónica con circuitos reales.",
+    url: "https://www.coursera.org/learn/electronics",
+    tipo: "curso",
+    nivel: "principiante",
+    habilidad: "Electrónica Básica"
+  },
+  {
+    titulo: "Guía oficial de Arduino",
+    descripcion: "Documentación oficial con ejemplos de montaje y código.",
+    url: "https://docs.arduino.cc/",
+    tipo: "documentación",
+    nivel: "principiante",
+    habilidad: "Prototipado con Arduino"
+  },
+  {
+    titulo: "Video: Fundamentos de redes paso a paso",
+    descripcion: "Serie de videos que explica el modelo OSI y TCP/IP con ejemplos.",
+    url: "https://www.youtube.com/@powercert",
+    tipo: "video",
+    nivel: "principiante",
+    habilidad: "Fundamentos de Redes"
+  },
+  {
+    titulo: "Artículo: Diseña tu primer PCB en 5 pasos",
+    descripcion: "Guía práctica para diseñar y mandar a fabricar tu primera placa.",
+    url: "https://learn.sparkfun.com/tutorials/pcb-basics",
+    tipo: "artículo",
+    nivel: "intermedio",
+    habilidad: "Diseño de PCB"
+  },
+  {
+    titulo: "Libro: Redes de Computadoras (Tanenbaum)",
+    descripcion: "Referencia clásica sobre redes de computadoras.",
+    url: "https://www.pearson.com/store/p/computer-networks/GPROG_ASTD_ISBM9780136764052",
+    tipo: "libro",
+    nivel: "intermedio",
+    habilidad: "Fundamentos de Redes"
+  },
+  {
+    titulo: "Curso: Ciberseguridad en redes",
+    descripcion: "Estrategias de defensa perimetral y monitoreo de red.",
+    url: "https://www.cisco.com/site/us/en/learn/training-certifications/training/index.html",
+    tipo: "curso",
+    nivel: "intermedio",
+    habilidad: "Ciberseguridad de Redes"
+  },
+  {
+    titulo: "Documentación: Packet Tracer de Cisco",
+    descripcion: "Simulador de redes para practicar topologías y configuración.",
+    url: "https://www.netacad.com/courses/packet-tracer",
+    tipo: "documentación",
+    nivel: "principiante",
+    habilidad: "Configuración de Routers y Switches"
+  },
+  {
+    titulo: "Libro: Aprendiendo Arduino con proyectos",
+    descripcion: "Proyectos guiados de sensores, motores y pantallas con Arduino.",
+    url: "https://www.amazon.com/Learning-Arduino-Programming-Richard-Shelby/dp/1782167126",
+    tipo: "libro",
+    nivel: "principiante",
+    habilidad: "Prototipado con Arduino"
+  }
 ];
 
 const PROYECTOS = [
   {
     titulo: "Sistema de riego automatizado IoT",
-    descripcion: "Plataforma que monitorea humedad del suelo y controla electroválvulas desde una app. Incluye sensores, placa ESP32 y panel de control web.",
+    descripcion:
+      "Plataforma que monitorea humedad del suelo y controla electroválvulas desde una app. Incluye sensores, placa ESP32 y panel de control web.",
     categoria: "IoT",
     nivel_dificultad: "intermedio",
     estado: "buscando_equipo",
-    habilidades: ["Prototipado con Arduino", "Electrónica Básica", "Circuitos Electrónicos", "Programación Embebida (C/C++)"],
+    habilidades: [
+      "Prototipado con Arduino",
+      "Electrónica Básica",
+      "Circuitos Electrónicos",
+      "Programación Embebida (C/C++)"
+    ],
     integrantes: 4,
-    dias_limite: 90,
+    dias_limite: 90
   },
   {
     titulo: "Red LAN para laboratorio escolar",
-    descripcion: "Diseño e implementación de una red local para un laboratorio de cómputo: cableado, switches VLAN y salida a Internet administrable.",
+    descripcion:
+      "Diseño e implementación de una red local para un laboratorio de cómputo: cableado, switches VLAN y salida a Internet administrable.",
     categoria: "Redes",
     nivel_dificultad: "intermedio",
     estado: "buscando_equipo",
-    habilidades: ["Fundamentos de Redes", "Configuración de Routers y Switches", "Redes Inalámbricas", "Linux para Redes"],
+    habilidades: [
+      "Fundamentos de Redes",
+      "Configuración de Routers y Switches",
+      "Redes Inalámbricas",
+      "Linux para Redes"
+    ],
     integrantes: 3,
-    dias_limite: 75,
+    dias_limite: 75
   },
   {
     titulo: "Medidor de energía con ESP32",
-    descripcion: "Dispositivo que registra consumo eléctrico en tiempo real, envía métricas a la nube y genera reportes de ahorro.",
+    descripcion:
+      "Dispositivo que registra consumo eléctrico en tiempo real, envía métricas a la nube y genera reportes de ahorro.",
     categoria: "Electrónica",
     nivel_dificultad: "avanzado",
     estado: "en_desarrollo",
     habilidades: ["Circuitos Electrónicos", "Diseño de PCB", "Programación Embebida (C/C++)"],
     integrantes: 3,
-    dias_limite: 60,
+    dias_limite: 60
   },
   {
     titulo: "Seguridad perimetral de la red",
-    descripcion: "Implementación de firewall, segmentación de red y monitoreo de tráfico para una pyme. Incluye política de acceso.",
+    descripcion:
+      "Implementación de firewall, segmentación de red y monitoreo de tráfico para una pyme. Incluye política de acceso.",
     categoria: "Ciberseguridad",
     nivel_dificultad: "avanzado",
     estado: "buscando_equipo",
     habilidades: ["Ciberseguridad de Redes", "Seguridad Informática", "Fundamentos de Redes", "Linux para Redes"],
     integrantes: 4,
-    dias_limite: 110,
+    dias_limite: 110
   },
   {
     titulo: "Amplificador de audio DIY",
-    descripcion: "Amplificador de audio de clase AB de bajo costo para estaciones de escucha escolares. Documentación completa del esquemático.",
+    descripcion:
+      "Amplificador de audio de clase AB de bajo costo para estaciones de escucha escolares. Documentación completa del esquemático.",
     categoria: "Electrónica",
     nivel_dificultad: "principiante",
     estado: "finalizado",
     habilidades: ["Electrónica Básica", "Circuitos Electrónicos"],
     integrantes: 2,
-    dias_limite: 45,
+    dias_limite: 45
   },
   {
     titulo: "Segmentación de red con VLANs",
-    descripcion: "Proyecto académico que separa departamentos con VLANs, aplica ACLs y valida el diseño con simulaciones.",
+    descripcion:
+      "Proyecto académico que separa departamentos con VLANs, aplica ACLs y valida el diseño con simulaciones.",
     categoria: "Redes",
     nivel_dificultad: "intermedio",
     estado: "en_desarrollo",
     habilidades: ["Configuración de Routers y Switches", "Fundamentos de Redes", "Ciberseguridad de Redes"],
     integrantes: 2,
-    dias_limite: 50,
-  },
+    dias_limite: 50
+  }
 ];
 
 const EQUIPOS = [
-  { nombreEquipo: "Riego IoT", proyecto: "Sistema de riego automatizado IoT", descripcion: "Equipo encargado de sensores, firmware y la app de control." },
-  { nombreEquipo: "Red Escolar", proyecto: "Red LAN para laboratorio escolar", descripcion: "Equipo de infraestructura y cableado estructurado." },
-  { nombreEquipo: "Energía ESP32", proyecto: "Medidor de energía con ESP32", descripcion: "Hardware, firmware y analítica de consumo." },
-  { nombreEquipo: "Ciber Defensa", proyecto: "Seguridad perimetral de la red", descripcion: "Especialistas en firewall y monitoreo." },
+  {
+    nombreEquipo: "Riego IoT",
+    proyecto: "Sistema de riego automatizado IoT",
+    descripcion: "Equipo encargado de sensores, firmware y la app de control."
+  },
+  {
+    nombreEquipo: "Red Escolar",
+    proyecto: "Red LAN para laboratorio escolar",
+    descripcion: "Equipo de infraestructura y cableado estructurado."
+  },
+  {
+    nombreEquipo: "Energía ESP32",
+    proyecto: "Medidor de energía con ESP32",
+    descripcion: "Hardware, firmware y analítica de consumo."
+  },
+  {
+    nombreEquipo: "Ciber Defensa",
+    proyecto: "Seguridad perimetral de la red",
+    descripcion: "Especialistas en firewall y monitoreo."
+  }
 ];
 
 const habilidadesRegistradas = {};
 
 const upsertSkill = async (s) => {
-  await Habilidad.updateOne(
-    { nombre: s.nombre },
-    { $set: s },
-    { upsert: true, setDefaultsOnInsert: true }
-  );
+  await Habilidad.updateOne({ nombre: s.nombre }, { $set: s }, { upsert: true, setDefaultsOnInsert: true });
   return Habilidad.findOne({ nombre: s.nombre });
 };
 
@@ -123,7 +284,7 @@ const upsertProyecto = async (admin, p) => {
     nivel_dificultad: p.nivel_dificultad,
     estado: p.estado,
     integrantes_maximos: p.integrantes,
-    fecha_limite: new Date(Date.now() + p.dias_limite * 86400000),
+    fecha_limite: new Date(Date.now() + p.dias_limite * 86400000)
   };
   await Proyecto.updateOne(
     { creador_id: admin._id, titulo: p.titulo },
@@ -195,7 +356,7 @@ const main = async () => {
     proyectos: await Proyecto.countDocuments(),
     recursos: await RecursoAprendizaje.countDocuments(),
     equipos: await Equipo.countDocuments(),
-    miembros: await MiembroEquipo.countDocuments(),
+    miembros: await MiembroEquipo.countDocuments()
   };
 
   console.log(`[seedDemo] admin: ${admin.nombre} <${admin.email}> (${admin._id})`);
@@ -205,7 +366,9 @@ const main = async () => {
   await mongoose.disconnect();
 };
 
-main().then(() => process.exit(0)).catch((err) => {
-  console.error("[seedDemo] error:", err);
-  process.exit(1);
-});
+main()
+  .then(() => process.exit(0))
+  .catch((err) => {
+    console.error("[seedDemo] error:", err);
+    process.exit(1);
+  });

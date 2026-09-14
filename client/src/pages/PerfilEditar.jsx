@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Container, Row, Col, Button, Alert, Spinner, Modal, Form } from 'react-bootstrap';
+import { Container, Row, Col, Button, Alert, Spinner, Modal } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import api from '../api';
 import EliminarCuentaModal from '../components/EliminarCuentaModal';
@@ -10,7 +10,7 @@ import {
   niveles,
   disponibilidades,
   interesesSugeridos,
-  idiomasSugeridos,
+  idiomasSugeridos
 } from '../utils/perfil';
 import './PerfilPage.css';
 
@@ -19,7 +19,7 @@ const ROL_LABEL = {
   estudiante: 'Estudiante',
   desarrollador: 'Desarrollador',
   ingeniero: 'Ingeniero',
-  mentor: 'Mentor / Docente',
+  mentor: 'Mentor / Docente'
 };
 
 const TAMANO_FOTO = 256;
@@ -29,14 +29,14 @@ const NIVEL_LABEL = {
   principiante: 'Básico',
   intermedio: 'Intermedio',
   avanzado: 'Avanzado',
-  experto: 'Experto',
+  experto: 'Experto'
 };
 
 const DISP_LABEL = {
   tiempo_completo: 'Tiempo completo',
   medio_tiempo: 'Medio tiempo',
   fines_de_semana: 'Fines de semana',
-  bajo_demanda: 'Bajo demanda',
+  bajo_demanda: 'Bajo demanda'
 };
 
 function PerfilEditar() {
@@ -69,10 +69,10 @@ function PerfilEditar() {
     educacion: {
       institucion: almacenado?.educacion?.institucion || '',
       titulo: almacenado?.educacion?.titulo || '',
-      en_curso: almacenado?.educacion?.en_curso || false,
+      en_curso: almacenado?.educacion?.en_curso || false
     },
     foto: almacenado?.foto || '',
-    habilidades: [],
+    habilidades: []
   });
   const [misHabilidades, setMisHabilidades] = useState([]);
   const [habilidadesCatalogo, setHabilidadesCatalogo] = useState([]);
@@ -88,10 +88,7 @@ function PerfilEditar() {
   useEffect(() => {
     const cargar = async () => {
       try {
-        const [perfil, mis] = await Promise.all([
-          api.get('/usuario/perfil'),
-          api.get('/mis-habilidades'),
-        ]);
+        const [perfil, mis] = await Promise.all([api.get('/usuario/perfil'), api.get('/mis-habilidades')]);
         const p = perfil.data;
         guardarUsuario(p);
         setDatos({
@@ -108,13 +105,13 @@ function PerfilEditar() {
           educacion: {
             institucion: p.educacion?.institucion || '',
             titulo: p.educacion?.titulo || '',
-            en_curso: p.educacion?.en_curso || false,
+            en_curso: p.educacion?.en_curso || false
           },
           foto: p.foto || '',
           habilidades: (mis.data || []).map((r) => ({
             habilidad_id: String(r.habilidad_id?._id || r.habilidad_id),
-            nivel: r.nivel || 'principiante',
-          })),
+            nivel: r.nivel || 'principiante'
+          }))
         });
         setMisHabilidades(mis.data || []);
       } catch (err) {
@@ -146,7 +143,7 @@ function PerfilEditar() {
   const alternar = (lista, item) => {
     setDatos((p) => ({
       ...p,
-      [lista]: p[lista].includes(item) ? p[lista].filter((i) => i !== item) : [...p[lista], item],
+      [lista]: p[lista].includes(item) ? p[lista].filter((i) => i !== item) : [...p[lista], item]
     }));
   };
 
@@ -165,7 +162,7 @@ function PerfilEditar() {
         ...p,
         habilidades: yaExiste
           ? p.habilidades.filter((s) => String(s.habilidad_id) !== String(h._id))
-          : [...p.habilidades, { habilidad_id: String(h._id), nivel: 'principiante' }],
+          : [...p.habilidades, { habilidad_id: String(h._id), nivel: 'principiante' }]
       };
     });
   };
@@ -173,9 +170,7 @@ function PerfilEditar() {
   const cambiarNivel = (id, nivel) => {
     setDatos((p) => ({
       ...p,
-      habilidades: p.habilidades.map((s) =>
-        String(s.habilidad_id) === String(id) ? { ...s, nivel } : s
-      ),
+      habilidades: p.habilidades.map((s) => (String(s.habilidad_id) === String(id) ? { ...s, nivel } : s))
     }));
   };
 
@@ -217,7 +212,7 @@ function PerfilEditar() {
     const { w, h } = tamanoVisor(escala);
     return {
       x: Math.max(0, (w - VISOR_RECORTE) / 2),
-      y: Math.max(0, (h - VISOR_RECORTE) / 2),
+      y: Math.max(0, (h - VISOR_RECORTE) / 2)
     };
   };
 
@@ -225,7 +220,7 @@ function PerfilEditar() {
     const lim = limitesVisor(escala);
     return {
       x: Math.min(lim.x, Math.max(-lim.x, pos.x)),
-      y: Math.min(lim.y, Math.max(-lim.y, pos.y)),
+      y: Math.min(lim.y, Math.max(-lim.y, pos.y))
     };
   };
 
@@ -235,7 +230,7 @@ function PerfilEditar() {
       width: w,
       height: h,
       left: (VISOR_RECORTE - w) / 2 + cropPos.x,
-      top: (VISOR_RECORTE - h) / 2 + cropPos.y,
+      top: (VISOR_RECORTE - h) / 2 + cropPos.y
     };
   };
 
@@ -247,7 +242,7 @@ function PerfilEditar() {
   const moverArrastre = (e) => {
     const a = arrastreRef.current;
     if (!a) return;
-    setCropPos((p) => ajustarPos({ x: e.clientX - a.x, y: e.clientY - a.y }, cropEscala));
+    setCropPos((_p) => ajustarPos({ x: e.clientX - a.x, y: e.clientY - a.y }, cropEscala));
   };
 
   const terminarArrastre = () => {
@@ -316,7 +311,7 @@ function PerfilEditar() {
         intereses: datos.intereses,
         idiomas: datos.idiomas,
         educacion: datos.educacion,
-        foto: datos.foto,
+        foto: datos.foto
       };
       const perfil = (await api.put('/usuario/perfil', payload)).data;
       guardarUsuario(perfil);
@@ -327,7 +322,7 @@ function PerfilEditar() {
           api.post('/usuario-habilidad/agregar', {
             usuario_id: miId,
             habilidad_id: s.habilidad_id,
-            nivel: s.nivel,
+            nivel: s.nivel
           })
         )
       );
@@ -361,9 +356,7 @@ function PerfilEditar() {
           ← Volver
         </button>
         <h2 className="proyectos-titulo mb-1">Mi perfil</h2>
-        <p className="proyectos-subtitulo mb-4">
-          Administra tus datos, tu foto y las habilidades que dominas.
-        </p>
+        <p className="proyectos-subtitulo mb-4">Administra tus datos, tu foto y las habilidades que dominas.</p>
 
         {error && <Alert variant="danger">{error}</Alert>}
 
@@ -377,12 +370,17 @@ function PerfilEditar() {
                 {datos.foto ? (
                   <img className="perfil-foto-img" src={datos.foto} alt="Foto de perfil" />
                 ) : (
-                  <span className="perfil-foto-iniciales">
-                    {(almacenado?.nombre || 'U').charAt(0).toUpperCase()}
-                  </span>
+                  <span className="perfil-foto-iniciales">{(almacenado?.nombre || 'U').charAt(0).toUpperCase()}</span>
                 )}
                 <span className="perfil-foto-camara" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
                     <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
                     <circle cx="12" cy="13" r="4" />
                   </svg>
@@ -414,9 +412,7 @@ function PerfilEditar() {
                 <span className="perfil-resumen-badge">
                   {NIVEL_LABEL[datos.nivel_experiencia] || datos.nivel_experiencia}
                 </span>
-                <span className="perfil-resumen-badge">
-                  {DISP_LABEL[datos.disponibilidad] || datos.disponibilidad}
-                </span>
+                <span className="perfil-resumen-badge">{DISP_LABEL[datos.disponibilidad] || datos.disponibilidad}</span>
               </div>
 
               <div className="perfil-resumen-botones">
@@ -442,14 +438,12 @@ function PerfilEditar() {
               {errorFoto && <p className="perfil-foto-error text-center">{errorFoto}</p>}
 
               <hr className="perfil-resumen-sep" />
-              <Button
-                type="button"
-                className="login-boton w-100"
-                onClick={guardar}
-                disabled={guardando}
-              >
+              <Button type="button" className="login-boton w-100" onClick={guardar} disabled={guardando}>
                 {guardando ? (
-                  <><Spinner as="span" animation="border" size="sm" className="me-2" />Guardando...</>
+                  <>
+                    <Spinner as="span" animation="border" size="sm" className="me-2" />
+                    Guardando...
+                  </>
                 ) : (
                   'Guardar cambios'
                 )}
@@ -543,11 +537,7 @@ function PerfilEditar() {
                   </div>
                   <div className="perfil-campo perfil-chequeo">
                     <label className="perfil-check">
-                      <input
-                        type="checkbox"
-                        checked={datos.educacion.en_curso}
-                        onChange={setEducacion('en_curso')}
-                      />
+                      <input type="checkbox" checked={datos.educacion.en_curso} onChange={setEducacion('en_curso')} />
                       Actualmente cursando
                     </label>
                   </div>
@@ -578,17 +568,29 @@ function PerfilEditar() {
                   </div>
                   <div className="perfil-campo">
                     <label className="login-label">Nivel de experiencia</label>
-                    <select className="perfil-input perfil-select" value={datos.nivel_experiencia} onChange={set('nivel_experiencia')}>
+                    <select
+                      className="perfil-input perfil-select"
+                      value={datos.nivel_experiencia}
+                      onChange={set('nivel_experiencia')}
+                    >
                       {niveles.map((n) => (
-                        <option key={n} value={n}>{NIVEL_LABEL[n] || n.charAt(0).toUpperCase() + n.slice(1)}</option>
+                        <option key={n} value={n}>
+                          {NIVEL_LABEL[n] || n.charAt(0).toUpperCase() + n.slice(1)}
+                        </option>
                       ))}
                     </select>
                   </div>
                   <div className="perfil-campo">
                     <label className="login-label">Disponibilidad</label>
-                    <select className="perfil-input perfil-select" value={datos.disponibilidad} onChange={set('disponibilidad')}>
+                    <select
+                      className="perfil-input perfil-select"
+                      value={datos.disponibilidad}
+                      onChange={set('disponibilidad')}
+                    >
                       {disponibilidades.map((d) => (
-                        <option key={d} value={d}>{DISP_LABEL[d] || d.replace(/_/g, ' ')}</option>
+                        <option key={d} value={d}>
+                          {DISP_LABEL[d] || d.replace(/_/g, ' ')}
+                        </option>
                       ))}
                     </select>
                   </div>
@@ -611,25 +613,35 @@ function PerfilEditar() {
                           {i}
                         </button>
                       ))}
-                      {datos.intereses.filter((i) => !interesesSugeridos.includes(i)).map((i) => (
-                        <button
-                          type="button"
-                          key={i}
-                          className="perfil-chip perfil-chip-activo"
-                          onClick={() => alternar('intereses', i)}
-                        >
-                          {i} ✕
-                        </button>
-                      ))}
+                      {datos.intereses
+                        .filter((i) => !interesesSugeridos.includes(i))
+                        .map((i) => (
+                          <button
+                            type="button"
+                            key={i}
+                            className="perfil-chip perfil-chip-activo"
+                            onClick={() => alternar('intereses', i)}
+                          >
+                            {i} ✕
+                          </button>
+                        ))}
                     </div>
-                    <form className="perfil-agregar" onSubmit={(e) => { e.preventDefault(); agregar('intereses', nuevoInteres, setNuevoInteres); }}>
+                    <form
+                      className="perfil-agregar"
+                      onSubmit={(e) => {
+                        e.preventDefault();
+                        agregar('intereses', nuevoInteres, setNuevoInteres);
+                      }}
+                    >
                       <input
                         className="perfil-input"
                         placeholder="Otro interés..."
                         value={nuevoInteres}
                         onChange={(e) => setNuevoInteres(e.target.value)}
                       />
-                      <Button type="submit" variant="outline-light" size="sm" className="perfil-agregar-btn">+</Button>
+                      <Button type="submit" variant="outline-light" size="sm" className="perfil-agregar-btn">
+                        +
+                      </Button>
                     </form>
                   </div>
 
@@ -646,25 +658,35 @@ function PerfilEditar() {
                           {i}
                         </button>
                       ))}
-                      {datos.idiomas.filter((i) => !idiomasSugeridos.includes(i)).map((i) => (
-                        <button
-                          type="button"
-                          key={i}
-                          className="perfil-chip perfil-chip-activo"
-                          onClick={() => alternar('idiomas', i)}
-                        >
-                          {i} ✕
-                        </button>
-                      ))}
+                      {datos.idiomas
+                        .filter((i) => !idiomasSugeridos.includes(i))
+                        .map((i) => (
+                          <button
+                            type="button"
+                            key={i}
+                            className="perfil-chip perfil-chip-activo"
+                            onClick={() => alternar('idiomas', i)}
+                          >
+                            {i} ✕
+                          </button>
+                        ))}
                     </div>
-                    <form className="perfil-agregar" onSubmit={(e) => { e.preventDefault(); agregar('idiomas', nuevoIdioma, setNuevoIdioma); }}>
+                    <form
+                      className="perfil-agregar"
+                      onSubmit={(e) => {
+                        e.preventDefault();
+                        agregar('idiomas', nuevoIdioma, setNuevoIdioma);
+                      }}
+                    >
                       <input
                         className="perfil-input"
                         placeholder="Otro idioma..."
                         value={nuevoIdioma}
                         onChange={(e) => setNuevoIdioma(e.target.value)}
                       />
-                      <Button type="submit" variant="outline-light" size="sm" className="perfil-agregar-btn">+</Button>
+                      <Button type="submit" variant="outline-light" size="sm" className="perfil-agregar-btn">
+                        +
+                      </Button>
                     </form>
                   </div>
                 </section>
@@ -762,9 +784,7 @@ function PerfilEditar() {
       <EliminarCuentaModal mostrar={eliminarAbierto} onCerrar={() => setEliminarAbierto(false)} />
 
       <Modal show={verFoto} onHide={() => setVerFoto(false)} centered className="foto-modal">
-        {datos.foto && (
-          <img className="perfil-foto-grande" src={datos.foto} alt="Foto de perfil" />
-        )}
+        {datos.foto && <img className="perfil-foto-grande" src={datos.foto} alt="Foto de perfil" />}
         <button
           type="button"
           className="foto-modal-cerrar"
@@ -811,11 +831,7 @@ function PerfilEditar() {
             <Button className="proyectos-boton" onClick={aplicarRecorte}>
               Aplicar recorte
             </Button>
-            <Button
-              variant="outline-light"
-              className="proyectos-boton"
-              onClick={() => setCropAbierto(false)}
-            >
+            <Button variant="outline-light" className="proyectos-boton" onClick={() => setCropAbierto(false)}>
               Cancelar
             </Button>
           </div>

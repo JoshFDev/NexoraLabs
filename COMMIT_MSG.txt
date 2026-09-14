@@ -1,1 +1,0 @@
-fix(ui): remove white flash, chispas and stagger on auth page changes

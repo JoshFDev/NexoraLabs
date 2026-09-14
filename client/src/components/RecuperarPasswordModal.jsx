@@ -91,8 +91,8 @@ function RecuperarPasswordModal({ mostrar, onCerrar, emailInicial = '' }) {
         ) : !enviado ? (
           <>
             <p className="proyectos-subtitulo">
-              Te enviaremos un código a tu correo para verificar que eres tú.
-              Si la cuenta existe, recibirás el correo en unos momentos.
+              Te enviaremos un código a tu correo para verificar que eres tú. Si la cuenta existe, recibirás el correo
+              en unos momentos.
             </p>
             <Form.Control
               type="email"
@@ -104,7 +104,11 @@ function RecuperarPasswordModal({ mostrar, onCerrar, emailInicial = '' }) {
               }}
               autoFocus
             />
-            {error && <Alert variant="danger" className="recuperar-aviso">{error}</Alert>}
+            {error && (
+              <Alert variant="danger" className="recuperar-aviso">
+                {error}
+              </Alert>
+            )}
             <div className="d-flex justify-content-center gap-3 mt-3">
               <Button
                 variant="primary"
@@ -159,7 +163,11 @@ function RecuperarPasswordModal({ mostrar, onCerrar, emailInicial = '' }) {
               }}
               className="mt-2"
             />
-            {error && <Alert variant="danger" className="recuperar-aviso">{error}</Alert>}
+            {error && (
+              <Alert variant="danger" className="recuperar-aviso">
+                {error}
+              </Alert>
+            )}
             <div className="d-flex justify-content-center gap-3 mt-3">
               <Button
                 variant="primary"

@@ -1,7 +1,7 @@
 import "dotenv/config";
-import app from './app';
-import './database';
-import { validarEntorno } from './config/entorno';
+import app from "./app";
+import "./database";
+import { validarEntorno } from "./config/entorno";
 
 validarEntorno();
 

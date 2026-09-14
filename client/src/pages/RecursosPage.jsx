@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Container, Row, Col, Form, Button, Spinner, Alert, Modal } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import api from '../api';
@@ -10,22 +10,20 @@ const ETIQUETAS_TIPO = {
   documentación: 'Documentación',
   video: 'Video',
   artículo: 'Artículo',
-  libro: 'Libro',
+  libro: 'Libro'
 };
 
 const ETIQUETAS_NIVEL = {
   principiante: 'Básico',
   intermedio: 'Intermedio',
   avanzado: 'Avanzado',
-  experto: 'Experto',
+  experto: 'Experto'
 };
 
 const ROLES_GESTION_RECURSOS = ['admin', 'mentor'];
 
 function RecursosPage() {
-  const usuario = JSON.parse(
-    localStorage.getItem('usuario') || sessionStorage.getItem('usuario') || 'null'
-  );
+  const usuario = JSON.parse(localStorage.getItem('usuario') || sessionStorage.getItem('usuario') || 'null');
 
   const [lista, setLista] = useState(null);
   const [pagina, setPagina] = useState(1);
@@ -50,7 +48,7 @@ function RecursosPage() {
     tipo: 'curso',
     nivel: 'principiante',
     descripcion: '',
-    habilidad_id: '',
+    habilidad_id: ''
   });
   const [creando, setCreando] = useState(false);
   const [errorCrear, setErrorCrear] = useState('');
@@ -105,7 +103,7 @@ function RecursosPage() {
     try {
       const res = await api.post(`/recurso-aprendizaje/${r._id}/calificar`, {
         calificacion: formResena.estrellas,
-        texto: formResena.texto || '',
+        texto: formResena.texto || ''
       });
       setFormResena(null);
       setLista((prev) =>
@@ -120,7 +118,7 @@ function RecursosPage() {
             valoracion_promedio: d.valoracion_promedio,
             num_valoraciones: d.num_valoraciones,
             comentarios: d.comentarios,
-            _miResena: miResena || null,
+            _miResena: miResena || null
           };
         })
       );
@@ -147,7 +145,7 @@ function RecursosPage() {
             valoracion_promedio: d.valoracion_promedio,
             num_valoraciones: d.num_valoraciones,
             comentarios: d.comentarios,
-            _miResena: null,
+            _miResena: null
           };
         })
       );
@@ -183,7 +181,7 @@ function RecursosPage() {
         tipo: formNuevo.tipo,
         nivel: formNuevo.nivel,
         descripcion: formNuevo.descripcion.trim(),
-        habilidad_id: formNuevo.habilidad_id || undefined,
+        habilidad_id: formNuevo.habilidad_id || undefined
       });
       setCreado(true);
       setPagina(1);
@@ -198,7 +196,7 @@ function RecursosPage() {
           tipo: 'curso',
           nivel: 'principiante',
           descripcion: '',
-          habilidad_id: '',
+          habilidad_id: ''
         });
       }, 700);
     } catch (err) {
@@ -262,7 +260,9 @@ function RecursosPage() {
             >
               <option value="">Tipo</option>
               {Object.entries(ETIQUETAS_TIPO).map(([v, l]) => (
-                <option key={v} value={v}>{l}</option>
+                <option key={v} value={v}>
+                  {l}
+                </option>
               ))}
             </Form.Select>
             <Form.Select
@@ -275,7 +275,9 @@ function RecursosPage() {
             >
               <option value="">Nivel</option>
               {Object.entries(ETIQUETAS_NIVEL).map(([v, l]) => (
-                <option key={v} value={v}>{l}</option>
+                <option key={v} value={v}>
+                  {l}
+                </option>
               ))}
             </Form.Select>
             <Button type="submit" variant="primary" className="proyectos-boton">
@@ -302,7 +304,16 @@ function RecursosPage() {
                     <div className="proyecto-fila-cabecera">
                       <h3 className="proyecto-titulo-tarjeta mb-1">{r.titulo}</h3>
                       <span className="proyecto-fila-flecha" aria-hidden="true">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                        <svg
+                          width="18"
+                          height="18"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2.4"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
                           <polyline points="6 9 12 15 18 9" />
                         </svg>
                       </span>
@@ -311,8 +322,7 @@ function RecursosPage() {
                       <span className="proyecto-badge">{ETIQUETAS_TIPO[r.tipo] || r.tipo}</span>
                       <span className="proyecto-badge">{ETIQUETAS_NIVEL[r.nivel] || r.nivel}</span>
                       <span className="recurso-rating">
-                        <span className="recurso-estrella llena">★</span>{' '}
-                        {(r.valoracion_promedio || 0).toFixed(1)}
+                        <span className="recurso-estrella llena">★</span> {(r.valoracion_promedio || 0).toFixed(1)}
                         <span className="recurso-rating-num">({r.num_valoraciones || 0})</span>
                       </span>
                     </div>
@@ -360,7 +370,12 @@ function RecursosPage() {
                                     key={n}
                                     type="button"
                                     className={`recurso-estrella${n <= formResena.estrellas ? ' llena' : ''}`}
-                                    style={{ background: 'none', border: 'none', fontSize: '1.15rem', cursor: 'pointer' }}
+                                    style={{
+                                      background: 'none',
+                                      border: 'none',
+                                      fontSize: '1.15rem',
+                                      cursor: 'pointer'
+                                    }}
                                     onClick={() => setFormResena((f) => ({ ...f, estrellas: n }))}
                                   >
                                     ★
@@ -388,8 +403,8 @@ function RecursosPage() {
                                   {califId === String(r._id)
                                     ? 'Guardando…'
                                     : r._miResena
-                                    ? 'Actualizar reseña'
-                                    : 'Publicar reseña'}
+                                      ? 'Actualizar reseña'
+                                      : 'Publicar reseña'}
                                 </Button>
                                 <Button
                                   size="sm"
@@ -414,7 +429,7 @@ function RecursosPage() {
                                   setFormResena({
                                     id: String(r._id),
                                     estrellas: r._miResena?.calificacion || 0,
-                                    texto: r._miResena?.texto || '',
+                                    texto: r._miResena?.texto || ''
                                   });
                                 }}
                               >
@@ -440,9 +455,7 @@ function RecursosPage() {
                       </section>
                       <section className="proyecto-fila-detalle">
                         <div className="proyecto-detalle-bloque">
-                          <span className="proyecto-detalle-etiqueta">
-                            Reseñas ({r.comentarios?.length || 0})
-                          </span>
+                          <span className="proyecto-detalle-etiqueta">Reseñas ({r.comentarios?.length || 0})</span>
                           {r.comentarios?.length ? (
                             <div className="equipo-miembros">
                               {r.comentarios.map((c, i) => {
@@ -456,12 +469,19 @@ function RecursosPage() {
                                             {autor.nombre || 'Anónimo'} {autor.apellido_paterno || ''}
                                           </Link>
                                         ) : (
-                                          <>{(autor?.nombre || 'Usuario')} {autor?.apellido_paterno || ''}</>
+                                          <>
+                                            {autor?.nombre || 'Usuario'} {autor?.apellido_paterno || ''}
+                                          </>
                                         )}
                                       </strong>
                                       <div className="recurso-estrellas">
                                         {[1, 2, 3, 4, 5].map((n) => (
-                                          <span key={n} className={`recurso-estrella${n <= c.calificacion ? ' llena' : ''}`}>★</span>
+                                          <span
+                                            key={n}
+                                            className={`recurso-estrella${n <= c.calificacion ? ' llena' : ''}`}
+                                          >
+                                            ★
+                                          </span>
                                         ))}
                                       </div>
                                       {c.texto && <p className="proyecto-detalle-texto mb-0">{c.texto}</p>}
@@ -479,9 +499,13 @@ function RecursosPage() {
                         </div>
                       </section>
                     </div>
-                    <footer className="proyecto-creador">Valorado
+                    <footer className="proyecto-creador">
+                      Valorado
                       {r.valoracion_promedio > 0 ? (
-                        <> {r.valoracion_promedio.toFixed(1)}/5 por {r.num_valoraciones} usuario(s)</>
+                        <>
+                          {' '}
+                          {r.valoracion_promedio.toFixed(1)}/5 por {r.num_valoraciones} usuario(s)
+                        </>
                       ) : (
                         <> todavía sin calificar</>
                       )}
@@ -554,7 +578,9 @@ function RecursosPage() {
           {errorCrear && <Alert variant="danger">{errorCrear}</Alert>}
           {creado && (
             <div className="proyectos-bloqueo" style={{ margin: '0 auto 1rem' }}>
-              <span className="dash-bloqueo-icono" style={{ color: '#34d399' }}>✓</span>
+              <span className="dash-bloqueo-icono" style={{ color: '#34d399' }}>
+                ✓
+              </span>
               <h3>¡Recurso agregado!</h3>
             </div>
           )}
@@ -585,7 +611,9 @@ function RecursosPage() {
                       onChange={(e) => setFormNuevo((f) => ({ ...f, tipo: e.target.value }))}
                     >
                       {Object.entries(ETIQUETAS_TIPO).map(([v, l]) => (
-                        <option key={v} value={v}>{l}</option>
+                        <option key={v} value={v}>
+                          {l}
+                        </option>
                       ))}
                     </Form.Select>
                   </Form.Group>
@@ -598,7 +626,9 @@ function RecursosPage() {
                       onChange={(e) => setFormNuevo((f) => ({ ...f, nivel: e.target.value }))}
                     >
                       {Object.entries(ETIQUETAS_NIVEL).map(([v, l]) => (
-                        <option key={v} value={v}>{l}</option>
+                        <option key={v} value={v}>
+                          {l}
+                        </option>
                       ))}
                     </Form.Select>
                   </Form.Group>
@@ -612,7 +642,9 @@ function RecursosPage() {
                 >
                   <option value="">General</option>
                   {habilidades.map((h) => (
-                    <option key={String(h._id)} value={h._id}>{h.nombre}</option>
+                    <option key={String(h._id)} value={h._id}>
+                      {h.nombre}
+                    </option>
                   ))}
                 </Form.Select>
               </Form.Group>
@@ -630,11 +662,7 @@ function RecursosPage() {
                 <Button type="submit" className="proyectos-boton" disabled={creando}>
                   {creando ? <Spinner animation="border" size="sm" /> : 'Agregar recurso'}
                 </Button>
-                <Button
-                  variant="outline-light"
-                  className="proyectos-boton"
-                  onClick={() => setModalAbierto(false)}
-                >
+                <Button variant="outline-light" className="proyectos-boton" onClick={() => setModalAbierto(false)}>
                   Cancelar
                 </Button>
               </div>

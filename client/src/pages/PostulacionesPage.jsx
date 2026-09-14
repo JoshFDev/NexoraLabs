@@ -9,19 +9,17 @@ const ETIQUETAS_ESTADO_POSTULACION = {
   pendiente: 'Pendiente',
   aceptada: 'Aceptada',
   rechazada: 'Rechazada',
-  cancelada: 'Cancelada',
+  cancelada: 'Cancelada'
 };
 
 const UMBRALES = [
   { valor: '', etiqueta: 'Cualquier ajuste' },
   { valor: '50', etiqueta: 'Ajuste ≥ 50%' },
-  { valor: '75', etiqueta: 'Ajuste ≥ 75%' },
+  { valor: '75', etiqueta: 'Ajuste ≥ 75%' }
 ];
 
 function ajuste(postulacion) {
-  const requeridas = (postulacion.proyecto_id?.habilidades_requeridas || []).map((h) =>
-    String(h._id || h)
-  );
+  const requeridas = (postulacion.proyecto_id?.habilidades_requeridas || []).map((h) => String(h._id || h));
   const ofrecidas = (postulacion.habilidades_ofrecidas || []).map((h) => String(h._id || h));
   if (!requeridas.length) return null;
   const cubiertas = requeridas.filter((h) => ofrecidas.includes(h)).length;
@@ -56,22 +54,18 @@ function PostulacionesPage() {
     });
     Object.values(agrupadas).forEach((grupo) => {
       grupo.lista.sort(
-        mejorAjuste
-          ? (a, b) => (b._ajuste ?? -1) - (a._ajuste ?? -1)
-          : (a, b) => new Date(b.fecha) - new Date(a.fecha)
+        mejorAjuste ? (a, b) => (b._ajuste ?? -1) - (a._ajuste ?? -1) : (a, b) => new Date(b.fecha) - new Date(a.fecha)
       );
     });
     return agrupadas;
   }, [postulaciones, mejorAjuste]);
 
   const gruposVisibles = useMemo(() => {
-    const lista = Object.values(grupos).filter(
-      (g) => !filtroProyecto || g.id === filtroProyecto
-    );
+    const lista = Object.values(grupos).filter((g) => !filtroProyecto || g.id === filtroProyecto);
     if (!mejorAjuste || !umbral) return lista;
     return lista.map((g) => ({
       ...g,
-      lista: g.lista.filter((po) => po._ajuste === null || po._ajuste >= Number(umbral)),
+      lista: g.lista.filter((po) => po._ajuste === null || po._ajuste >= Number(umbral))
     }));
   }, [grupos, filtroProyecto, mejorAjuste, umbral]);
 
@@ -126,13 +120,11 @@ function PostulacionesPage() {
                   onChange={(e) => setMejorAjuste(e.target.checked)}
                 />
                 {mejorAjuste && (
-                  <Form.Select
-                    value={umbral}
-                    onChange={(e) => setUmbral(e.target.value)}
-                    style={{ width: 'auto' }}
-                  >
+                  <Form.Select value={umbral} onChange={(e) => setUmbral(e.target.value)} style={{ width: 'auto' }}>
                     {UMBRALES.map((u) => (
-                      <option key={u.valor} value={u.valor}>{u.etiqueta}</option>
+                      <option key={u.valor} value={u.valor}>
+                        {u.etiqueta}
+                      </option>
                     ))}
                   </Form.Select>
                 )}
@@ -163,11 +155,12 @@ function PostulacionesPage() {
                             <strong className="postulacion-nombre">
                               {po.usuario_id?._id ? (
                                 <Link to={`/usuario/${po.usuario_id._id}`} className="perfil-publico-enlace">
-                                  {po.usuario_id?.nombre || 'Anónimo'}{' '}
-                                  {po.usuario_id?.apellido_paterno || ''}
+                                  {po.usuario_id?.nombre || 'Anónimo'} {po.usuario_id?.apellido_paterno || ''}
                                 </Link>
                               ) : (
-                                <>{(po.usuario_id?.nombre || 'Anónimo')} {po.usuario_id?.apellido_paterno || ''}</>
+                                <>
+                                  {po.usuario_id?.nombre || 'Anónimo'} {po.usuario_id?.apellido_paterno || ''}
+                                </>
                               )}
                             </strong>
                             <div className="postulacion-email">
@@ -190,7 +183,9 @@ function PostulacionesPage() {
                           <div className="postulacion-acciones">
                             <div className="postulacion-badges">
                               {po._ajuste !== null && (
-                                <span className={`postulacion-match${po._ajuste <= 0 ? ' bajo' : po._ajuste >= 75 ? ' activo' : ''}`}>
+                                <span
+                                  className={`postulacion-match${po._ajuste <= 0 ? ' bajo' : po._ajuste >= 75 ? ' activo' : ''}`}
+                                >
                                   Ajuste {po._ajuste}%
                                 </span>
                               )}

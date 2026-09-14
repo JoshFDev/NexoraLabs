@@ -10,20 +10,20 @@ const ETIQUETAS_ESTADO = {
   buscando_equipo: 'Buscando equipo',
   en_desarrollo: 'En desarrollo',
   finalizado: 'Finalizado',
-  cancelado: 'Cancelado',
+  cancelado: 'Cancelado'
 };
 
 const ETIQUETAS_NIVEL = {
   principiante: 'Principiante',
   intermedio: 'Intermedio',
   avanzado: 'Avanzado',
-  experto: 'Experto',
+  experto: 'Experto'
 };
 
 const ETIQUETAS_ESTADO_EQUIPO = {
   activo: 'Activo',
   finalizado: 'Finalizado',
-  disuelto: 'Disuelto',
+  disuelto: 'Disuelto'
 };
 
 function diasRestantes(fecha) {
@@ -36,9 +36,7 @@ function diasRestantes(fecha) {
 function ProyectoDetallePage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const usuario = JSON.parse(
-    localStorage.getItem('usuario') || sessionStorage.getItem('usuario') || 'null'
-  );
+  const usuario = JSON.parse(localStorage.getItem('usuario') || sessionStorage.getItem('usuario') || 'null');
   const idUsuario = usuario?._id || usuario?.id;
 
   const [proyecto, setProyecto] = useState(null);
@@ -55,38 +53,33 @@ function ProyectoDetallePage() {
   const [nuevoComentario, setNuevoComentario] = useState('');
   const [enviandoComentario, setEnviandoComentario] = useState(false);
 
-  const esCreador = proyecto && idUsuario && String(proyecto.creador_id?._id || proyecto.creador_id) === String(idUsuario);
+  const esCreador =
+    proyecto && idUsuario && String(proyecto.creador_id?._id || proyecto.creador_id) === String(idUsuario);
 
   const cargarDatos = useCallback(() => {
     setCargandoEquipo(true);
     Promise.all([
       api.get('/equipos?limite=1&orden=recientes&' + new URLSearchParams({ proyecto: id })),
       api.get('/mis-equipos').catch(() => ({ data: [] })),
-      api.get('/mis-solicitudes-enviadas').catch(() => ({ data: [] })),
+      api.get('/mis-solicitudes-enviadas').catch(() => ({ data: [] }))
     ])
       .then(([resEquipos, resMis, resSolicitudes]) => {
         const primerEquipo = (resEquipos.data.equipos || [])[0] || null;
         setEquipo(primerEquipo);
-        const pertenezco = (resMis.data || []).some(
-          (e) => String(e._id) === String(primerEquipo?._id)
-        );
+        const pertenezco = (resMis.data || []).some((e) => String(e._id) === String(primerEquipo?._id));
         setSoyMiembro(pertenezco);
         setSolicitudPendiente(
           Boolean(
             primerEquipo &&
             (resSolicitudes.data || []).some(
-              (s) =>
-                s.estado === 'pendiente' &&
-                String(s.equipo_id?._id || s.equipo_id) === String(primerEquipo._id)
+              (s) => s.estado === 'pendiente' && String(s.equipo_id?._id || s.equipo_id) === String(primerEquipo._id)
             )
           )
         );
         if (primerEquipo) {
           return api.get(`/equipo/${primerEquipo._id}/miembros`).then((r) => {
             setMiembros(r.data || []);
-            setSoyMiembro(
-              (r.data || []).some((m) => String(m.usuario_id?._id) === String(idUsuario))
-            );
+            setSoyMiembro((r.data || []).some((m) => String(m.usuario_id?._id) === String(idUsuario)));
           });
         }
         setMiembros([]);
@@ -114,9 +107,7 @@ function ProyectoDetallePage() {
     api
       .get('/mis-proyectos/postulaciones')
       .then((res) => {
-        const n = (res.data || []).filter(
-          (po) => String(po.proyecto_id?._id || po.proyecto_id) === String(id)
-        ).length;
+        const n = (res.data || []).filter((po) => String(po.proyecto_id?._id || po.proyecto_id) === String(id)).length;
         setNPostulaciones(n);
       })
       .catch(() => setNPostulaciones(0));
@@ -199,10 +190,14 @@ function ProyectoDetallePage() {
           </>
         ) : (
           <div className="proyecto-detalle">
-            <h3 className="proyecto-titulo mb-2" style={{ fontSize: '1.5rem' }}>{proyecto.titulo}</h3>
+            <h3 className="proyecto-titulo mb-2" style={{ fontSize: '1.5rem' }}>
+              {proyecto.titulo}
+            </h3>
             <div className="proyecto-meta mb-4">
               <span className="proyecto-badge">{ETIQUETAS_ESTADO[proyecto.estado] || proyecto.estado}</span>
-              <span className="proyecto-badge">{ETIQUETAS_NIVEL[proyecto.nivel_dificultad] || proyecto.nivel_dificultad}</span>
+              <span className="proyecto-badge">
+                {ETIQUETAS_NIVEL[proyecto.nivel_dificultad] || proyecto.nivel_dificultad}
+              </span>
               {proyecto.categoria && <span className="proyecto-badge">{proyecto.categoria}</span>}
             </div>
 
@@ -263,17 +258,24 @@ function ProyectoDetallePage() {
                   </div>
                   {dias !== null && (
                     <div className="proyecto-detalle-fila">
-                      <strong>Fecha límite</strong>{' '}
-                      {new Date(proyecto.fecha_limite).toLocaleDateString('es')}
+                      <strong>Fecha límite</strong> {new Date(proyecto.fecha_limite).toLocaleDateString('es')}
                       <span
                         className={`proyecto-badge${dias < 0 ? ' recurso-borrar' : ''}`}
-                        style={dias >= 0 ? { background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.45)', color: '#047857' } : {}}
+                        style={
+                          dias >= 0
+                            ? {
+                                background: 'rgba(16,185,129,0.12)',
+                                border: '1px solid rgba(16,185,129,0.45)',
+                                color: '#047857'
+                              }
+                            : {}
+                        }
                       >
                         {dias < 0
                           ? `Vencido hace ${Math.abs(dias)} día(s)`
                           : dias === 0
-                          ? 'Vence hoy'
-                          : `${dias} día(s) restante(s)`}
+                            ? 'Vence hoy'
+                            : `${dias} día(s) restante(s)`}
                       </span>
                     </div>
                   )}
@@ -285,7 +287,9 @@ function ProyectoDetallePage() {
 
               <Col lg={5}>
                 <div className="proyectos-filtros-panel mb-4" style={{ position: 'static' }}>
-                  <h4 className="proyectos-titulo mb-1" style={{ fontSize: '1.05rem' }}>Equipo del proyecto</h4>
+                  <h4 className="proyectos-titulo mb-1" style={{ fontSize: '1.05rem' }}>
+                    Equipo del proyecto
+                  </h4>
                   <p className="proyectos-subtitulo" style={{ fontSize: '0.82rem' }}>
                     {proyecto.estado === 'en_desarrollo' || proyecto.estado === 'finalizado'
                       ? 'El equipo que construye este proyecto.'
@@ -300,12 +304,12 @@ function ProyectoDetallePage() {
                     <>
                       <div className="proyecto-meta mb-3">
                         <span className="proyecto-badge">{equipo.nombre}</span>
-                        <span className="proyecto-badge">{ETIQUETAS_ESTADO_EQUIPO[equipo.estado] || equipo.estado}</span>
+                        <span className="proyecto-badge">
+                          {ETIQUETAS_ESTADO_EQUIPO[equipo.estado] || equipo.estado}
+                        </span>
                         <span className="proyecto-badge">{miembros.length} integrante(s)</span>
                       </div>
-                      {equipo.descripcion && (
-                        <p className="proyecto-detalle-texto mb-3">{equipo.descripcion}</p>
-                      )}
+                      {equipo.descripcion && <p className="proyecto-detalle-texto mb-3">{equipo.descripcion}</p>}
                       <div className="equipo-miembros mb-3">
                         {miembros.length ? (
                           miembros.map((m) => (
@@ -317,7 +321,9 @@ function ProyectoDetallePage() {
                                       {m.usuario_id?.nombre || 'Anónimo'} {m.usuario_id?.apellido_paterno || ''}
                                     </Link>
                                   ) : (
-                                    <>{m.usuario_id?.nombre || 'Anónimo'} {m.usuario_id?.apellido_paterno || ''}</>
+                                    <>
+                                      {m.usuario_id?.nombre || 'Anónimo'} {m.usuario_id?.apellido_paterno || ''}
+                                    </>
                                   )}
                                 </strong>
                                 <div className="proyecto-detalle-texto">{m.usuario_id?.email || ''}</div>
@@ -331,7 +337,13 @@ function ProyectoDetallePage() {
                       </div>
                       {equipo.estado === 'activo' &&
                         (soyMiembro ? (
-                          <Button size="sm" variant="outline-light" className="proyectos-boton" disabled={!!accion} onClick={salir}>
+                          <Button
+                            size="sm"
+                            variant="outline-light"
+                            className="proyectos-boton"
+                            disabled={!!accion}
+                            onClick={salir}
+                          >
                             {accion === 'salir' ? 'Saliendo…' : 'Salir del equipo'}
                           </Button>
                         ) : solicitudPendiente ? (
@@ -387,9 +399,7 @@ function ProyectoDetallePage() {
                   <Spinner animation="border" size="sm" variant="secondary" />
                 </div>
               ) : comentarios.length === 0 ? (
-                <p className="proyecto-detalle-texto">
-                  Aún no hay comentarios{usuario ? '. ¡Sé el primero!' : '.'}
-                </p>
+                <p className="proyecto-detalle-texto">Aún no hay comentarios{usuario ? '. ¡Sé el primero!' : '.'}</p>
               ) : (
                 <div className="proyecto-comentarios">
                   {comentarios.map((c) => {
@@ -402,11 +412,7 @@ function ProyectoDetallePage() {
                     return (
                       <div className="proyecto-comentario" key={String(c._id)}>
                         <span className="proyecto-comentario-avatar">
-                          {autor.foto ? (
-                            <img src={autor.foto} alt={`Foto de ${autor.nombre || 'usuario'}`} />
-                          ) : (
-                            inicial
-                          )}
+                          {autor.foto ? <img src={autor.foto} alt={`Foto de ${autor.nombre || 'usuario'}`} /> : inicial}
                         </span>
                         <div className="proyecto-comentario-cuerpo">
                           <div className="proyecto-comentario-cabeza">
@@ -416,12 +422,12 @@ function ProyectoDetallePage() {
                                   {autor.nombre || 'Anónimo'} {autor.apellido_paterno || ''}
                                 </Link>
                               ) : (
-                                <>{autor?.nombre || 'Usuario'} {autor?.apellido_paterno || ''}</>
+                                <>
+                                  {autor?.nombre || 'Usuario'} {autor?.apellido_paterno || ''}
+                                </>
                               )}
                             </strong>
-                            <span className="proyecto-comentario-fecha">
-                              {new Date(c.fecha).toLocaleString('es')}
-                            </span>
+                            <span className="proyecto-comentario-fecha">{new Date(c.fecha).toLocaleString('es')}</span>
                           </div>
                           <div className="proyecto-comentario-texto">{c.contenido}</div>
                         </div>

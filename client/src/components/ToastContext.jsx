@@ -46,12 +46,7 @@ export function ToastProvider({ children }) {
               {t.titulo && <strong className="toast-app-titulo">{t.titulo}</strong>}
               <span className="toast-app-mensaje">{t.mensaje}</span>
             </div>
-            <button
-              type="button"
-              className="toast-app-cerrar"
-              aria-label="Cerrar aviso"
-              onClick={() => cerrar(t.id)}
-            >
+            <button type="button" className="toast-app-cerrar" aria-label="Cerrar aviso" onClick={() => cerrar(t.id)}>
               <span className="material-symbols-outlined">close</span>
             </button>
           </div>

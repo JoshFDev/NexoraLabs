@@ -1,0 +1,10 @@
+node_modules
+dist
+coverage
+pnpm-lock.yaml
+*.ico
+*.png
+*.jpg
+*.svg
+*.css
+*.hbs

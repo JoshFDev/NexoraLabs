@@ -2,12 +2,12 @@ import { Router } from "express";
 import verifyToken from "../middleware/verifyToken";
 import authorize from "../middleware/authorize";
 import {
-    listarEquipos,
-    obtenerEquipo,
-    crearEquipo,
-    actualizarEquipo,
-    eliminarEquipo,
-    miembrosDeEquipo
+  listarEquipos,
+  obtenerEquipo,
+  crearEquipo,
+  actualizarEquipo,
+  eliminarEquipo,
+  miembrosDeEquipo
 } from "../controllers/equipoController";
 
 const router = Router();
@@ -15,21 +15,21 @@ const router = Router();
 //Toda la lógica vive en src/controllers/equipoController.js
 
 //Listar equipos con filtros, paginación y ordenamiento
-router.get('/equipos', listarEquipos);
+router.get("/equipos", listarEquipos);
 
 //Crear equipo
-router.post('/equipo/agregar', verifyToken, authorize("admin", "mentor"), crearEquipo);
+router.post("/equipo/agregar", verifyToken, authorize("admin", "mentor"), crearEquipo);
 
 //Ver un equipo por id
-router.get('/equipo/:id', obtenerEquipo);
+router.get("/equipo/:id", obtenerEquipo);
 
 //Integrantes de un equipo
-router.get('/equipo/:id/miembros', verifyToken, miembrosDeEquipo);
+router.get("/equipo/:id/miembros", verifyToken, miembrosDeEquipo);
 
 //Actualizar equipo
-router.put('/equipo/:id', verifyToken, authorize("admin", "mentor"), actualizarEquipo);
+router.put("/equipo/:id", verifyToken, authorize("admin", "mentor"), actualizarEquipo);
 
 //Eliminar equipo
-router.delete('/equipo/:id', verifyToken, authorize("admin", "mentor"), eliminarEquipo);
+router.delete("/equipo/:id", verifyToken, authorize("admin", "mentor"), eliminarEquipo);
 
 export default router;

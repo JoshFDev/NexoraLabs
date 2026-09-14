@@ -10,7 +10,12 @@ const ETIQUETAS_TIPO = { empleo: 'Empleo', practica: 'Práctica', voluntariado: 
 const MODALIDADES = ['remoto', 'hibrido', 'presencial'];
 const ETIQUETAS_MODALIDAD = { remoto: 'Remoto', hibrido: 'Híbrido', presencial: 'Presencial' };
 const NIVELES = ['principiante', 'intermedio', 'avanzado', 'experto'];
-const ETIQUETAS_NIVEL = { principiante: 'Principiante', intermedio: 'Intermedio', avanzado: 'Avanzado', experto: 'Experto' };
+const ETIQUETAS_NIVEL = {
+  principiante: 'Principiante',
+  intermedio: 'Intermedio',
+  avanzado: 'Avanzado',
+  experto: 'Experto'
+};
 const ETIQUETAS_ESTADO = { abierta: 'Abierta', cerrada: 'Cerrada', cancelada: 'Cancelada' };
 const ETIQUETAS_POS = { pendiente: 'Pendiente', aceptada: 'Aceptada', rechazada: 'Rechazada', cancelada: 'Cancelada' };
 
@@ -27,7 +32,17 @@ function OfertasEmpleoPage() {
 
   const [habilidades, setHabilidades] = useState([]);
   const [showPublicar, setShowPublicar] = useState(false);
-  const [formOferta, setFormOferta] = useState({ titulo: '', empresa: '', descripcion: '', tipo: 'empleo', modalidad: 'remoto', ubicacion: '', salario: '', nivel: 'intermedio', fecha_limite: '' });
+  const [formOferta, setFormOferta] = useState({
+    titulo: '',
+    empresa: '',
+    descripcion: '',
+    tipo: 'empleo',
+    modalidad: 'remoto',
+    ubicacion: '',
+    salario: '',
+    nivel: 'intermedio',
+    fecha_limite: ''
+  });
   const [seleccionadas, setSeleccionadas] = useState([]);
   const [buscarHabilidad, setBuscarHabilidad] = useState('');
   const [cargandoGuardar, setCargandoGuardar] = useState(false);
@@ -68,7 +83,6 @@ function OfertasEmpleoPage() {
       .get('/habilidades?limite=500')
       .then((res) => setHabilidades(res.data.habilidades || []))
       .catch(() => setHabilidades([]));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -77,7 +91,9 @@ function OfertasEmpleoPage() {
   }, [filtros, puedePublicar]);
 
   const ofertasAbiertas = ofertas.filter((o) => o.estado === 'abierta');
-  const misOfertas = puedePublicar ? ofertas.filter((o) => String(o.publicado_por?._id || o.publicado_por) === idUsuario) : [];
+  const misOfertas = puedePublicar
+    ? ofertas.filter((o) => String(o.publicado_por?._id || o.publicado_por) === idUsuario)
+    : [];
 
   const publicarOferta = async (e) => {
     e.preventDefault();
@@ -95,10 +111,20 @@ function OfertasEmpleoPage() {
       await api.post('/oferta/agregar', {
         ...formOferta,
         habilidades_requeridas: seleccionadas,
-        fecha_limite: formOferta.fecha_limite || undefined,
+        fecha_limite: formOferta.fecha_limite || undefined
       });
       setShowPublicar(false);
-      setFormOferta({ titulo: '', empresa: '', descripcion: '', tipo: 'empleo', modalidad: 'remoto', ubicacion: '', salario: '', nivel: 'intermedio', fecha_limite: '' });
+      setFormOferta({
+        titulo: '',
+        empresa: '',
+        descripcion: '',
+        tipo: 'empleo',
+        modalidad: 'remoto',
+        ubicacion: '',
+        salario: '',
+        nivel: 'intermedio',
+        fecha_limite: ''
+      });
       setSeleccionadas([]);
       cargarOfertas();
     } catch (err) {
@@ -172,9 +198,7 @@ function OfertasEmpleoPage() {
   };
 
   const estadoBadge = (estado) => (
-    <span className={`proyecto-badge oferta-badge-${estado}`}>
-      {ETIQUETAS_POS[estado] || estado}
-    </span>
+    <span className={`proyecto-badge oferta-badge-${estado}`}>{ETIQUETAS_POS[estado] || estado}</span>
   );
 
   const rendCard = (o, gestion = false) => (
@@ -185,7 +209,16 @@ function OfertasEmpleoPage() {
           {o.empresa && <span className="proyectos-subtitulo">{o.empresa}</span>}
         </div>
         <span className="proyecto-fila-flecha">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.4"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <polyline points="6 9 12 15 18 9" />
           </svg>
         </span>
@@ -221,12 +254,22 @@ function OfertasEmpleoPage() {
               Ver postulaciones
             </Button>
             {o.estado === 'abierta' && (
-              <Button size="sm" variant="outline-light" className="proyectos-boton" onClick={() => cambiarEstadoOferta(o, 'cerrada')}>
+              <Button
+                size="sm"
+                variant="outline-light"
+                className="proyectos-boton"
+                onClick={() => cambiarEstadoOferta(o, 'cerrada')}
+              >
                 Cerrar oferta
               </Button>
             )}
             {o.estado !== 'abierta' && (
-              <Button size="sm" variant="outline-light" className="proyectos-boton" onClick={() => cambiarEstadoOferta(o, 'abierta')}>
+              <Button
+                size="sm"
+                variant="outline-light"
+                className="proyectos-boton"
+                onClick={() => cambiarEstadoOferta(o, 'abierta')}
+              >
                 Reabrir oferta
               </Button>
             )}
@@ -250,9 +293,7 @@ function OfertasEmpleoPage() {
         <div className="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-4">
           <div>
             <h2 className="proyectos-titulo mb-0">Ofertas y oportunidades</h2>
-            <p className="proyectos-subtitulo mb-0">
-              Empleos, prácticas y voluntariados para la comunidad.
-            </p>
+            <p className="proyectos-subtitulo mb-0">Empleos, prácticas y voluntariados para la comunidad.</p>
           </div>
           {puedePublicar && (
             <Button className="proyectos-boton" onClick={() => setShowPublicar(true)}>
@@ -272,17 +313,41 @@ function OfertasEmpleoPage() {
               onChange={(e) => setFiltros((f) => ({ ...f, busqueda: e.target.value }))}
             />
           </div>
-          <Form.Select style={{ width: 'auto' }} value={filtros.tipo} onChange={(e) => setFiltros((f) => ({ ...f, tipo: e.target.value }))}>
+          <Form.Select
+            style={{ width: 'auto' }}
+            value={filtros.tipo}
+            onChange={(e) => setFiltros((f) => ({ ...f, tipo: e.target.value }))}
+          >
             <option value="">Tipo</option>
-            {TIPOS.map((t) => <option key={t} value={t}>{ETIQUETAS_TIPO[t]}</option>)}
+            {TIPOS.map((t) => (
+              <option key={t} value={t}>
+                {ETIQUETAS_TIPO[t]}
+              </option>
+            ))}
           </Form.Select>
-          <Form.Select style={{ width: 'auto' }} value={filtros.modalidad} onChange={(e) => setFiltros((f) => ({ ...f, modalidad: e.target.value }))}>
+          <Form.Select
+            style={{ width: 'auto' }}
+            value={filtros.modalidad}
+            onChange={(e) => setFiltros((f) => ({ ...f, modalidad: e.target.value }))}
+          >
             <option value="">Modalidad</option>
-            {MODALIDADES.map((m) => <option key={m} value={m}>{ETIQUETAS_MODALIDAD[m]}</option>)}
+            {MODALIDADES.map((m) => (
+              <option key={m} value={m}>
+                {ETIQUETAS_MODALIDAD[m]}
+              </option>
+            ))}
           </Form.Select>
-          <Form.Select style={{ width: 'auto' }} value={filtros.nivel} onChange={(e) => setFiltros((f) => ({ ...f, nivel: e.target.value }))}>
+          <Form.Select
+            style={{ width: 'auto' }}
+            value={filtros.nivel}
+            onChange={(e) => setFiltros((f) => ({ ...f, nivel: e.target.value }))}
+          >
             <option value="">Nivel</option>
-            {NIVELES.map((n) => <option key={n} value={n}>{ETIQUETAS_NIVEL[n]}</option>)}
+            {NIVELES.map((n) => (
+              <option key={n} value={n}>
+                {ETIQUETAS_NIVEL[n]}
+              </option>
+            ))}
           </Form.Select>
         </Form>
 
@@ -295,13 +360,17 @@ function OfertasEmpleoPage() {
         ) : (
           <div className="d-flex flex-column gap-3">
             {ofertasAbiertas.map((o) => rendCard(o))}
-            {ofertasAbiertas.length === 0 && <p className="proyectos-vacio">No hay ofertas que coincidan con tus filtros.</p>}
+            {ofertasAbiertas.length === 0 && (
+              <p className="proyectos-vacio">No hay ofertas que coincidan con tus filtros.</p>
+            )}
           </div>
         )}
 
         {misPostulaciones.length > 0 && (
           <section className="mt-5">
-            <h3 className="proyectos-titulo mb-3" style={{ fontSize: '1.1rem' }}>Mis postulaciones</h3>
+            <h3 className="proyectos-titulo mb-3" style={{ fontSize: '1.1rem' }}>
+              Mis postulaciones
+            </h3>
             <div className="d-flex flex-column gap-3">
               {misPostulaciones.map((p) => (
                 <div className="proyecto-fila" key={p._id}>
@@ -318,7 +387,12 @@ function OfertasEmpleoPage() {
                   </footer>
                   <div className="proyecto-detalle-acciones">
                     {p.estado === 'pendiente' && (
-                      <Button size="sm" variant="outline-danger" className="proyectos-boton" onClick={() => retirarPostulacion(p)}>
+                      <Button
+                        size="sm"
+                        variant="outline-danger"
+                        className="proyectos-boton"
+                        onClick={() => retirarPostulacion(p)}
+                      >
                         Retirar postulación
                       </Button>
                     )}
@@ -331,10 +405,10 @@ function OfertasEmpleoPage() {
 
         {puedePublicar && misOfertas.length > 0 && (
           <section className="mt-5">
-            <h3 className="proyectos-titulo mb-3" style={{ fontSize: '1.1rem' }}>Mis ofertas publicadas</h3>
-            <div className="d-flex flex-column gap-3">
-              {misOfertas.map((o) => rendCard(o, true))}
-            </div>
+            <h3 className="proyectos-titulo mb-3" style={{ fontSize: '1.1rem' }}>
+              Mis ofertas publicadas
+            </h3>
+            <div className="d-flex flex-column gap-3">{misOfertas.map((o) => rendCard(o, true))}</div>
           </section>
         )}
       </Container>
@@ -349,67 +423,120 @@ function OfertasEmpleoPage() {
               <Col md={7}>
                 <Form.Group className="mb-2">
                   <Form.Label className="proyecto-form-label">Título del puesto *</Form.Label>
-                  <Form.Control value={formOferta.titulo} onChange={(e) => setFormOferta((f) => ({ ...f, titulo: e.target.value }))} placeholder="Ej. Desarrollador Full Stack" />
+                  <Form.Control
+                    value={formOferta.titulo}
+                    onChange={(e) => setFormOferta((f) => ({ ...f, titulo: e.target.value }))}
+                    placeholder="Ej. Desarrollador Full Stack"
+                  />
                 </Form.Group>
               </Col>
               <Col md={5}>
                 <Form.Group className="mb-2">
                   <Form.Label className="proyecto-form-label">Empresa</Form.Label>
-                  <Form.Control value={formOferta.empresa} onChange={(e) => setFormOferta((f) => ({ ...f, empresa: e.target.value }))} placeholder="Ej. TechCorp" />
+                  <Form.Control
+                    value={formOferta.empresa}
+                    onChange={(e) => setFormOferta((f) => ({ ...f, empresa: e.target.value }))}
+                    placeholder="Ej. TechCorp"
+                  />
                 </Form.Group>
               </Col>
               <Col xs={12}>
                 <Form.Group className="mb-2">
                   <Form.Label className="proyecto-form-label">Descripción *</Form.Label>
-                  <Form.Control as="textarea" rows={4} value={formOferta.descripcion} onChange={(e) => setFormOferta((f) => ({ ...f, descripcion: e.target.value }))} placeholder="Responsabilidades, requisitos, beneficios…" />
+                  <Form.Control
+                    as="textarea"
+                    rows={4}
+                    value={formOferta.descripcion}
+                    onChange={(e) => setFormOferta((f) => ({ ...f, descripcion: e.target.value }))}
+                    placeholder="Responsabilidades, requisitos, beneficios…"
+                  />
                 </Form.Group>
               </Col>
               <Col md={4}>
                 <Form.Group className="mb-2">
                   <Form.Label className="proyecto-form-label">Tipo</Form.Label>
-                  <Form.Select value={formOferta.tipo} onChange={(e) => setFormOferta((f) => ({ ...f, tipo: e.target.value }))}>
-                    {TIPOS.map((t) => <option key={t} value={t}>{ETIQUETAS_TIPO[t]}</option>)}
+                  <Form.Select
+                    value={formOferta.tipo}
+                    onChange={(e) => setFormOferta((f) => ({ ...f, tipo: e.target.value }))}
+                  >
+                    {TIPOS.map((t) => (
+                      <option key={t} value={t}>
+                        {ETIQUETAS_TIPO[t]}
+                      </option>
+                    ))}
                   </Form.Select>
                 </Form.Group>
               </Col>
               <Col md={4}>
                 <Form.Group className="mb-2">
                   <Form.Label className="proyecto-form-label">Modalidad</Form.Label>
-                  <Form.Select value={formOferta.modalidad} onChange={(e) => setFormOferta((f) => ({ ...f, modalidad: e.target.value }))}>
-                    {MODALIDADES.map((m) => <option key={m} value={m}>{ETIQUETAS_MODALIDAD[m]}</option>)}
+                  <Form.Select
+                    value={formOferta.modalidad}
+                    onChange={(e) => setFormOferta((f) => ({ ...f, modalidad: e.target.value }))}
+                  >
+                    {MODALIDADES.map((m) => (
+                      <option key={m} value={m}>
+                        {ETIQUETAS_MODALIDAD[m]}
+                      </option>
+                    ))}
                   </Form.Select>
                 </Form.Group>
               </Col>
               <Col md={4}>
                 <Form.Group className="mb-2">
                   <Form.Label className="proyecto-form-label">Nivel</Form.Label>
-                  <Form.Select value={formOferta.nivel} onChange={(e) => setFormOferta((f) => ({ ...f, nivel: e.target.value }))}>
-                    {NIVELES.map((n) => <option key={n} value={n}>{ETIQUETAS_NIVEL[n]}</option>)}
+                  <Form.Select
+                    value={formOferta.nivel}
+                    onChange={(e) => setFormOferta((f) => ({ ...f, nivel: e.target.value }))}
+                  >
+                    {NIVELES.map((n) => (
+                      <option key={n} value={n}>
+                        {ETIQUETAS_NIVEL[n]}
+                      </option>
+                    ))}
                   </Form.Select>
                 </Form.Group>
               </Col>
               <Col md={4}>
                 <Form.Group className="mb-2">
                   <Form.Label className="proyecto-form-label">Ubicación</Form.Label>
-                  <Form.Control value={formOferta.ubicacion} onChange={(e) => setFormOferta((f) => ({ ...f, ubicacion: e.target.value }))} placeholder="Ciudad / País" />
+                  <Form.Control
+                    value={formOferta.ubicacion}
+                    onChange={(e) => setFormOferta((f) => ({ ...f, ubicacion: e.target.value }))}
+                    placeholder="Ciudad / País"
+                  />
                 </Form.Group>
               </Col>
               <Col md={4}>
                 <Form.Group className="mb-2">
                   <Form.Label className="proyecto-form-label">Salario / rango</Form.Label>
-                  <Form.Control value={formOferta.salario} onChange={(e) => setFormOferta((f) => ({ ...f, salario: e.target.value }))} placeholder="Ej. $1,500–$2,000" />
+                  <Form.Control
+                    value={formOferta.salario}
+                    onChange={(e) => setFormOferta((f) => ({ ...f, salario: e.target.value }))}
+                    placeholder="Ej. $1,500–$2,000"
+                  />
                 </Form.Group>
               </Col>
               <Col md={4}>
                 <Form.Group className="mb-2">
                   <Form.Label className="proyecto-form-label">Fecha límite</Form.Label>
-                  <Form.Control type="date" value={formOferta.fecha_limite} onChange={(e) => setFormOferta((f) => ({ ...f, fecha_limite: e.target.value }))} />
+                  <Form.Control
+                    type="date"
+                    value={formOferta.fecha_limite}
+                    onChange={(e) => setFormOferta((f) => ({ ...f, fecha_limite: e.target.value }))}
+                  />
                 </Form.Group>
               </Col>
               <Col xs={12}>
                 <Form.Group className="mb-2">
                   <Form.Label className="proyecto-form-label">Habilidades requeridas</Form.Label>
-                  <Form.Control type="search" placeholder="Buscar habilidades…" value={buscarHabilidad} onChange={(e) => setBuscarHabilidad(e.target.value)} className="mb-2" />
+                  <Form.Control
+                    type="search"
+                    placeholder="Buscar habilidades…"
+                    value={buscarHabilidad}
+                    onChange={(e) => setBuscarHabilidad(e.target.value)}
+                    className="mb-2"
+                  />
                   <div className="proyecto-habilidades-chips">
                     {habilidades
                       .filter((h) => h.nombre.toLowerCase().includes(buscarHabilidad.trim().toLowerCase()))
@@ -418,7 +545,9 @@ function OfertasEmpleoPage() {
                           type="button"
                           key={h._id}
                           className={`proyecto-chip-habilidad ${seleccionadas.includes(h._id) ? 'seleccionada' : ''}`}
-                          onClick={() => setSeleccionadas((s) => (s.includes(h._id) ? s.filter((x) => x !== h._id) : [...s, h._id]))}
+                          onClick={() =>
+                            setSeleccionadas((s) => (s.includes(h._id) ? s.filter((x) => x !== h._id) : [...s, h._id]))
+                          }
                         >
                           <IconoHabilidad nombre={h.nombre} />
                           {h.nombre}
@@ -429,7 +558,9 @@ function OfertasEmpleoPage() {
               </Col>
             </Row>
             <div className="d-flex justify-content-end gap-2 mt-4">
-              <Button variant="outline-light" className="proyectos-boton" onClick={() => setShowPublicar(false)}>Cancelar</Button>
+              <Button variant="outline-light" className="proyectos-boton" onClick={() => setShowPublicar(false)}>
+                Cancelar
+              </Button>
               <Button variant="primary" type="submit" className="proyectos-boton" disabled={cargandoGuardar}>
                 {cargandoGuardar ? <Spinner animation="border" size="sm" /> : 'Publicar oferta'}
               </Button>
@@ -454,7 +585,9 @@ function OfertasEmpleoPage() {
             />
           </Form.Group>
           <div className="d-flex justify-content-end gap-2">
-            <Button variant="outline-light" className="proyectos-boton" onClick={() => setPostularOferta(null)}>Cancelar</Button>
+            <Button variant="outline-light" className="proyectos-boton" onClick={() => setPostularOferta(null)}>
+              Cancelar
+            </Button>
             <Button variant="primary" className="proyectos-boton" onClick={postular} disabled={cargandoPost}>
               {cargandoPost ? <Spinner animation="border" size="sm" /> : 'Enviar postulación'}
             </Button>
@@ -468,7 +601,9 @@ function OfertasEmpleoPage() {
         </Modal.Header>
         <Modal.Body className="px-4">
           {cargandoPostulantes ? (
-            <div className="text-center py-4"><Spinner animation="border" variant="light" /></div>
+            <div className="text-center py-4">
+              <Spinner animation="border" variant="light" />
+            </div>
           ) : !postulantes || postulantes.length === 0 ? (
             <p className="proyectos-vacio">Todavía no hay postulaciones para esta oferta.</p>
           ) : (
@@ -477,9 +612,7 @@ function OfertasEmpleoPage() {
                 <div className="proyecto-fila" key={p._id}>
                   <div className="proyecto-fila-cabecera">
                     <div>
-                      <h4 className="proyecto-titulo-tarjeta mb-0">
-                        {p.usuario_id?.nombre || 'Usuario'}
-                      </h4>
+                      <h4 className="proyecto-titulo-tarjeta mb-0">{p.usuario_id?.nombre || 'Usuario'}</h4>
                       <span className="proyectos-subtitulo">
                         {p.usuario_id?.rol} · {p.usuario_id?.especialidad_principal || 'Sin especialidad'}
                         {p.usuario_id?.pais ? ` · ${p.usuario_id.pais}` : ''}
@@ -493,10 +626,20 @@ function OfertasEmpleoPage() {
                   </footer>
                   {p.estado === 'pendiente' && (
                     <div className="proyecto-detalle-acciones">
-                      <Button size="sm" variant="primary" className="proyectos-boton" onClick={() => responderPostulacion(p, 'aceptada')}>
+                      <Button
+                        size="sm"
+                        variant="primary"
+                        className="proyectos-boton"
+                        onClick={() => responderPostulacion(p, 'aceptada')}
+                      >
                         Aceptar
                       </Button>
-                      <Button size="sm" variant="outline-danger" className="proyectos-boton" onClick={() => responderPostulacion(p, 'rechazada')}>
+                      <Button
+                        size="sm"
+                        variant="outline-danger"
+                        className="proyectos-boton"
+                        onClick={() => responderPostulacion(p, 'rechazada')}
+                      >
                         Rechazar
                       </Button>
                     </div>

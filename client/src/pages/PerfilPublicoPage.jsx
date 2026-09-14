@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Container, Row, Col, Spinner, Alert, Button, Modal } from 'react-bootstrap';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import api from '../api';
@@ -10,28 +10,28 @@ const ROL_LABEL = {
   estudiante: 'Estudiante',
   desarrollador: 'Desarrollador',
   ingeniero: 'Ingeniero',
-  mentor: 'Mentor / Docente',
+  mentor: 'Mentor / Docente'
 };
 
 const NIVEL_LABEL = {
   principiante: 'Básico',
   intermedio: 'Intermedio',
   avanzado: 'Avanzado',
-  experto: 'Experto',
+  experto: 'Experto'
 };
 
 const DISP_LABEL = {
   tiempo_completo: 'Tiempo completo',
   medio_tiempo: 'Medio tiempo',
   fines_de_semana: 'Fines de semana',
-  bajo_demanda: 'Bajo demanda',
+  bajo_demanda: 'Bajo demanda'
 };
 
 const NIVEL_HABILIDAD = {
   principiante: 'Básico',
   intermedio: 'Intermedio',
   avanzado: 'Avanzado',
-  experto: 'Experto',
+  experto: 'Experto'
 };
 
 const ICONOS_LOGROS = {
@@ -40,15 +40,13 @@ const ICONOS_LOGROS = {
   postularse: 'connect_without_contact',
   unirse_equipo: 'group',
   comentar: 'forum',
-  calificar_recurso: 'school',
+  calificar_recurso: 'school'
 };
 
 function PerfilPublicoPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const miUsuario = JSON.parse(
-    localStorage.getItem('usuario') || sessionStorage.getItem('usuario') || 'null'
-  );
+  const miUsuario = JSON.parse(localStorage.getItem('usuario') || sessionStorage.getItem('usuario') || 'null');
 
   const [perfil, setPerfil] = useState(null);
   const [habilidades, setHabilidades] = useState([]);
@@ -65,7 +63,7 @@ function PerfilPublicoPage() {
     Promise.all([
       api.get(`/usuario/${id}`),
       api.get(`/usuario/${id}/habilidades`).catch(() => ({ data: [] })),
-      api.get(`/logros/usuario/${id}`).catch(() => ({ data: { logros: [] } })),
+      api.get(`/logros/usuario/${id}`).catch(() => ({ data: { logros: [] } }))
     ])
       .then(([resPerfil, resHabilidades, resLogros]) => {
         setPerfil(resPerfil.data);
@@ -110,9 +108,7 @@ function PerfilPublicoPage() {
                   {perfil.foto ? (
                     <img className="perfil-foto-img" src={perfil.foto} alt="Foto de perfil" />
                   ) : (
-                    <span className="perfil-foto-iniciales">
-                      {(perfil.nombre || 'U').charAt(0).toUpperCase()}
-                    </span>
+                    <span className="perfil-foto-iniciales">{(perfil.nombre || 'U').charAt(0).toUpperCase()}</span>
                   )}
                   {perfil.foto && (
                     <span className="perfil-foto-ver" aria-hidden="true">
@@ -122,8 +118,7 @@ function PerfilPublicoPage() {
                   )}
                 </div>
                 <h1 className="perfil-resumen-nombre">
-                  {perfil.nombre || ''} {perfil.apellido_paterno || ''}{' '}
-                  {perfil.apellido_materno || ''}
+                  {perfil.nombre || ''} {perfil.apellido_paterno || ''} {perfil.apellido_materno || ''}
                 </h1>
                 <p className="perfil-rol">{ROL_LABEL[perfil.rol] || perfil.rol || 'Usuario'}</p>
 
@@ -146,7 +141,14 @@ function PerfilPublicoPage() {
                 {perfil.email && (
                   <div className="perfil-publico-linea">
                     <span className="perfil-publico-icono">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
                         <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
                         <polyline points="22,6 12,13 2,6" />
                       </svg>
@@ -157,7 +159,14 @@ function PerfilPublicoPage() {
                 {perfil.telefono && (
                   <div className="perfil-publico-linea">
                     <span className="perfil-publico-icono">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
                         <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z" />
                       </svg>
                     </span>
@@ -165,7 +174,9 @@ function PerfilPublicoPage() {
                   </div>
                 )}
 
-                {(perfil.redes_sociales?.github || perfil.redes_sociales?.linkedin || perfil.redes_sociales?.portafolio) && (
+                {(perfil.redes_sociales?.github ||
+                  perfil.redes_sociales?.linkedin ||
+                  perfil.redes_sociales?.portafolio) && (
                   <>
                     <hr className="perfil-resumen-sep" />
                     <div className="perfil-publico-redes">
@@ -224,7 +235,13 @@ function PerfilPublicoPage() {
                           <span
                             key={l.clave}
                             className="perfil-chip"
-                            style={{ cursor: 'default', fontSize: '0.85rem', gap: '0.35rem', display: 'inline-flex', alignItems: 'center' }}
+                            style={{
+                              cursor: 'default',
+                              fontSize: '0.85rem',
+                              gap: '0.35rem',
+                              display: 'inline-flex',
+                              alignItems: 'center'
+                            }}
                             title={l.descripcion}
                           >
                             <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>
@@ -253,7 +270,11 @@ function PerfilPublicoPage() {
                         {habilidades.map((r) => {
                           const h = r.habilidad_id;
                           return (
-                            <span key={String(r._id)} className="proyecto-chip-habilidad seleccionada" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', cursor: 'default' }}>
+                            <span
+                              key={String(r._id)}
+                              className="proyecto-chip-habilidad seleccionada"
+                              style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', cursor: 'default' }}
+                            >
                               <IconoHabilidad nombre={h?.nombre || 'Habilidad'} />
                               {h?.nombre || 'Habilidad'}
                               <span className="perfil-publico-nivel">
@@ -273,7 +294,9 @@ function PerfilPublicoPage() {
                     {perfil.intereses?.length ? (
                       <div className="perfil-chips">
                         {perfil.intereses.map((i) => (
-                          <span key={i} className="perfil-chip" style={{ cursor: 'default' }}>{i}</span>
+                          <span key={i} className="perfil-chip" style={{ cursor: 'default' }}>
+                            {i}
+                          </span>
                         ))}
                       </div>
                     ) : (
@@ -288,7 +311,9 @@ function PerfilPublicoPage() {
                     {perfil.idiomas?.length ? (
                       <div className="perfil-chips">
                         {perfil.idiomas.map((i) => (
-                          <span key={i} className="perfil-chip" style={{ cursor: 'default' }}>{i}</span>
+                          <span key={i} className="perfil-chip" style={{ cursor: 'default' }}>
+                            {i}
+                          </span>
                         ))}
                       </div>
                     ) : (
@@ -324,9 +349,7 @@ function PerfilPublicoPage() {
       </Container>
 
       <Modal show={verFoto} onHide={() => setVerFoto(false)} centered className="foto-modal">
-        {perfil?.foto && (
-          <img className="perfil-foto-grande" src={perfil.foto} alt="Foto de perfil" />
-        )}
+        {perfil?.foto && <img className="perfil-foto-grande" src={perfil.foto} alt="Foto de perfil" />}
         <button
           type="button"
           className="foto-modal-cerrar"

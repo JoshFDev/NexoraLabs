@@ -10,21 +10,21 @@ const ETIQUETAS_ESTADO = {
   buscando_equipo: 'Buscando equipo',
   en_desarrollo: 'En desarrollo',
   finalizado: 'Finalizado',
-  cancelado: 'Cancelado',
+  cancelado: 'Cancelado'
 };
 
 const ETIQUETAS_NIVEL = {
   principiante: 'Principiante',
   intermedio: 'Intermedio',
   avanzado: 'Avanzado',
-  experto: 'Experto',
+  experto: 'Experto'
 };
 
 const ETIQUETAS_POSTULACION = {
   pendiente: 'Postulado',
   aceptada: 'Postulación aceptada',
   rechazada: 'Postulación rechazada',
-  cancelada: 'Postulación cancelada',
+  cancelada: 'Postulación cancelada'
 };
 
 const CATEGORIAS = ['web', 'movil', 'ia', 'backend', 'frontend', 'devops', 'big_data', 'diseno', 'otro'];
@@ -51,8 +51,7 @@ function ExplorarProyectosPage() {
 
   const alternar = (id) => setExpandido((x) => (x === id ? null : id));
 
-  const usuario =
-    JSON.parse(localStorage.getItem('usuario') || sessionStorage.getItem('usuario') || 'null');
+  const usuario = JSON.parse(localStorage.getItem('usuario') || sessionStorage.getItem('usuario') || 'null');
 
   useEffect(() => {
     api
@@ -103,7 +102,7 @@ function ExplorarProyectosPage() {
     try {
       await api.post(`/proyecto/${p._id}/postular`, {
         mensaje: formPostulacion?.id === p._id ? formPostulacion.mensaje : '',
-        habilidades_ofrecidas: [],
+        habilidades_ofrecidas: []
       });
       setFormPostulacion(null);
       await refrescarMisPostulaciones();
@@ -137,7 +136,7 @@ function ExplorarProyectosPage() {
     setError('');
     try {
       await api.put(`/postulacion-own/${po._id}`, {
-        mensaje: editForm.mensaje ?? '',
+        mensaje: editForm.mensaje ?? ''
       });
       setEditForm(null);
       await refrescarMisPostulaciones();
@@ -186,9 +185,7 @@ function ExplorarProyectosPage() {
       api
         .get(`/proyectos?buscar=${encodeURIComponent(texto)}&limite=20&orden=recientes`)
         .then((res) => {
-          const coinciden = (res.data.proyectos || []).filter((p) =>
-            (p.titulo || '').toLowerCase().includes(texto)
-          );
+          const coinciden = (res.data.proyectos || []).filter((p) => (p.titulo || '').toLowerCase().includes(texto));
           coinciden.sort((a, b) => {
             const aEmpieza = a.titulo.toLowerCase().startsWith(texto) ? 0 : 1;
             const bEmpieza = b.titulo.toLowerCase().startsWith(texto) ? 0 : 1;
@@ -239,9 +236,7 @@ function ExplorarProyectosPage() {
         </div>
         <div className="proyecto-detalle-bloque">
           <span className="proyecto-detalle-etiqueta">Equipo</span>
-          <span className="proyecto-detalle-texto">
-            {p.integrantes_maximos || 1} integrante(s) máximo
-          </span>
+          <span className="proyecto-detalle-texto">{p.integrantes_maximos || 1} integrante(s) máximo</span>
         </div>
         <div className="proyecto-detalle-bloque">
           <span className="proyecto-detalle-etiqueta">Creador</span>
@@ -267,9 +262,7 @@ function ExplorarProyectosPage() {
           </div>
         )}
         <div className="proyecto-detalle-acciones">
-          {p.creador_id &&
-          usuario &&
-          String(p.creador_id._id || p.creador_id) === String(usuario._id || usuario.id) ? (
+          {p.creador_id && usuario && String(p.creador_id._id || p.creador_id) === String(usuario._id || usuario.id) ? (
             <span className="proyecto-postulado-badge">Eres el creador de este proyecto</span>
           ) : misPostulaciones[String(p._id)] ? (
             <div className="d-flex flex-wrap align-items-center gap-2">
@@ -320,7 +313,7 @@ function ExplorarProyectosPage() {
                         onClick={() =>
                           setEditForm({
                             proyectoId: String(p._id),
-                            mensaje: misPostulaciones[String(p._id)].mensaje || '',
+                            mensaje: misPostulaciones[String(p._id)].mensaje || ''
                           })
                         }
                       >
@@ -358,9 +351,7 @@ function ExplorarProyectosPage() {
                 size="sm"
                 disabled={cargandoPost}
                 onClick={() =>
-                  formPostulacion?.id === p._id
-                    ? postular(p)
-                    : setFormPostulacion({ id: p._id, mensaje: '' })
+                  formPostulacion?.id === p._id ? postular(p) : setFormPostulacion({ id: p._id, mensaje: '' })
                 }
               >
                 {formPostulacion?.id === p._id ? 'Confirmar postulación' : 'Postularme'}
@@ -370,6 +361,7 @@ function ExplorarProyectosPage() {
         </div>
       </section>
     ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [misPostulaciones, formPostulacion, cargandoPost, editForm]
   );
 
@@ -383,7 +375,16 @@ function ExplorarProyectosPage() {
         <div className="proyecto-fila-cabecera">
           <h3 className="proyecto-titulo-tarjeta mb-1">{p.titulo}</h3>
           <span className="proyecto-fila-flecha" aria-hidden="true">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.4"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <polyline points="6 9 12 15 18 9" />
             </svg>
           </span>
@@ -406,9 +407,7 @@ function ExplorarProyectosPage() {
           · {p.integrantes_maximos || 1} integrante(s)
           {p.coincidencias ? ` · ${p.coincidencias} coincidencia${p.coincidencias !== 1 ? 's' : ''}` : ''}
         </footer>
-        <div className={`proyecto-fila-contenido${expandido === p._id ? ' abierto' : ''}`}>
-          {rendDetalle(p)}
-        </div>
+        <div className={`proyecto-fila-contenido${expandido === p._id ? ' abierto' : ''}`}>{rendDetalle(p)}</div>
       </article>
     ),
     [expandido, rendDetalle]
@@ -429,9 +428,13 @@ function ExplorarProyectosPage() {
               placeholder="Buscar por título o descripción…"
               value={textoBuscar}
               onChange={(e) => cambiarBusqueda(e.target.value)}
-              onFocus={() => { if (textoBuscar.trim().length >= 2) setSugAbierta(true); }}
+              onFocus={() => {
+                if (textoBuscar.trim().length >= 2) setSugAbierta(true);
+              }}
               onBlur={() => setTimeout(() => setSugAbierta(false), 150)}
-              onKeyDown={(e) => { if (e.key === 'Escape') setSugAbierta(false); }}
+              onKeyDown={(e) => {
+                if (e.key === 'Escape') setSugAbierta(false);
+              }}
             />
             {sugAbierta && sugerencias.length > 0 && (
               <div className="proyectos-sug">
@@ -450,31 +453,59 @@ function ExplorarProyectosPage() {
               </div>
             )}
           </div>
-          <Form.Select value={filtros.categoria} onChange={(e) => cambiarFiltro('categoria', e.target.value)} style={{ width: 'auto' }}>
+          <Form.Select
+            value={filtros.categoria}
+            onChange={(e) => cambiarFiltro('categoria', e.target.value)}
+            style={{ width: 'auto' }}
+          >
             <option value="">Categoría</option>
             {CATEGORIAS.map((c) => (
-              <option key={c} value={c}>{c}</option>
+              <option key={c} value={c}>
+                {c}
+              </option>
             ))}
           </Form.Select>
-          <Form.Select value={filtros.habilidad} onChange={(e) => cambiarFiltro('habilidad', e.target.value)} style={{ width: 'auto' }}>
+          <Form.Select
+            value={filtros.habilidad}
+            onChange={(e) => cambiarFiltro('habilidad', e.target.value)}
+            style={{ width: 'auto' }}
+          >
             <option value="">Habilidad</option>
             {habilidades.map((h) => (
-              <option key={String(h._id)} value={h._id}>{h.nombre}</option>
+              <option key={String(h._id)} value={h._id}>
+                {h.nombre}
+              </option>
             ))}
           </Form.Select>
-          <Form.Select value={filtros.estado} onChange={(e) => cambiarFiltro('estado', e.target.value)} style={{ width: 'auto' }}>
+          <Form.Select
+            value={filtros.estado}
+            onChange={(e) => cambiarFiltro('estado', e.target.value)}
+            style={{ width: 'auto' }}
+          >
             <option value="">Estado</option>
             {Object.entries(ETIQUETAS_ESTADO).map(([v, l]) => (
-              <option key={v} value={v}>{l}</option>
+              <option key={v} value={v}>
+                {l}
+              </option>
             ))}
           </Form.Select>
-          <Form.Select value={filtros.nivel} onChange={(e) => cambiarFiltro('nivel', e.target.value)} style={{ width: 'auto' }}>
+          <Form.Select
+            value={filtros.nivel}
+            onChange={(e) => cambiarFiltro('nivel', e.target.value)}
+            style={{ width: 'auto' }}
+          >
             <option value="">Nivel</option>
             {Object.entries(ETIQUETAS_NIVEL).map(([v, l]) => (
-              <option key={v} value={v}>{l}</option>
+              <option key={v} value={v}>
+                {l}
+              </option>
             ))}
           </Form.Select>
-          <Form.Select value={filtros.orden} onChange={(e) => cambiarFiltro('orden', e.target.value)} style={{ width: 'auto' }}>
+          <Form.Select
+            value={filtros.orden}
+            onChange={(e) => cambiarFiltro('orden', e.target.value)}
+            style={{ width: 'auto' }}
+          >
             <option value="recientes">Más recientes</option>
             <option value="antiguos">Más antiguos</option>
             <option value="a-z">Título A-Z</option>

@@ -6,7 +6,11 @@
   "scripts": {
     "test": "jest --runInBand",
     "dev": "nodemon src/index.js --exec babel-node",
-    "seed": "babel-node src/tests/seedDemo.js"
+    "seed": "babel-node src/tests/seedDemo.js",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "jest": {
     "testEnvironment": "node",
@@ -29,8 +33,13 @@
     "@babel/core": "^7.29.7",
     "@babel/node": "^7.29.7",
     "@babel/preset-env": "^7.29.7",
+    "@eslint/js": "^9.39.5",
+    "eslint": "^9.39.5",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.12.0",
     "jest": "^30.5.1",
     "nodemon": "^3.1.14",
+    "prettier": "^3.9.6",
     "supertest": "^7.2.2"
   },
   "dependencies": {

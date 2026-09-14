@@ -11,14 +11,14 @@ const ETIQUETAS_ESTADO = {
   buscando_equipo: 'Buscando equipo',
   en_desarrollo: 'En desarrollo',
   finalizado: 'Finalizado',
-  cancelado: 'Cancelado',
+  cancelado: 'Cancelado'
 };
 
 const ETIQUETAS_NIVEL = {
   principiante: 'Principiante',
   intermedio: 'Intermedio',
   avanzado: 'Avanzado',
-  experto: 'Experto',
+  experto: 'Experto'
 };
 
 function DashboardPage() {
@@ -42,10 +42,8 @@ function DashboardPage() {
         const [resProyectos, resRecomendados, resMis, resLogros] = await Promise.all([
           api.get('/proyectos?limite=6&orden=recientes'),
           api.get('/proyecto/recomendados').catch(() => null),
-          api
-            .get(`/proyectos?creador=${usuario._id || usuario.id}&limite=6&orden=recientes`)
-            .catch(() => null),
-          api.get('/mis-logros').catch(() => null),
+          api.get(`/proyectos?creador=${usuario._id || usuario.id}&limite=6&orden=recientes`).catch(() => null),
+          api.get('/mis-logros').catch(() => null)
         ]);
         setProyectos(resProyectos.data.proyectos || []);
         setRecomendados(resRecomendados?.data || null);
@@ -71,9 +69,7 @@ function DashboardPage() {
       <footer className="proyecto-fila-pie">
         <span className="proyecto-fila-creador-meta">
           · {p.integrantes_maximos || 1} integrante(s)
-          {p.coincidencias > 0
-            ? ` · ${p.coincidencias} coincidencia${p.coincidencias !== 1 ? 's' : ''}`
-            : ''}
+          {p.coincidencias > 0 ? ` · ${p.coincidencias} coincidencia${p.coincidencias !== 1 ? 's' : ''}` : ''}
         </span>
         <Button
           variant="primary"
@@ -93,17 +89,11 @@ function DashboardPage() {
 
   const rendCarjeta = useCallback(
     (p) => (
-      <article
-        className="proyecto-fila"
-        key={p._id}
-        onClick={() => navigate(`/proyecto/${p._id}`)}
-      >
+      <article className="proyecto-fila" key={p._id} onClick={() => navigate(`/proyecto/${p._id}`)}>
         <div className="proyecto-fila-cabecera">
           <div>
             <h3 className="proyecto-titulo-tarjeta mb-1">{p.titulo}</h3>
-            <span className="proyecto-fila-creador-meta">
-              {p.creador_id?.nombre || 'anon'}
-            </span>
+            <span className="proyecto-fila-creador-meta">{p.creador_id?.nombre || 'anon'}</span>
           </div>
           <span className="proyecto-fila-flecha" aria-hidden="true">
             →
@@ -134,16 +124,14 @@ function DashboardPage() {
 
   const rendMini = useCallback(
     (p, esMio = false) => (
-      <div
-        className="recomendado-mini"
-        key={p._id}
-        onClick={() => navigate(`/proyecto/${p._id}`)}
-      >
+      <div className="recomendado-mini" key={p._id} onClick={() => navigate(`/proyecto/${p._id}`)}>
         <div className="recomendado-mini-cabecera">
           <h6>{p.titulo}</h6>
-          <span className="recomendado-mini-posicion" aria-hidden="true">→</span>
+          <span className="recomendado-mini-posicion" aria-hidden="true">
+            →
+          </span>
         </div>
-        <p>{(p.descripcion || '').length > 90 ? `${(p.descripcion || '').slice(0, 90)}…` : (p.descripcion || '')}</p>
+        <p>{(p.descripcion || '').length > 90 ? `${(p.descripcion || '').slice(0, 90)}…` : p.descripcion || ''}</p>
         <div className="recomendado-badges">
           <span className="proyecto-badge">{ETIQUETAS_ESTADO[p.estado] || p.estado}</span>
           {p.coincidencias > 0 && (
@@ -186,26 +174,26 @@ function DashboardPage() {
       etiqueta: 'Proyectos recientes',
       valor: proyectos.length,
       icono: 'folder_open',
-      enlace: '/explorar',
+      enlace: '/explorar'
     },
     {
       etiqueta: 'Recomendados para ti',
       valor: totalRecomendados,
       icono: 'favorite_border',
-      enlace: '/explorar',
+      enlace: '/explorar'
     },
     {
       etiqueta: 'Mis proyectos',
       valor: misProyectos?.length || 0,
       icono: 'check_circle_outline',
-      enlace: '/crear-proyecto',
+      enlace: '/crear-proyecto'
     },
     {
       etiqueta: 'Logros desbloqueados',
       valor: misLogros ? `${misLogros.total_obtenidos}/${misLogros.total_logros}` : '—',
       icono: 'workspace_premium',
-      enlace: '/logros',
-    },
+      enlace: '/logros'
+    }
   ];
 
   if (cargando) {
@@ -223,9 +211,7 @@ function DashboardPage() {
         <div className="dash-bloqueo">
           <span className="dash-bloqueo-icono">!</span>
           <h2>Tu perfil está incompleto</h2>
-          <p>
-            Completa tu perfil para desbloquear el panel y poder crear proyectos, unirte a equipos y postularte.
-          </p>
+          <p>Completa tu perfil para desbloquear el panel y poder crear proyectos, unirte a equipos y postularte.</p>
           <Button as={Link} to="/perfil" className="dash-bloqueo-btn">
             Completar mi perfil
           </Button>
@@ -241,17 +227,11 @@ function DashboardPage() {
 
         <section className="dash-hero mb-4">
           <div className="dash-hero-avatar" aria-hidden="true">
-            {usuario?.foto ? (
-              <img src={usuario.foto} alt="" />
-            ) : (
-              inicial
-            )}
+            {usuario?.foto ? <img src={usuario.foto} alt="" /> : inicial}
           </div>
           <div className="dash-hero-datos">
             <span className="dash-hero-saludo">{saludo}</span>
-            <h1 className="dash-hero-titulo mb-0">
-              {usuario?.nombre || 'compañero'}
-            </h1>
+            <h1 className="dash-hero-titulo mb-0">{usuario?.nombre || 'compañero'}</h1>
             <p className="dash-hero-subtitulo mb-0">
               Resumen de {puedeCrear ? 'tus proyectos' : 'la comunidad'} y recomendaciones para ti.
             </p>
@@ -298,16 +278,16 @@ function DashboardPage() {
 
               {proyectos.length === 0 ? (
                 <div className="dash-vacio">
-                  <span className="dash-vacio-icono"><span className="material-symbols-outlined">rocket_launch</span></span>
+                  <span className="dash-vacio-icono">
+                    <span className="material-symbols-outlined">rocket_launch</span>
+                  </span>
                   <p>Todavía no hay proyectos publicados.</p>
                   <Button size="sm" className="proyectos-boton" as={Link} to="/ofertas">
                     Ver oportunidades
                   </Button>
                 </div>
               ) : (
-                <div className="d-flex flex-column gap-3">
-                  {proyectos.map(rendCarjeta)}
-                </div>
+                <div className="d-flex flex-column gap-3">{proyectos.map(rendCarjeta)}</div>
               )}
             </section>
           </Col>
@@ -321,10 +301,10 @@ function DashboardPage() {
               </div>
               {!recomendados || recomendados.proyectos?.length === 0 ? (
                 <div className="dash-vacio dash-vacio-chico">
-                  <span className="dash-vacio-icono"><span className="material-symbols-outlined">lightbulb</span></span>
-                  <p>
-                    Registra tus habilidades para recibir recomendaciones.
-                  </p>
+                  <span className="dash-vacio-icono">
+                    <span className="material-symbols-outlined">lightbulb</span>
+                  </span>
+                  <p>Registra tus habilidades para recibir recomendaciones.</p>
                   <Button size="sm" variant="outline-light" className="proyectos-boton" as={Link} to="/habilidades">
                     Registrar habilidades
                   </Button>
@@ -351,11 +331,11 @@ function DashboardPage() {
             <p className="proyectos-subtitulo">Cargando…</p>
           ) : misProyectos.length === 0 ? (
             <div className="dash-vacio">
-              <span className="dash-vacio-icono"><span className="material-symbols-outlined">folder_open</span></span>
+              <span className="dash-vacio-icono">
+                <span className="material-symbols-outlined">folder_open</span>
+              </span>
               <p>
-                {puedeCrear
-                  ? 'Aún no has creado proyectos. Publica tu primera idea.'
-                  : 'Aún no has creado proyectos.'}
+                {puedeCrear ? 'Aún no has creado proyectos. Publica tu primera idea.' : 'Aún no has creado proyectos.'}
               </p>
               {puedeCrear && (
                 <Button size="sm" className="proyectos-boton" as={Link} to="/crear-proyecto">
@@ -375,11 +355,7 @@ function DashboardPage() {
         </section>
       </Container>
 
-      <Modal
-        show={!!proyectoAEliminar}
-        onHide={() => setProyectoAEliminar(null)}
-        centered
-      >
+      <Modal show={!!proyectoAEliminar} onHide={() => setProyectoAEliminar(null)} centered>
         <Modal.Header closeButton className="proyecto-modal-cabecera">
           <Modal.Title className="proyectos-titulo" style={{ fontSize: '1.05rem' }}>
             Solicitar la baja de un proyecto
@@ -387,28 +363,21 @@ function DashboardPage() {
         </Modal.Header>
         <Modal.Body>
           <p className="mb-1">
-            Vas a enviar la solicitud para dar de baja el proyecto{' '}
-            <strong>"{proyectoAEliminar?.titulo}"</strong>.
+            Vas a enviar la solicitud para dar de baja el proyecto <strong>"{proyectoAEliminar?.titulo}"</strong>.
           </p>
           <p className="proyectos-subtitulo mb-0" style={{ fontSize: '0.85rem' }}>
-            El proyecto dejará de estar visible para la comunidad y los integrantes serán
-            notificados de la salida. Esta acción no se puede deshacer.
+            El proyecto dejará de estar visible para la comunidad y los integrantes serán notificados de la salida. Esta
+            acción no se puede deshacer.
           </p>
         </Modal.Body>
         <Modal.Footer className="proyecto-modal-pie">
-          <Button
-            variant="outline-light"
-            className="proyectos-boton"
-            onClick={() => setProyectoAEliminar(null)}
-          >
+          <Button variant="outline-light" className="proyectos-boton" onClick={() => setProyectoAEliminar(null)}>
             Cancelar
           </Button>
           <Button
             variant="danger"
             className="proyectos-boton"
-            onClick={() =>
-              proyectoAEliminar && eliminarProyecto(proyectoAEliminar._id)
-            }
+            onClick={() => proyectoAEliminar && eliminarProyecto(proyectoAEliminar._id)}
           >
             Enviar solicitud de baja
           </Button>

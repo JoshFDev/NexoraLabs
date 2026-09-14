@@ -7,14 +7,13 @@ import './ProyectosPage.css';
 const ETIQUETAS_ESTADO_EQUIPO = {
   activo: 'Activo',
   finalizado: 'Finalizado',
-  disuelto: 'Disuelto',
+  disuelto: 'Disuelto'
 };
 
 const ROLES_CREADOR_EQUIPO = ['admin', 'mentor'];
 
 function EquiposPage() {
-  const usuario =
-    JSON.parse(localStorage.getItem('usuario') || sessionStorage.getItem('usuario') || 'null');
+  const usuario = JSON.parse(localStorage.getItem('usuario') || sessionStorage.getItem('usuario') || 'null');
 
   const [equipos, setEquipos] = useState([]);
   const [pagina, setPagina] = useState(1);
@@ -232,7 +231,7 @@ function EquiposPage() {
       await api.post('/equipo/agregar', {
         proyecto_id: formCrear.proyecto_id,
         nombre: formCrear.nombre.trim(),
-        descripcion: formCrear.descripcion.trim(),
+        descripcion: formCrear.descripcion.trim()
       });
       setCreado(true);
       setPagina(1);
@@ -253,8 +252,7 @@ function EquiposPage() {
   const soyMiembro = (id) => misEquipos?.has(String(id));
 
   const soyCreadorDelEquipo = (e) =>
-    !!usuario?._id && !!e.proyecto_id?.creador_id &&
-    String(e.proyecto_id.creador_id) === String(usuario._id);
+    !!usuario?._id && !!e.proyecto_id?.creador_id && String(e.proyecto_id.creador_id) === String(usuario._id);
 
   const puedeGestionar = (e) => soyCreadorDelEquipo(e) || puedeCrear;
 
@@ -287,11 +285,12 @@ function EquiposPage() {
                     <strong>
                       {s.usuario_id?._id ? (
                         <Link to={`/usuario/${s.usuario_id._id}`} className="perfil-publico-enlace">
-                          {s.usuario_id?.nombre || 'Anónimo'}{' '}
-                          {s.usuario_id?.apellido_paterno || ''}
+                          {s.usuario_id?.nombre || 'Anónimo'} {s.usuario_id?.apellido_paterno || ''}
                         </Link>
                       ) : (
-                        <>{(s.usuario_id?.nombre || 'Usuario')} {s.usuario_id?.apellido_paterno || ''}</>
+                        <>
+                          {s.usuario_id?.nombre || 'Usuario'} {s.usuario_id?.apellido_paterno || ''}
+                        </>
                       )}
                     </strong>
                     <div className="proyecto-detalle-texto">
@@ -356,7 +355,9 @@ function EquiposPage() {
           >
             <option value="">Estado</option>
             {Object.entries(ETIQUETAS_ESTADO_EQUIPO).map(([v, l]) => (
-              <option key={v} value={v}>{l}</option>
+              <option key={v} value={v}>
+                {l}
+              </option>
             ))}
           </Form.Select>
           <Form.Select
@@ -369,7 +370,9 @@ function EquiposPage() {
           >
             <option value="">Habilidad</option>
             {habilidades.map((h) => (
-              <option key={String(h._id)} value={h._id}>{h.nombre}</option>
+              <option key={String(h._id)} value={h._id}>
+                {h.nombre}
+              </option>
             ))}
           </Form.Select>
           <Button type="submit" className="proyectos-boton">
@@ -395,7 +398,16 @@ function EquiposPage() {
                     <div className="proyecto-fila-cabecera">
                       <h3 className="proyecto-titulo-tarjeta mb-1">{e.nombre}</h3>
                       <span className="proyecto-fila-flecha" aria-hidden="true">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                        <svg
+                          width="18"
+                          height="18"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2.4"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
                           <polyline points="6 9 12 15 18 9" />
                         </svg>
                       </span>
@@ -421,11 +433,12 @@ function EquiposPage() {
                                       <strong>
                                         {m.usuario_id?._id ? (
                                           <Link to={`/usuario/${m.usuario_id._id}`} className="perfil-publico-enlace">
-                                            {m.usuario_id?.nombre || 'Anónimo'}{' '}
-                                            {m.usuario_id?.apellido_paterno || ''}
+                                            {m.usuario_id?.nombre || 'Anónimo'} {m.usuario_id?.apellido_paterno || ''}
                                           </Link>
                                         ) : (
-                                          <>{(m.usuario_id?.nombre || 'Anónimo')} {m.usuario_id?.apellido_paterno || ''}</>
+                                          <>
+                                            {m.usuario_id?.nombre || 'Anónimo'} {m.usuario_id?.apellido_paterno || ''}
+                                          </>
                                         )}
                                       </strong>
                                       <div className="proyecto-detalle-texto">{m.usuario_id?.email || ''}</div>
@@ -554,12 +567,7 @@ function EquiposPage() {
         )}
       </Container>
 
-      <Modal
-        show={modalAbierto}
-        onHide={() => setModalAbierto(false)}
-        centered
-        className="equipo-modal"
-      >
+      <Modal show={modalAbierto} onHide={() => setModalAbierto(false)} centered className="equipo-modal">
         <Modal.Header closeButton className="equipo-modal-head">
           <Modal.Title className="proyectos-titulo">Crear equipo</Modal.Title>
         </Modal.Header>
@@ -567,7 +575,9 @@ function EquiposPage() {
           {errorCrear && <Alert variant="danger">{errorCrear}</Alert>}
           {creado && (
             <div className="proyectos-bloqueo" style={{ margin: '0 auto 1rem' }}>
-              <span className="dash-bloqueo-icono" style={{ color: '#34d399' }}>✓</span>
+              <span className="dash-bloqueo-icono" style={{ color: '#34d399' }}>
+                ✓
+              </span>
               <h3>¡Equipo creado!</h3>
             </div>
           )}
@@ -581,7 +591,9 @@ function EquiposPage() {
                 >
                   <option value="">Elige un proyecto tuyo</option>
                   {misProyectos.map((p) => (
-                    <option key={String(p._id)} value={p._id}>{p.titulo}</option>
+                    <option key={String(p._id)} value={p._id}>
+                      {p.titulo}
+                    </option>
                   ))}
                 </Form.Select>
                 {misProyectos.length === 0 && (
@@ -612,11 +624,7 @@ function EquiposPage() {
                 <Button type="submit" className="proyectos-boton" disabled={creando}>
                   {creando ? <Spinner animation="border" size="sm" /> : 'Crear equipo'}
                 </Button>
-                <Button
-                  variant="outline-light"
-                  className="proyectos-boton"
-                  onClick={() => setModalAbierto(false)}
-                >
+                <Button variant="outline-light" className="proyectos-boton" onClick={() => setModalAbierto(false)}>
                   Cancelar
                 </Button>
               </div>

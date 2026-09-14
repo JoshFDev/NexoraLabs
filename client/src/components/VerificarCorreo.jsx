@@ -68,8 +68,16 @@ function VerificarCorreo({ email, onVerificado, yaEnviado = false }) {
 
   return (
     <div>
-      {msg && <Alert variant="info" className="login-alerta">{msg}</Alert>}
-      {error && <Alert variant="danger" className="login-alerta">{error}</Alert>}
+      {msg && (
+        <Alert variant="info" className="login-alerta">
+          {msg}
+        </Alert>
+      )}
+      {error && (
+        <Alert variant="danger" className="login-alerta">
+          {error}
+        </Alert>
+      )}
 
       <Form onSubmit={verificar} noValidate>
         <Form.Group className="mb-2" controlId="codigo">
@@ -95,25 +103,21 @@ function VerificarCorreo({ email, onVerificado, yaEnviado = false }) {
         </Form.Group>
 
         <Button type="submit" className="login-boton w-100 mt-2" disabled={cargando}>
-          {cargando
-            ? (<><Spinner as="span" animation="border" size="sm" className="me-2" />Verificando...</>)
-            : 'Verificar correo'}
+          {cargando ? (
+            <>
+              <Spinner as="span" animation="border" size="sm" className="me-2" />
+              Verificando...
+            </>
+          ) : (
+            'Verificar correo'
+          )}
         </Button>
       </Form>
 
       <p className="verificar-reenvio">
         ¿No te llegó?{' '}
-        <button
-          type="button"
-          className="login-olvidar"
-          onClick={reenviar}
-          disabled={seg > 0 || reenviando}
-        >
-          {reenviando
-            ? 'Enviando...'
-            : seg > 0
-              ? `Reenviar código (${seg}s)`
-              : 'Reenviar código'}
+        <button type="button" className="login-olvidar" onClick={reenviar} disabled={seg > 0 || reenviando}>
+          {reenviando ? 'Enviando...' : seg > 0 ? `Reenviar código (${seg}s)` : 'Reenviar código'}
         </button>
       </p>
     </div>

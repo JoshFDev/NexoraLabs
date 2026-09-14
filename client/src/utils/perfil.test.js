@@ -9,7 +9,7 @@ const completo = {
   especialidad_principal: 'Desarrollo Web',
   intereses: ['Desarrollo Web'],
   idiomas: ['Español'],
-  educacion: { institucion: 'UNAM', titulo: 'Ing. en Sistemas' },
+  educacion: { institucion: 'UNAM', titulo: 'Ing. en Sistemas' }
 };
 
 describe('esPerfilCompleto', () => {

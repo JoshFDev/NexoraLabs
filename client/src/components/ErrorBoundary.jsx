@@ -27,11 +27,7 @@ class ErrorBoundary extends Component {
           </p>
           <small className="error-boundary-detalle">{this.state.error.message}</small>
           <div className="error-boundary-acciones">
-            <button
-              type="button"
-              className="error-boundary-boton"
-              onClick={() => window.location.reload()}
-            >
+            <button type="button" className="error-boundary-boton" onClick={() => window.location.reload()}>
               Recargar página
             </button>
             <button

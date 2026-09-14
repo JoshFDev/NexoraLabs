@@ -1,12 +1,12 @@
 <h1>Lista de Equipos</h1>
 
 {{#each equipos}}
-    <div>
-        <h3>{{this.nombre}}</h3>
-        <p>{{this.descripcion}}</p>
-        <p>Estado: {{this.estado}}</p>
-        <a href="/equipo/{{this._id}}">Ver</a>
-    </div>
+  <div>
+    <h3>{{this.nombre}}</h3>
+    <p>{{this.descripcion}}</p>
+    <p>Estado: {{this.estado}}</p>
+    <a href="/equipo/{{this._id}}">Ver</a>
+  </div>
 {{else}}
-    <p>No hay equipos registrados.</p>
+  <p>No hay equipos registrados.</p>
 {{/each}}

@@ -2,40 +2,40 @@ import { Router } from "express";
 import verifyToken from "../middleware/verifyToken";
 import authorize from "../middleware/authorize";
 import {
-    listarUsuarioHabilidades,
-    obtenerUsuarioHabilidad,
-    crearUsuarioHabilidad,
-    actualizarUsuarioHabilidad,
-    eliminarUsuarioHabilidad,
-    eliminarMiUsuarioHabilidad,
-    misHabilidades,
-    habilidadesPublicas
+  listarUsuarioHabilidades,
+  obtenerUsuarioHabilidad,
+  crearUsuarioHabilidad,
+  actualizarUsuarioHabilidad,
+  eliminarUsuarioHabilidad,
+  eliminarMiUsuarioHabilidad,
+  misHabilidades,
+  habilidadesPublicas
 } from "../controllers/usuarioHabilidadController";
 
 const router = Router();
 
 //Listar todas las habilidades de los usuarios
-router.get('/usuarios-habilidades', listarUsuarioHabilidades);
+router.get("/usuarios-habilidades", listarUsuarioHabilidades);
 
 //Ver una relación usuario-habilidad por id
-router.get('/usuario-habilidad/:id', obtenerUsuarioHabilidad);
+router.get("/usuario-habilidad/:id", obtenerUsuarioHabilidad);
 
 //Habilidades declaradas por el usuario autenticado
-router.get('/mis-habilidades', verifyToken, misHabilidades);
+router.get("/mis-habilidades", verifyToken, misHabilidades);
 
 //Habilidades públicas de un usuario (perfil público)
-router.get('/usuario/:id/habilidades', habilidadesPublicas);
+router.get("/usuario/:id/habilidades", habilidadesPublicas);
 
 //Crear o actualizar relación usuario-habilidad (upsert)
-router.post('/usuario-habilidad/agregar', verifyToken, crearUsuarioHabilidad);
+router.post("/usuario-habilidad/agregar", verifyToken, crearUsuarioHabilidad);
 
 //Actualizar relación usuario-habilidad
-router.put('/usuario-habilidad/:id', verifyToken, actualizarUsuarioHabilidad);
+router.put("/usuario-habilidad/:id", verifyToken, actualizarUsuarioHabilidad);
 
 //Eliminar relación usuario-habilidad (admin)
-router.delete('/usuario-habilidad/:id', verifyToken, authorize("admin"), eliminarUsuarioHabilidad);
+router.delete("/usuario-habilidad/:id", verifyToken, authorize("admin"), eliminarUsuarioHabilidad);
 
 //El usuario elimina su propia relación (autenticado)
-router.delete('/usuario-habilidad/own/:id', verifyToken, eliminarMiUsuarioHabilidad);
+router.delete("/usuario-habilidad/own/:id", verifyToken, eliminarMiUsuarioHabilidad);
 
 export default router;

@@ -2,14 +2,16 @@ export function esPerfilCompleto(u) {
   if (!u) return false;
   return Boolean(
     u.apellido_materno &&
-      u.pais &&
-      u.provincia &&
-      u.acerca_de_mi &&
-      u.especialidad_principal &&
-      Array.isArray(u.intereses) && u.intereses.length > 0 &&
-      Array.isArray(u.idiomas) && u.idiomas.length > 0 &&
-      u.educacion?.institucion &&
-      u.educacion?.titulo
+    u.pais &&
+    u.provincia &&
+    u.acerca_de_mi &&
+    u.especialidad_principal &&
+    Array.isArray(u.intereses) &&
+    u.intereses.length > 0 &&
+    Array.isArray(u.idiomas) &&
+    u.idiomas.length > 0 &&
+    u.educacion?.institucion &&
+    u.educacion?.titulo
   );
 }
 
@@ -40,7 +42,7 @@ export const interesesSugeridos = [
   'IoT',
   'Robótica',
   'Videojuegos',
-  'DevOps',
+  'DevOps'
 ];
 
 export const idiomasSugeridos = ['Español', 'Inglés', 'Francés', 'Portugués', 'Alemán', 'Italiano', 'Japonés', 'Chino'];

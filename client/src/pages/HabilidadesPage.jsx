@@ -16,14 +16,14 @@ const CATEGORIAS = [
   'Inteligencia Artificial',
   'Cloud',
   'DevOps',
-  'Sistemas Operativos',
+  'Sistemas Operativos'
 ];
 
 const ETIQUETAS_NIVEL = {
   principiante: 'Básico',
   intermedio: 'Intermedio',
   avanzado: 'Avanzado',
-  experto: 'Experto',
+  experto: 'Experto'
 };
 
 const ROLES_GESTION_HABILIDADES = ['admin'];
@@ -36,13 +36,11 @@ const FORM_VACIO = {
   descripcion: '',
   etiquetas: '',
   popularidad: 0,
-  visible: true,
+  visible: true
 };
 
 function HabilidadesPage() {
-  const usuario = JSON.parse(
-    localStorage.getItem('usuario') || sessionStorage.getItem('usuario') || 'null'
-  );
+  const usuario = JSON.parse(localStorage.getItem('usuario') || sessionStorage.getItem('usuario') || 'null');
 
   const [lista, setLista] = useState(null);
   const [pagina, setPagina] = useState(1);
@@ -97,8 +95,7 @@ function HabilidadesPage() {
       .catch(() => setMisHabilidades([]));
   }, [puedeGestionar]);
 
-  const enMiPerfil = (h) =>
-    misHabilidades.some((r) => String(r.habilidad_id?._id || r.habilidad_id) === String(h._id));
+  const enMiPerfil = (h) => misHabilidades.some((r) => String(r.habilidad_id?._id || r.habilidad_id) === String(h._id));
 
   const alternarSeleccion = async (h, ev) => {
     ev.stopPropagation();
@@ -107,16 +104,14 @@ function HabilidadesPage() {
     setError('');
     try {
       if (yaTengo) {
-        const reg = misHabilidades.find(
-          (r) => String(r.habilidad_id?._id || r.habilidad_id) === String(h._id)
-        );
+        const reg = misHabilidades.find((r) => String(r.habilidad_id?._id || r.habilidad_id) === String(h._id));
         await api.delete(`/usuario-habilidad/own/${reg._id}`);
         setMisHabilidades((prev) => prev.filter((r) => String(r._id) !== String(reg._id)));
       } else {
         const res = await api.post('/usuario-habilidad/agregar', {
           usuario_id: usuario?._id || usuario?.id,
           habilidad_id: h._id,
-          nivel: 'principiante',
+          nivel: 'principiante'
         });
         setMisHabilidades((prev) => [...prev, res.data]);
       }
@@ -157,7 +152,7 @@ function HabilidadesPage() {
             descripcion: habilidad.descripcion || '',
             etiquetas: (habilidad.etiquetas || []).join(', '),
             popularidad: habilidad.popularidad || 0,
-            visible: habilidad.visible !== false,
+            visible: habilidad.visible !== false
           }
         : FORM_VACIO
     );
@@ -183,14 +178,12 @@ function HabilidadesPage() {
         .map((s) => s.trim())
         .filter(Boolean),
       popularidad: Number(form.popularidad) || 0,
-      visible: form.visible,
+      visible: form.visible
     };
     try {
       if (editando) {
         const res = await api.put(`/habilidad/${editando._id}`, payload);
-        setLista((prev) =>
-          prev.map((x) => (String(x._id) === String(editando._id) ? res.data : x))
-        );
+        setLista((prev) => prev.map((x) => (String(x._id) === String(editando._id) ? res.data : x)));
       } else {
         await api.post('/habilidad/agregar', payload);
         setPagina(1);
@@ -205,7 +198,9 @@ function HabilidadesPage() {
         setEditando(null);
       }, 700);
     } catch (err) {
-      setErrorForm(err.response?.data?.error || (editando ? 'No se pudo actualizar la habilidad' : 'No se pudo crear la habilidad'));
+      setErrorForm(
+        err.response?.data?.error || (editando ? 'No se pudo actualizar la habilidad' : 'No se pudo crear la habilidad')
+      );
     } finally {
       setGuardando(false);
     }
@@ -256,7 +251,9 @@ function HabilidadesPage() {
             >
               <option value="">Categoría</option>
               {CATEGORIAS.map((c) => (
-                <option key={c} value={c}>{c}</option>
+                <option key={c} value={c}>
+                  {c}
+                </option>
               ))}
             </Form.Select>
             <Form.Select
@@ -269,7 +266,9 @@ function HabilidadesPage() {
             >
               <option value="">Nivel</option>
               {Object.entries(ETIQUETAS_NIVEL).map(([v, l]) => (
-                <option key={v} value={v}>{l}</option>
+                <option key={v} value={v}>
+                  {l}
+                </option>
               ))}
             </Form.Select>
             <Form.Select
@@ -316,7 +315,16 @@ function HabilidadesPage() {
                         <h3 className="proyecto-titulo-tarjeta mb-0">{h.nombre}</h3>
                       </div>
                       <span className="proyecto-fila-flecha" aria-hidden="true">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                        <svg
+                          width="18"
+                          height="18"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2.4"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
                           <polyline points="6 9 12 15 18 9" />
                         </svg>
                       </span>
@@ -345,7 +353,9 @@ function HabilidadesPage() {
                           <div className="proyecto-detalle-chips">
                             {h.etiquetas?.length ? (
                               h.etiquetas.map((t) => (
-                                <span key={t} className="proyecto-detalle-chip">{t}</span>
+                                <span key={t} className="proyecto-detalle-chip">
+                                  {t}
+                                </span>
                               ))
                             ) : (
                               <span className="proyecto-detalle-texto">Sin etiquetas.</span>
@@ -360,7 +370,14 @@ function HabilidadesPage() {
                         <span className="habilidad-pop flex-grow-1">
                           <span style={{ width: `${Math.min(h.popularidad || 0, 100)}%` }} />
                         </span>
-                        <span style={{ fontSize: '0.8rem', color: 'var(--nx-morado-oscuro)', minWidth: '2.2rem', textAlign: 'right' }}>
+                        <span
+                          style={{
+                            fontSize: '0.8rem',
+                            color: 'var(--nx-morado-oscuro)',
+                            minWidth: '2.2rem',
+                            textAlign: 'right'
+                          }}
+                        >
                           {h.popularidad || 0}%
                         </span>
                       </div>
@@ -453,7 +470,9 @@ function HabilidadesPage() {
           {errorForm && <Alert variant="danger">{errorForm}</Alert>}
           {exito && (
             <div className="proyectos-bloqueo" style={{ margin: '0 auto 1rem' }}>
-              <span className="dash-bloqueo-icono" style={{ color: '#34d399' }}>✓</span>
+              <span className="dash-bloqueo-icono" style={{ color: '#34d399' }}>
+                ✓
+              </span>
               <h3>{editando ? '¡Habilidad actualizada!' : '¡Habilidad agregada!'}</h3>
             </div>
           )}
@@ -477,7 +496,9 @@ function HabilidadesPage() {
                     >
                       <option value="">Elige una categoría</option>
                       {CATEGORIAS.map((c) => (
-                        <option key={c} value={c}>{c}</option>
+                        <option key={c} value={c}>
+                          {c}
+                        </option>
                       ))}
                     </Form.Select>
                   </Form.Group>
@@ -490,7 +511,9 @@ function HabilidadesPage() {
                       onChange={(e) => setForm((f) => ({ ...f, nivel_minimo: e.target.value }))}
                     >
                       {Object.entries(ETIQUETAS_NIVEL).map(([v, l]) => (
-                        <option key={v} value={v}>{l}</option>
+                        <option key={v} value={v}>
+                          {l}
+                        </option>
                       ))}
                     </Form.Select>
                   </Form.Group>
@@ -548,13 +571,15 @@ function HabilidadesPage() {
               </Row>
               <div className="d-flex gap-3">
                 <Button type="submit" className="proyectos-boton" disabled={guardando}>
-                  {guardando ? <Spinner animation="border" size="sm" /> : editando ? 'Guardar cambios' : 'Agregar habilidad'}
+                  {guardando ? (
+                    <Spinner animation="border" size="sm" />
+                  ) : editando ? (
+                    'Guardar cambios'
+                  ) : (
+                    'Agregar habilidad'
+                  )}
                 </Button>
-                <Button
-                  variant="outline-light"
-                  className="proyectos-boton"
-                  onClick={() => setModalAbierto(false)}
-                >
+                <Button variant="outline-light" className="proyectos-boton" onClick={() => setModalAbierto(false)}>
                   Cancelar
                 </Button>
               </div>
@@ -563,19 +588,21 @@ function HabilidadesPage() {
         </Modal.Body>
       </Modal>
 
-      <Modal
-        show={!!confirmarBorrar}
-        onHide={() => setConfirmarBorrar(null)}
-        centered
-        className="equipo-modal"
-      >
+      <Modal show={!!confirmarBorrar} onHide={() => setConfirmarBorrar(null)} centered className="equipo-modal">
         <Modal.Header closeButton className="equipo-modal-head">
           <Modal.Title className="proyectos-titulo">Eliminar habilidad</Modal.Title>
         </Modal.Header>
         <Modal.Body className="equipo-modal-body">
           <div className="d-flex flex-column align-items-center text-center py-3">
             <span className="confirmar-borrar-icono" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <path d="M3 6h18" />
                 <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
                 <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
@@ -585,15 +612,11 @@ function HabilidadesPage() {
             </span>
             <p className="mb-4" style={{ color: '#4f4a6d', maxWidth: '28rem' }}>
               ¿Seguro que deseas eliminar la habilidad{' '}
-              <strong style={{ color: 'var(--nx-morado-oscuro)' }}>“{confirmarBorrar?.nombre}”</strong>?
-              Esta acción no se puede deshacer.
+              <strong style={{ color: 'var(--nx-morado-oscuro)' }}>“{confirmarBorrar?.nombre}”</strong>? Esta acción no
+              se puede deshacer.
             </p>
             <div className="d-flex gap-3">
-              <Button
-                variant="outline-light"
-                className="proyectos-boton"
-                onClick={() => setConfirmarBorrar(null)}
-              >
+              <Button variant="outline-light" className="proyectos-boton" onClick={() => setConfirmarBorrar(null)}>
                 Cancelar
               </Button>
               <Button
@@ -601,11 +624,7 @@ function HabilidadesPage() {
                 disabled={borrando === String(confirmarBorrar?._id)}
                 onClick={confirmarBorrarAhora}
               >
-                {borrando === String(confirmarBorrar?._id) ? (
-                  <Spinner animation="border" size="sm" />
-                ) : (
-                  'Eliminar'
-                )}
+                {borrando === String(confirmarBorrar?._id) ? <Spinner animation="border" size="sm" /> : 'Eliminar'}
               </Button>
             </div>
           </div>

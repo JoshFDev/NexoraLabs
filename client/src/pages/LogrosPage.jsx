@@ -9,7 +9,7 @@ const ICONOS_TIPO = {
   postularse: { icono: 'connect_without_contact', etiqueta: 'Participación' },
   unirse_equipo: { icono: 'group', etiqueta: 'Equipo' },
   comentar: { icono: 'forum', etiqueta: 'Comunidad' },
-  calificar_recurso: { icono: 'school', etiqueta: 'Aprendizaje' },
+  calificar_recurso: { icono: 'school', etiqueta: 'Aprendizaje' }
 };
 
 function useColumnas() {
@@ -18,7 +18,7 @@ function useColumnas() {
     const puntos = [
       { m: '(min-width: 1200px)', n: 4 },
       { m: '(min-width: 992px)', n: 3 },
-      { m: '(min-width: 640px)', n: 2 },
+      { m: '(min-width: 640px)', n: 2 }
     ];
     const mqs = puntos.map((p) => ({ ...p, q: window.matchMedia(p.m) }));
     const calcular = () => {
@@ -74,7 +74,7 @@ function LogrosPage() {
               <div className="honeycomb-barra">
                 <div
                   style={{
-                    width: `${(datos.total_obtenidos / datos.total_logros) * 100}%`,
+                    width: `${(datos.total_obtenidos / datos.total_logros) * 100}%`
                   }}
                 />
               </div>
@@ -127,7 +127,10 @@ function LogrosPage() {
                               `Obtenido · ${new Date(l.fecha_obtencion).toLocaleDateString('es')}`
                             ) : (
                               <>
-                                <span className="material-symbols-outlined" style={{ fontSize: '12px', verticalAlign: '-2px' }}>
+                                <span
+                                  className="material-symbols-outlined"
+                                  style={{ fontSize: '12px', verticalAlign: '-2px' }}
+                                >
                                   lock
                                 </span>
                                 &nbsp;Bloqueado

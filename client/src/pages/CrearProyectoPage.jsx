@@ -18,7 +18,7 @@ const ETIQUETAS_ESTADO_CREAR = {
   buscando_equipo: 'Buscando equipo',
   en_desarrollo: 'En desarrollo',
   finalizado: 'Finalizado',
-  cancelado: 'Cancelado',
+  cancelado: 'Cancelado'
 };
 const CATEGORIAS = ['web', 'movil', 'ia', 'backend', 'frontend', 'devops', 'big_data', 'diseno', 'otro'];
 
@@ -38,7 +38,7 @@ function CrearProyectoPage() {
     nivel_dificultad: 'intermedio',
     estado: 'buscando_equipo',
     integrantes_maximos: 3,
-    fecha_limite: '',
+    fecha_limite: ''
   });
   const [habilidades, setHabilidades] = useState([]);
   const [seleccionadas, setSeleccionadas] = useState([]);
@@ -73,7 +73,7 @@ function CrearProyectoPage() {
           nivel_dificultad: p.nivel_dificultad || 'intermedio',
           estado: p.estado || 'buscando_equipo',
           integrantes_maximos: p.integrantes_maximos || 3,
-          fecha_limite: p.fecha_limite ? p.fecha_limite.slice(0, 10) : '',
+          fecha_limite: p.fecha_limite ? p.fecha_limite.slice(0, 10) : ''
         });
         if (Array.isArray(p.habilidades_requeridas)) {
           setSeleccionadas(p.habilidades_requeridas.map((h) => (typeof h === 'string' ? h : h._id)));
@@ -126,7 +126,7 @@ function CrearProyectoPage() {
         creador_id: usuario._id || usuario.id,
         fecha_limite: form.fecha_limite || undefined,
         habilidades_requeridas: seleccionadas,
-        integrantes_maximos: Number(form.integrantes_maximos),
+        integrantes_maximos: Number(form.integrantes_maximos)
       };
       if (esEdicion) {
         await api.put(`/proyecto/${editId}`, datos);
@@ -155,8 +155,8 @@ function CrearProyectoPage() {
             <span className="dash-bloqueo-icono">!</span>
             <h2>Solo roles de creación</h2>
             <p>
-              Tu perfil ({usuario?.rol || 'estudiante'}) no tiene permisos para publicar proyectos. Los roles
-              mentor, desarrollador e ingeniero pueden crear. Mientras tanto, explora y postúlate a los que te interesen.
+              Tu perfil ({usuario?.rol || 'estudiante'}) no tiene permisos para publicar proyectos. Los roles mentor,
+              desarrollador e ingeniero pueden crear. Mientras tanto, explora y postúlate a los que te interesen.
             </p>
             <Button variant="primary" className="proyectos-boton" as={Link} to="/explorar">
               Explorar proyectos
@@ -181,7 +181,9 @@ function CrearProyectoPage() {
 
         {exito && (
           <div className="proyectos-bloqueo" style={{ margin: '2rem auto' }}>
-            <span className="dash-bloqueo-icono" style={{ color: '#34d399' }}>✓</span>
+            <span className="dash-bloqueo-icono" style={{ color: '#34d399' }}>
+              ✓
+            </span>
             <h2>{esEdicion ? '¡Proyecto actualizado!' : '¡Proyecto publicado!'}</h2>
             <p>{esEdicion ? 'Los cambios se guardaron correctamente.' : 'Tu proyecto ya está en la plataforma.'}</p>
           </div>
@@ -233,7 +235,9 @@ function CrearProyectoPage() {
                         <Form.Select value={form.categoria} onChange={(e) => cambiar('categoria', e.target.value)}>
                           <option value="">Sin categoría</option>
                           {CATEGORIAS.map((c) => (
-                            <option key={c} value={c}>{c}</option>
+                            <option key={c} value={c}>
+                              {c}
+                            </option>
                           ))}
                         </Form.Select>
                       </Form.Group>
@@ -241,9 +245,14 @@ function CrearProyectoPage() {
                     <Col md={6}>
                       <Form.Group className="mb-3">
                         <Form.Label className="proyecto-form-label">Nivel de dificultad</Form.Label>
-                        <Form.Select value={form.nivel_dificultad} onChange={(e) => cambiar('nivel_dificultad', e.target.value)}>
+                        <Form.Select
+                          value={form.nivel_dificultad}
+                          onChange={(e) => cambiar('nivel_dificultad', e.target.value)}
+                        >
                           {NIVELES.map((n) => (
-                            <option key={n} value={n}>{n}</option>
+                            <option key={n} value={n}>
+                              {n}
+                            </option>
                           ))}
                         </Form.Select>
                       </Form.Group>
@@ -253,12 +262,16 @@ function CrearProyectoPage() {
                   <Row>
                     <Col md={6}>
                       <Form.Group className="mb-3">
-                        <Form.Label className="proyecto-form-label">{esEdicion ? 'Estado del proyecto' : 'Estado inicial'}</Form.Label>
-<Form.Select value={form.estado} onChange={(e) => cambiar('estado', e.target.value)}>
-                        {(esEdicion ? ESTADOS_EDITAR : ESTADOS).map((s) => (
-                          <option key={s} value={s}>{ETIQUETAS_ESTADO_CREAR[s] || s}</option>
-                        ))}
-                      </Form.Select>
+                        <Form.Label className="proyecto-form-label">
+                          {esEdicion ? 'Estado del proyecto' : 'Estado inicial'}
+                        </Form.Label>
+                        <Form.Select value={form.estado} onChange={(e) => cambiar('estado', e.target.value)}>
+                          {(esEdicion ? ESTADOS_EDITAR : ESTADOS).map((s) => (
+                            <option key={s} value={s}>
+                              {ETIQUETAS_ESTADO_CREAR[s] || s}
+                            </option>
+                          ))}
+                        </Form.Select>
                       </Form.Group>
                     </Col>
                     <Col md={6}>
@@ -302,9 +315,7 @@ function CrearProyectoPage() {
                         </div>
                         <div className="proyecto-habilidades-chips">
                           {habilidades
-                            .filter((h) =>
-                              h.nombre.toLowerCase().includes(buscarHabilidad.trim().toLowerCase())
-                            )
+                            .filter((h) => h.nombre.toLowerCase().includes(buscarHabilidad.trim().toLowerCase()))
                             .map((h) => (
                               <button
                                 type="button"
@@ -341,7 +352,13 @@ function CrearProyectoPage() {
 
                   <div className="d-flex gap-3">
                     <Button variant="primary" type="submit" className="proyectos-boton" disabled={cargando}>
-                      {cargando ? <Spinner animation="border" size="sm" /> : esEdicion ? 'Guardar cambios' : 'Publicar proyecto'}
+                      {cargando ? (
+                        <Spinner animation="border" size="sm" />
+                      ) : esEdicion ? (
+                        'Guardar cambios'
+                      ) : (
+                        'Publicar proyecto'
+                      )}
                     </Button>
                     <Button variant="outline-light" className="proyectos-boton" as={Link} to="/explorar">
                       Cancelar

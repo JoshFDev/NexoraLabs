@@ -5,12 +5,12 @@ import { misLogros, listarLogros, logrosDeUsuario } from "../controllers/logroCo
 const router = Router();
 
 //Catálogo de logros (público)
-router.get('/logros', listarLogros);
+router.get("/logros", listarLogros);
 
 //Verificar y listar mis logros con su estado (autenticado)
-router.get('/mis-logros', verifyToken, misLogros);
+router.get("/mis-logros", verifyToken, misLogros);
 
 //Logros obtenidos por un usuario (público)
-router.get('/logros/usuario/:id', logrosDeUsuario);
+router.get("/logros/usuario/:id", logrosDeUsuario);
 
 export default router;

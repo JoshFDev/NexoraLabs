@@ -3,20 +3,20 @@ import rateLimit from "express-rate-limit";
 import verifyToken from "../middleware/verifyToken";
 import authorize from "../middleware/authorize";
 import {
-    listarUsuarios,
-    verPerfil,
-    obtenerUsuario,
-    registrarUsuario,
-    iniciarSesion,
-    verificarEmail,
-    reenviarCodigoVerificacion,
-    solicitarRecuperacion,
-    confirmarRecuperacion,
-    solicitarEliminarCuenta,
-    confirmarEliminarCuenta,
-    actualizarMiPerfil,
-    actualizarUsuario,
-    eliminarUsuario
+  listarUsuarios,
+  verPerfil,
+  obtenerUsuario,
+  registrarUsuario,
+  iniciarSesion,
+  verificarEmail,
+  reenviarCodigoVerificacion,
+  solicitarRecuperacion,
+  confirmarRecuperacion,
+  solicitarEliminarCuenta,
+  confirmarEliminarCuenta,
+  actualizarMiPerfil,
+  actualizarUsuario,
+  eliminarUsuario
 } from "../controllers/usuarioController";
 
 const router = Router();
@@ -24,73 +24,69 @@ const router = Router();
 //Las rutas SOLO definen: método, path y middlewares. Toda la lógica vive en usuarioController.
 
 //Listar usuarios con filtros, paginación y ordenamiento
-router.get('/usuarios', listarUsuarios);
+router.get("/usuarios", listarUsuarios);
 
 //Perfil del usuario autenticado (OJO: va ANTES de /usuario/:id)
-router.get('/usuario/perfil', verifyToken, verPerfil);
+router.get("/usuario/perfil", verifyToken, verPerfil);
 
 //El usuario autenticado actualiza su propio perfil (va ANTES de /usuario/:id)
-router.put('/usuario/perfil', verifyToken, actualizarMiPerfil);
+router.put("/usuario/perfil", verifyToken, actualizarMiPerfil);
 
 //Ver un usuario por id
-router.get('/usuario/:id', obtenerUsuario);
+router.get("/usuario/:id", obtenerUsuario);
 
 //Registro de usuario (público)
-router.post('/usuario/registro', registrarUsuario);
+router.post("/usuario/registro", registrarUsuario);
 
 //Limitador ESTRICTO solo para el login (anti fuerza bruta):
 //10 intentos por IP cada 15 minutos; al superarlos responde 429
 const limitadorLogin = rateLimit({
-    windowMs: 15 * 60 * 1000, // ventana de 15 minutos
-    limit: 10,                // solo 10 intentos por IP
-    standardHeaders: true,
-    legacyHeaders: false,
-    message: { error: "Demasiados intentos de login, espera 15 minutos" }
+  windowMs: 15 * 60 * 1000, // ventana de 15 minutos
+  limit: 10, // solo 10 intentos por IP
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "Demasiados intentos de login, espera 15 minutos" }
 });
 
 //En modo test se salta el limitador para no bloquearse al repetir las pruebas
-const limitadorLoginActivo = process.env.NODE_ENV === "test"
-    ? (req, res, next) => next()
-    : limitadorLogin;
+const limitadorLoginActivo = process.env.NODE_ENV === "test" ? (req, res, next) => next() : limitadorLogin;
 
 //Limitador para códigos de verificación (anti fuerza bruta): 5 intentos por IP cada 15 minutos
 const limitadorCodigos = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    limit: 5,
-    standardHeaders: true,
-    legacyHeaders: false,
-    message: { error: "Demasiados intentos. Espera 15 minutos." }
+  windowMs: 15 * 60 * 1000,
+  limit: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "Demasiados intentos. Espera 15 minutos." }
 });
 
-const limitadorCodigosActivo = process.env.NODE_ENV === "test"
-    ? (req, res, next) => next()
-    : limitadorCodigos;
+const limitadorCodigosActivo = process.env.NODE_ENV === "test" ? (req, res, next) => next() : limitadorCodigos;
 
 //Login de usuario (público)
-router.post('/usuario/login', limitadorLoginActivo, iniciarSesion);
+router.post("/usuario/login", limitadorLoginActivo, iniciarSesion);
 
 //Verificar el correo con el código recibido (público)
-router.post('/usuario/verificar-email', limitadorCodigosActivo, verificarEmail);
+router.post("/usuario/verificar-email", limitadorCodigosActivo, verificarEmail);
 
 //Reenviar el código de verificación (público)
-router.post('/usuario/reenviar-codigo', limitadorCodigosActivo, reenviarCodigoVerificacion);
+router.post("/usuario/reenviar-codigo", limitadorCodigosActivo, reenviarCodigoVerificacion);
 
 //Pedir el código para restablecer la contraseña (público)
-router.post('/usuario/recuperar/solicitar', limitadorCodigosActivo, solicitarRecuperacion);
+router.post("/usuario/recuperar/solicitar", limitadorCodigosActivo, solicitarRecuperacion);
 
 //Validar el código y guardar la nueva contraseña (público)
-router.post('/usuario/recuperar/confirmar', confirmarRecuperacion);
+router.post("/usuario/recuperar/confirmar", confirmarRecuperacion);
 
 //Pedir el código para eliminar la cuenta (autenticado)
-router.post('/usuario/eliminar/solicitar', verifyToken, limitadorCodigosActivo, solicitarEliminarCuenta);
+router.post("/usuario/eliminar/solicitar", verifyToken, limitadorCodigosActivo, solicitarEliminarCuenta);
 
 //Confirmar la eliminación de la cuenta con el código (autenticado)
-router.post('/usuario/eliminar/confirmar', verifyToken, confirmarEliminarCuenta);
+router.post("/usuario/eliminar/confirmar", verifyToken, confirmarEliminarCuenta);
 
 //Actualizar usuario (solo admin)
-router.put('/usuario/:id', verifyToken, authorize("admin"), actualizarUsuario);
+router.put("/usuario/:id", verifyToken, authorize("admin"), actualizarUsuario);
 
 //Eliminar usuario (solo admin)
-router.delete('/usuario/:id', verifyToken, authorize("admin"), eliminarUsuario);
+router.delete("/usuario/:id", verifyToken, authorize("admin"), eliminarUsuario);
 
 export default router;

@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import api from './api';
 
 describe('cliente axios', () => {
@@ -34,7 +34,7 @@ describe('cliente axios', () => {
     const original = window.location;
     Object.defineProperty(window, 'location', {
       configurable: true,
-      value: { pathname: '/perfil', href: '' },
+      value: { pathname: '/perfil', href: '' }
     });
 
     const [respuesta] = api.interceptors.response.handlers;

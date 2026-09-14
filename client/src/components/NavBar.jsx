@@ -12,7 +12,7 @@ const RUTAS = [
   { to: '/postulaciones', etiqueta: 'Postulaciones', para: 'creador' },
   { to: '/equipos', etiqueta: 'Equipos', para: 'todos' },
   { to: '/recursos', etiqueta: 'Recursos', para: 'todos' },
-  { to: '/ofertas', etiqueta: 'Ofertas', para: 'todos' },
+  { to: '/ofertas', etiqueta: 'Ofertas', para: 'todos' }
 ];
 
 function NavBar() {
@@ -41,9 +41,7 @@ function NavBar() {
 
   useEffect(() => {
     const refrescar = () =>
-      setUsuario(
-        JSON.parse(localStorage.getItem('usuario') || sessionStorage.getItem('usuario') || 'null')
-      );
+      setUsuario(JSON.parse(localStorage.getItem('usuario') || sessionStorage.getItem('usuario') || 'null'));
     window.addEventListener('usuario-actualizado', refrescar);
     return () => window.removeEventListener('usuario-actualizado', refrescar);
   }, []);
