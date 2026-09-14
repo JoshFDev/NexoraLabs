@@ -1,6 +1,7 @@
 import request from "supertest";
 import mongoose from "mongoose";
 import app from "../app";
+import CorreoValidacion from "../models/CorreoValidacion";
 
 // Usamos una BD aparte para no ensuciar la de desarrollo
 const TEST_URI = process.env.MONGO_TEST_URI || "mongodb://localhost:27017/nexoralabs_test";
@@ -956,6 +957,44 @@ describe("Chat de equipo", () => {
     expect(notifMensaje.tipo).toBe("equipo");
     expect(notifMensaje.mensaje).toContain("Hola con chat reactivado");
     expect(notifMensaje.enlace).toBe("/mi-equipo");
+  });
+});
+
+describe("Validación de correo (Abstract)", () => {
+  test("GET /correo/validar valida el formato y devuelve estado", async () => {
+    const sinEmail = await request(app).get("/correo/validar");
+    expect(sinEmail.status).toBe(400);
+
+    const malFormato = await request(app).get("/correo/validar?email=no-es-correo");
+    expect(malFormato.status).toBe(400);
+
+    const demo = await request(app).get("/correo/validar?email=alguien@example.com");
+    expect(demo.status).toBe(200);
+    expect(demo.body.estado).toBe("valido");
+    expect(demo.body.email).toBe("alguien@example.com");
+
+    //En modo test no se llama a servicios externos: responde indeterminado sin fallar
+    const real = await request(app).get("/correo/validar?email=hola@midominio.com");
+    expect(real.status).toBe(200);
+    expect(real.body.estado).toBe("indeterminado");
+  });
+
+  test("Registrar un correo claramente inexistente (según caché) responde 400", async () => {
+    await CorreoValidacion.create({
+      email: "noexisto@correofalso.com",
+      estado: "invalido",
+      deliverability: "UNDELIVERABLE"
+    });
+
+    const res = await request(app).post("/usuario/registro").send({
+      nombre: "Inexistente",
+      apellido_paterno: "Correo",
+      email: "noexisto@correofalso.com",
+      password: "12345678",
+      rol: "estudiante"
+    });
+    expect(res.status).toBe(400);
+    expect(res.body.error).toContain("no parece existir");
   });
 });
 

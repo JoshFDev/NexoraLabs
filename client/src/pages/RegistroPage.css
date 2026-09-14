@@ -47,23 +47,23 @@
 }
 
 .login-select {
-  background: #2b2538;
+  background: #383b44;
   color: #fff;
-  border: 1px solid rgba(237, 233, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 0 0.35rem 0.35rem 0 !important;
   font-size: 0.92rem;
   padding: 0.58rem 0.8rem;
 }
 
 .login-select:focus {
-  background: #342c48;
+  background: #3f424d;
   border-color: var(--nx-morado);
   box-shadow: 0 0 0 0.22rem rgba(168, 85, 247, 0.22);
   outline: 0;
 }
 
 .login-select option {
-  background: #241e35;
+  background: #2a2d35;
   color: #fff;
 }
 

@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import { Form, Button, Alert, InputGroup, Spinner } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import api from '../api';
+import grupoDevelopers from '../assets/grupoDevelopers.jpg';
 import VerificarCorreo from '../components/VerificarCorreo';
 import RecuperarPasswordModal from '../components/RecuperarPasswordModal';
 import { guardarUsuario, esPerfilCompleto } from '../utils/perfil';
@@ -218,190 +219,210 @@ function LoginPage() {
         <span className="login-vineta"></span>
       </div>
 
-      <main className={cerrando ? 'login-tarjeta login-tarjeta-cerrar' : 'login-tarjeta'}>
-        <div className="login-encabezado">
-          <div
-            className="login-firma"
-            role="img"
-            aria-label="NexoraLabs"
-            onContextMenu={(e) => e.preventDefault()}
-            onDragStart={(e) => e.preventDefault()}
-            onCopy={(e) => e.preventDefault()}
-          />
-          <h1>{verificando ? 'Verifica tu correo' : 'Bienvenido'}</h1>
-          {verificando ? (
-            <p className="login-subtitulo">
-              Tu cuenta aún no está activa. Ingresa el código que enviamos a <strong>{email}</strong>.
-            </p>
-          ) : (
-            <p>Inicia sesión para acceder a NexoraLabs</p>
-          )}
+      <main className={`login-tarjeta login-tarjeta-doble${cerrando ? ' login-tarjeta-cerrar' : ''}`}>
+        <div className="login-panel-imagen">
+          <img className="login-imagen" src={grupoDevelopers} alt="" aria-hidden="true" />
+          <div className="login-imagen-vineta"></div>
+          <div className="login-imagen-contenido">
+            <div
+              className="login-firma"
+              role="img"
+              aria-label="NexoraLabs"
+              onContextMenu={(e) => e.preventDefault()}
+              onDragStart={(e) => e.preventDefault()}
+              onCopy={(e) => e.preventDefault()}
+            />
+            <p className="login-imagen-lema">Conecta, aprende, crea, avanza</p>
+          </div>
         </div>
 
-        {error && !verificando && (
-          <Alert variant="danger" className="login-alerta">
-            <strong>No pudimos iniciar sesión.</strong> {error}
-          </Alert>
-        )}
+        <div className="login-panel-morado">
+          <div className="login-panel-form">
+            <div className="login-encabezado">
+            <h1>{verificando ? 'Verifica tu correo' : 'Bienvenido'}</h1>
+            {verificando ? (
+              <p className="login-subtitulo">
+                Tu cuenta aún no está activa. Ingresa el código que enviamos a <strong>{email}</strong>.
+              </p>
+            ) : (
+              <p>Inicia sesión para acceder a NexoraLabs</p>
+            )}
+          </div>
 
-        {verificando ? (
-          <VerificarCorreo email={email} onVerificado={verificado} yaEnviado />
-        ) : (
-          <Form onSubmit={submit} className={agitar ? 'login-agitar' : ''} noValidate>
-            <Form.Group className="mb-2" controlId="email">
-              <Form.Label className="login-label">Correo electrónico</Form.Label>
-              <InputGroup>
-                <InputGroup.Text className="login-icono-prefijo">
-                  <IconoCorreo />
-                </InputGroup.Text>
-                <Form.Control
-                  type="email"
-                  placeholder="Ingresa tu correo"
-                  value={email}
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                    if (errores.email) setErrores((p) => ({ ...p, email: '' }));
-                  }}
-                  autoComplete="email"
-                  ref={emailRef}
-                  autoFocus
-                  disabled={cargando || listo}
-                  className={errores.email ? 'login-control-invalido' : ''}
-                  aria-invalid={!!errores.email}
-                  required
-                />
-                {email && (
-                  <InputGroup.Text className={emailValido ? 'login-estado-valido' : 'login-estado-invalido'}>
-                    <IconoEstado valido={emailValido} />
+          {error && !verificando && (
+            <Alert variant="danger" className="login-alerta">
+              <strong>No pudimos iniciar sesión.</strong> {error}
+            </Alert>
+          )}
+
+          {verificando ? (
+            <VerificarCorreo email={email} onVerificado={verificado} yaEnviado />
+          ) : (
+            <Form onSubmit={submit} className={agitar ? 'login-agitar' : ''} noValidate>
+              <Form.Group className="mb-2" controlId="email">
+                <Form.Label className="login-label">Correo electrónico</Form.Label>
+                <InputGroup>
+                  <InputGroup.Text className="login-icono-prefijo">
+                    <IconoCorreo />
                   </InputGroup.Text>
+                  <Form.Control
+                    type="email"
+                    placeholder="Ingresa tu correo"
+                    value={email}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      if (errores.email) setErrores((p) => ({ ...p, email: '' }));
+                    }}
+                    autoComplete="email"
+                    ref={emailRef}
+                    autoFocus
+                    disabled={cargando || listo}
+                    className={errores.email ? 'login-control-invalido' : ''}
+                    aria-invalid={!!errores.email}
+                    required
+                  />
+                  {email && (
+                    <InputGroup.Text className={emailValido ? 'login-estado-valido' : 'login-estado-invalido'}>
+                      <IconoEstado valido={emailValido} />
+                    </InputGroup.Text>
+                  )}
+                </InputGroup>
+                {errores.email && (
+                  <Form.Text className="login-error-campo" role="alert">
+                    <IconoEstado valido={false} /> {errores.email}
+                  </Form.Text>
                 )}
-              </InputGroup>
-              {errores.email && (
-                <Form.Text className="login-error-campo" role="alert">
-                  <IconoEstado valido={false} /> {errores.email}
-                </Form.Text>
-              )}
-            </Form.Group>
+              </Form.Group>
 
-            <Form.Group className="mb-1" controlId="password">
-              <Form.Label className="login-label">Contraseña</Form.Label>
-              <InputGroup>
-                <InputGroup.Text className="login-icono-prefijo">
-                  <IconoCandado />
-                </InputGroup.Text>
-                <Form.Control
-                  type={mostrarPassword ? 'text' : 'password'}
-                  placeholder="Ingresa tu contraseña"
-                  value={password}
-                  onChange={(e) => {
-                    setPassword(e.target.value);
-                    if (errores.password) setErrores((p) => ({ ...p, password: '' }));
-                  }}
-                  onKeyUp={detectarCaps}
-                  autoComplete="current-password"
-                  ref={passwordRef}
-                  disabled={cargando || listo}
-                  className={errores.password ? 'login-control-invalido' : ''}
-                  aria-invalid={!!errores.password}
-                  required
+              <Form.Group className="mb-1" controlId="password">
+                <Form.Label className="login-label">Contraseña</Form.Label>
+                <InputGroup>
+                  <InputGroup.Text className="login-icono-prefijo">
+                    <IconoCandado />
+                  </InputGroup.Text>
+                  <Form.Control
+                    type={mostrarPassword ? 'text' : 'password'}
+                    placeholder="Ingresa tu contraseña"
+                    value={password}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      if (errores.password) setErrores((p) => ({ ...p, password: '' }));
+                    }}
+                    onKeyUp={detectarCaps}
+                    autoComplete="current-password"
+                    ref={passwordRef}
+                    disabled={cargando || listo}
+                    className={errores.password ? 'login-control-invalido' : ''}
+                    aria-invalid={!!errores.password}
+                    required
+                  />
+                  <Button
+                    variant="outline-light"
+                    className="login-toggle-password"
+                    onClick={() => setMostrarPassword(!mostrarPassword)}
+                    disabled={cargando || listo}
+                    aria-label={mostrarPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                  >
+                    <IconoOjo abierto={mostrarPassword} />
+                  </Button>
+                </InputGroup>
+                {errores.password && (
+                  <Form.Text className="login-error-campo" role="alert">
+                    <IconoEstado valido={false} /> {errores.password}
+                  </Form.Text>
+                )}
+              </Form.Group>
+              {capsActivo && <small className="login-aviso-caps">⚠ La tecla Bloq Mayús está activada</small>}
+              {password && password.length < 6 && (
+                <small className="login-aviso-minimo">La contraseña debe tener al menos 6 caracteres</small>
+              )}
+
+              <div className="login-extras">
+                <Form.Check
+                  type="checkbox"
+                  id="recordarme"
+                  label="Recordarme"
+                  checked={recordarme}
+                  onChange={(e) => setRecordarme(e.target.checked)}
+                  className="login-recordarme"
                 />
+                <button type="button" className="login-olvidar" onClick={olvidar}>
+                  ¿Olvidaste tu contraseña?
+                </button>
+              </div>
+
+              <Button type="submit" className="login-boton w-100 mt-3" disabled={cargando || listo}>
+                {listo ? (
+                  <>
+                    <span className="login-exito-icono">✓</span>¡Bienvenido!
+                  </>
+                ) : cargando ? (
+                  <>
+                    <Spinner as="span" animation="border" size="sm" className="me-2" />
+                    Verificando...
+                  </>
+                ) : (
+                  'Iniciar sesión'
+                )}
+              </Button>
+            </Form>
+          )}
+
+          {!verificando && nota && <small className="login-social-nota">{nota}</small>}
+
+          {!verificando && (
+            <div className="login-social">
+              <div className="login-divisor">
+                <span>o continúa con</span>
+              </div>
+              <div className="login-social-redes">
+                <Button variant="outline-light" onClick={() => social('Google')} aria-label="Iniciar sesión con Google">
+                  <IconoGoogle /> Google
+                </Button>
                 <Button
                   variant="outline-light"
-                  className="login-toggle-password"
-                  onClick={() => setMostrarPassword(!mostrarPassword)}
-                  disabled={cargando || listo}
-                  aria-label={mostrarPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                  onClick={() => social('LinkedIn')}
+                  aria-label="Iniciar sesión con LinkedIn"
                 >
-                  <IconoOjo abierto={mostrarPassword} />
+                  <IconoLinkedIn /> LinkedIn
                 </Button>
-              </InputGroup>
-              {errores.password && (
-                <Form.Text className="login-error-campo" role="alert">
-                  <IconoEstado valido={false} /> {errores.password}
-                </Form.Text>
-              )}
-            </Form.Group>
-            {capsActivo && <small className="login-aviso-caps">⚠ La tecla Bloq Mayús está activada</small>}
-            {password && password.length < 6 && (
-              <small className="login-aviso-minimo">La contraseña debe tener al menos 6 caracteres</small>
-            )}
-
-            <div className="login-extras">
-              <Form.Check
-                type="checkbox"
-                id="recordarme"
-                label="Recordarme"
-                checked={recordarme}
-                onChange={(e) => setRecordarme(e.target.checked)}
-                className="login-recordarme"
-              />
-              <button type="button" className="login-olvidar" onClick={olvidar}>
-                ¿Olvidaste tu contraseña?
-              </button>
+                <Button variant="outline-light" onClick={() => social('GitHub')} aria-label="Iniciar sesión con GitHub">
+                  <IconoGitHub /> GitHub
+                </Button>
+              </div>
             </div>
+          )}
 
-            <Button type="submit" className="login-boton w-100 mt-3" disabled={cargando || listo}>
-              {listo ? (
-                <>
-                  <span className="login-exito-icono">✓</span>¡Bienvenido!
-                </>
-              ) : cargando ? (
-                <>
-                  <Spinner as="span" animation="border" size="sm" className="me-2" />
-                  Verificando...
-                </>
-              ) : (
-                'Iniciar sesión'
-              )}
-            </Button>
-          </Form>
-        )}
-
-        {!verificando && nota && <small className="login-social-nota">{nota}</small>}
-
-        {!verificando && (
-          <div className="login-social">
-            <div className="login-divisor">
-              <span>o continúa con</span>
+          {!verificando && (
+            <div className="login-demo">
+              <span className="login-demo-titulo">Cuentas de prueba</span>
+              <div className="login-demo-opciones">
+                <button
+                  type="button"
+                  className="login-chipe"
+                  onClick={() => autocompletar('joshua@test.com', '123456')}
+                >
+                  Estudiante
+                </button>
+                <button
+                  type="button"
+                  className="login-chipe"
+                  onClick={() => autocompletar('admin@test.com', '12345678')}
+                >
+                  Admin
+                </button>
+              </div>
             </div>
-            <div className="login-social-redes">
-              <Button variant="outline-light" onClick={() => social('Google')} aria-label="Iniciar sesión con Google">
-                <IconoGoogle /> Google
-              </Button>
-              <Button
-                variant="outline-light"
-                onClick={() => social('LinkedIn')}
-                aria-label="Iniciar sesión con LinkedIn"
-              >
-                <IconoLinkedIn /> LinkedIn
-              </Button>
-              <Button variant="outline-light" onClick={() => social('GitHub')} aria-label="Iniciar sesión con GitHub">
-                <IconoGitHub /> GitHub
-              </Button>
-            </div>
-          </div>
-        )}
+          )}
 
-        {!verificando && (
-          <div className="login-demo">
-            <span className="login-demo-titulo">Cuentas de prueba</span>
-            <div className="login-demo-opciones">
-              <button type="button" className="login-chipe" onClick={() => autocompletar('joshua@test.com', '123456')}>
-                Estudiante
-              </button>
-              <button type="button" className="login-chipe" onClick={() => autocompletar('admin@test.com', '12345678')}>
-                Admin
-              </button>
-            </div>
-          </div>
-        )}
-
-        <p className="login-registro">
-          ¿No tienes cuenta?{' '}
-          <a href="/registro" className="login-enlace-boton" onClick={irARegistro}>
-            Crea una
-          </a>
-        </p>
+          <p className="login-registro">
+            ¿No tienes cuenta?{' '}
+            <a href="/registro" className="login-enlace-boton" onClick={irARegistro}>
+              Crea una
+            </a>
+          </p>
+        </div>
+        </div>
       </main>
 
       <footer className="login-pie">© 2026 NexoraLabs · Plataforma de proyectos colaborativos</footer>

@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Form, Button, Alert, InputGroup, Spinner } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import api from '../api';
@@ -70,10 +70,37 @@ function RegistroPage() {
   const [verificando, setVerificando] = useState(false);
   const [emailPendiente, setEmailPendiente] = useState('');
   const [errores, setErrores] = useState({ nombre: '', apellido_paterno: '', email: '', password: '' });
+  const [correoEstado, setCorreoEstado] = useState(null);
   const emailRef = useRef(null);
+  const correoTimer = useRef(null);
+  const correoSecuencia = useRef(0);
   const navigate = useNavigate();
 
   const emailValido = form.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email);
+
+  //Validación en vivo del correo con Abstract (con debounce para no gastar el cupo por tecla)
+  useEffect(() => {
+    clearTimeout(correoTimer.current);
+    if (!emailValido) {
+      setCorreoEstado(null);
+      return;
+    }
+    setCorreoEstado((prev) => ({ cargando: true, ...(prev?.estado ? { estado: prev.estado } : {}) }));
+    correoTimer.current = setTimeout(() => {
+      const secuencia = ++correoSecuencia.current;
+      api
+        .get('/correo/validar', { params: { email: form.email } })
+        .then((res) => {
+          if (secuencia === correoSecuencia.current) setCorreoEstado({ cargando: false, ...res.data });
+        })
+        .catch(() => {
+          if (secuencia === correoSecuencia.current) {
+            setCorreoEstado({ cargando: false, error: true, estado: undefined });
+          }
+        });
+    }, 700);
+    return () => clearTimeout(correoTimer.current);
+  }, [form.email, emailValido]);
 
   const cambiar = (campo) => (e) => {
     setForm((p) => ({ ...p, [campo]: e.target.value }));
@@ -86,6 +113,7 @@ function RegistroPage() {
     if (!form.apellido_paterno.trim()) campos.apellido_paterno = 'Ingresa tu apellido.';
     if (!form.email.trim()) campos.email = 'Ingresa tu correo electrónico.';
     else if (!emailValido) campos.email = 'Formato de correo no válido.';
+    else if (correoEstado?.estado === 'invalido') campos.email = 'Este correo no parece existir. Revísalo.';
     if (!form.password) campos.password = 'Ingresa una contraseña.';
     else if (form.password.length < 8) campos.password = 'Debe tener al menos 8 caracteres.';
     return campos;
@@ -240,6 +268,34 @@ function RegistroPage() {
                   </InputGroup.Text>
                 )}
               </InputGroup>
+              {emailValido && correoEstado && (
+                <Form.Text
+                  className={`login-correo-${correoEstado.cargando ? 'verificando' : correoEstado.estado === 'valido' ? 'ok' : correoEstado.estado === 'invalido' ? 'error' : correoEstado.estado ? 'aviso' : 'aviso'}`}
+                  role={correoEstado.estado === 'invalido' ? 'alert' : undefined}
+                >
+                  {correoEstado.cargando ? (
+                    <>
+                      <Spinner animation="border" size="sm" className="me-1" /> Verificando este correo…
+                    </>
+                  ) : correoEstado.estado === 'valido' ? (
+                    <>
+                      <IconoEstado valido /> Este correo está listo para usarse.
+                    </>
+                  ) : correoEstado.estado === 'invalido' ? (
+                    <>
+                      <IconoEstado valido={false} /> Este correo no parece existir. Escríbelo bien o prueba otro.
+                    </>
+                  ) : correoEstado.estado === 'desechable' ? (
+                    <>Este parece ser un correo desechable; no podrás recuperar tu cuenta si lo pierdes.</>
+                  ) : correoEstado.estado === 'riesgoso' ? (
+                    <>Este correo luce riesgoso. Verifica que realmente sea tuyo.</>
+                  ) : correoEstado.error ? (
+                    <>No pudimos verificar este correo en este momento.</>
+                  ) : (
+                    <>No pudimos confirmar este correo; continúa solo si es tuyo.</>
+                  )}
+                </Form.Text>
+              )}
               {errores.email && (
                 <Form.Text className="login-error-campo" role="alert">
                   <IconoEstado valido={false} /> {errores.email}

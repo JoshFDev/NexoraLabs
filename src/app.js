@@ -20,6 +20,7 @@ import notificacionRoutes from "./routes/notificacion.routes";
 import statsRoutes from "./routes/stats.routes";
 import logroRoutes from "./routes/logro.routes";
 import ofertaRoutes from "./routes/oferta.routes";
+import correoRoutes from "./routes/correo.routes";
 import exphbs from "express-handlebars";
 import path from "path";
 import notFound from "./shared/errors/notFound";
@@ -94,6 +95,7 @@ app.use(notificacionRoutes);
 app.use(statsRoutes);
 app.use(logroRoutes);
 app.use(ofertaRoutes);
+app.use(correoRoutes);
 
 //Manejo de errores (después de todas las rutas)
 app.use(notFound);

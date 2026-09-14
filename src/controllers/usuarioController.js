@@ -20,6 +20,7 @@ import Oferta from "../models/Oferta";
 import RecursoAprendizaje from "../models/RecursoAprendizaje";
 import SolicitudEquipo from "../models/SolicitudEquipo";
 import UsuarioHabilidad from "../models/UsuarioHabilidad";
+import CorreoValidacion from "../models/CorreoValidacion";
 
 // Código de 6 dígitos verificado contra una firma HMAC (nunca se guarda el código en claro)
 const generarCodigo = () => String(Math.floor(100000 + Math.random() * 900000));
@@ -139,6 +140,19 @@ export const registrarUsuario = async (req, res) => {
     const emailExiste = await Usuario.findOne({ email });
     if (emailExiste) {
       return res.status(httpStatus.CONFLICT).json(conflict("El email ya está registrado"));
+    }
+
+    //Si ya validamos antes este correo con Abstract y es claramente inexistente, se rechaza
+    //(solo usa el resultado en caché para no gastar el cupo de la API por cada intento)
+    const correoInexistente = await CorreoValidacion.findOne({
+      email: email.toLowerCase(),
+      estado: "invalido",
+      deliverability: "UNDELIVERABLE"
+    });
+    if (correoInexistente) {
+      return res
+        .status(httpStatus.BAD_REQUEST)
+        .json(badRequest("Este correo no parece existir. Revísalo antes de continuar."));
     }
 
     //Hashear el password con bcrypt (nunca se guarda el texto plano)

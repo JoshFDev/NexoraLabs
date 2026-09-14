@@ -5,6 +5,11 @@ const router = Router();
 
 const rutas = [
   { metodo: "POST", ruta: "/usuario/registro", descripcion: "Registrar nuevo usuario" },
+  {
+    metodo: "GET",
+    ruta: "/correo/validar?email=...",
+    descripcion: "¿El correo existe? Valida formato y entregabilidad (Abstract Email Reputation)"
+  },
   { metodo: "POST", ruta: "/usuario/login", descripcion: "Iniciar sesión y obtener token" },
   { metodo: "GET", ruta: "/usuario/perfil", descripcion: "Ver perfil propio (requiere token)" },
   { metodo: "GET", ruta: "/usuarios", descripcion: "Listar usuarios" },
