@@ -1,7 +1,7 @@
 .login-tarjeta {
   position: relative;
   transform-origin: center;
-  animation: abrir-panel 0.26s cubic-bezier(0.2, 0.9, 0.25, 1.25) both;
+  animation: abrir-panel 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .login-tarjeta::before {
@@ -13,41 +13,22 @@
   z-index: -1;
   background: radial-gradient(
     circle at 50% 50%,
-    rgba(237, 233, 255, 0.75) 0%,
-    rgba(168, 85, 247, 0.28) 32%,
+    rgba(237, 233, 255, 0.5) 0%,
+    rgba(168, 85, 247, 0.2) 32%,
     transparent 68%
   );
-  opacity: 0;
-  animation: entrada-impacto 0.6s ease-out 0.12s both;
+  opacity: 0.6;
+  filter: blur(20px);
 }
 
 @keyframes abrir-panel {
-  0% {
-    transform: scaleY(0.02) scaleX(0.86);
+  from {
+    transform: translateY(24px) scale(0.98);
     opacity: 0;
   }
-  40% {
-    transform: scaleY(1.1) scaleX(1.02);
+  to {
+    transform: translateY(0) scale(1);
     opacity: 1;
-  }
-  65% {
-    transform: scaleY(0.985) scaleX(1);
-  }
-  100% {
-    transform: scaleY(1) scaleX(1);
-    opacity: 1;
-  }
-}
-
-@keyframes entrada-impacto {
-  0% {
-    opacity: 0;
-  }
-  15% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
   }
 }
 
@@ -106,16 +87,16 @@
 
 .login-tarjeta-cerrar {
   transform-origin: center;
-  animation: cerrar-panel 0.2s cubic-bezier(0.55, 0, 0.85, 0.36) forwards;
+  animation: cerrar-panel 0.42s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 @keyframes cerrar-panel {
   from {
-    transform: scaleY(1) scaleX(1);
+    transform: translateY(0) scale(1);
     opacity: 1;
   }
   to {
-    transform: scaleY(0.03) scaleX(0.97);
+    transform: translateY(-24px) scale(0.96);
     opacity: 0;
   }
 }

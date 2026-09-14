@@ -72,7 +72,7 @@ function RecuperarPasswordModal({ mostrar, onCerrar, emailInicial = '' }) {
   };
 
   return (
-    <Modal show={mostrar} onHide={onCerrar} centered>
+    <Modal show={mostrar} onHide={onCerrar} centered dialogClassName="recuperar-modal-dialog">
       <Modal.Header closeButton className="border-0 px-4 pt-4">
         <Modal.Title className="proyectos-titulo">Recuperar contraseña</Modal.Title>
       </Modal.Header>
