@@ -23,6 +23,7 @@ import exphbs from "express-handlebars";
 import path from "path";
 import notFound from './shared/errors/notFound';
 import errorHandlerMiddleware from './shared/errors/errorHandlerMiddleware';
+import { origenesPermitidos } from './config/entorno';
 
 const app = express();
 
@@ -39,8 +40,17 @@ app.engine(
 //SEGURIDAD 1: helmet añade cabeceras HTTP seguras (X-Content-Type-Options, X-Frame-Options, etc.)
 app.use(helmet());
 
-//SEGURIDAD 2: cors permite que otros dominios (el futuro frontend) consuman la API
-app.use(cors());
+//SEGURIDAD 2: cors permite que solo los origenes configurados consuman la API.
+//En desarrollo se aceptan los locales y en modo test cualquier origen.
+const origenesPermitidosConfig = origenesPermitidos();
+app.use(cors({
+    origin(origin, callback) {
+        if (!origin || process.env.NODE_ENV === 'test' || origenesPermitidosConfig.includes(origin)) {
+            return callback(null, true);
+        }
+        return callback(null, false);
+    }
+}));
 
 //En modo test se desactivan morgan y el limitador general para no ensuciar ni bloquear las pruebas
 if (process.env.NODE_ENV !== "test") {
