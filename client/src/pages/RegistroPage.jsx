@@ -2,7 +2,6 @@ import { useRef, useState } from 'react';
 import { Form, Button, Alert, InputGroup, Spinner } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import api from '../api';
-import Chispas from '../components/Chispas';
 import VerificarCorreo from '../components/VerificarCorreo';
 import './LoginPage.css';
 import './RegistroPage.css';
@@ -164,9 +163,6 @@ function RegistroPage() {
         <span className="login-granulado"></span>
         <span className="login-vineta"></span>
       </div>
-
-      {cerrando && <Chispas />}
-      <span className="login-destello"></span>
 
       <main className={cerrando ? 'login-tarjeta login-tarjeta-cerrar' : 'login-tarjeta'}>
         <div className="login-encabezado">

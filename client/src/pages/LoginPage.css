@@ -122,28 +122,10 @@
   }
 }
 
-/* Entrada escalonada de las secciones del panel */
+/* Entrada de las secciones del panel: sin escalonado para evitar parpadeos */
 .login-tarjeta > * {
-  animation: entrar-seccion 0.45s ease both;
-}
-
-.login-tarjeta > :nth-child(1) { animation-delay: 0.06s; }
-.login-tarjeta > :nth-child(2) { animation-delay: 0.12s; }
-.login-tarjeta > :nth-child(3) { animation-delay: 0.18s; }
-.login-tarjeta > :nth-child(4) { animation-delay: 0.24s; }
-.login-tarjeta > :nth-child(5) { animation-delay: 0.3s; }
-.login-tarjeta > :nth-child(6) { animation-delay: 0.36s; }
-.login-tarjeta > :nth-child(7) { animation-delay: 0.42s; }
-
-@keyframes entrar-seccion {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  opacity: 1;
+  transform: none;
 }
 
 @keyframes entrar-panel {
