@@ -1,0 +1,1 @@
+style(ui): soften auth card transitions and remove white glow flash

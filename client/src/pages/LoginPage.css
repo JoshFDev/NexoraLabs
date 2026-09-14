@@ -110,16 +110,14 @@
 
 .login-tarjeta-cerrar {
   transform-origin: center;
-  animation: cerrar-panel 0.42s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation: cerrar-panel 0.2s ease forwards;
 }
 
 @keyframes cerrar-panel {
   from {
-    transform: translateY(0) scale(1);
     opacity: 1;
   }
   to {
-    transform: translateY(-24px) scale(0.96);
     opacity: 0;
   }
 }

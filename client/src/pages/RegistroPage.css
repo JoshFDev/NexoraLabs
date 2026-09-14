@@ -1,33 +1,14 @@
 .login-tarjeta {
   position: relative;
   transform-origin: center;
-  animation: abrir-panel 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-.login-tarjeta::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  z-index: -1;
-  background: radial-gradient(
-    circle at 50% 50%,
-    rgba(237, 233, 255, 0.5) 0%,
-    rgba(168, 85, 247, 0.2) 32%,
-    transparent 68%
-  );
-  opacity: 0.6;
-  filter: blur(20px);
+  animation: abrir-panel 0.35s ease both;
 }
 
 @keyframes abrir-panel {
   from {
-    transform: translateY(24px) scale(0.98);
     opacity: 0;
   }
   to {
-    transform: translateY(0) scale(1);
     opacity: 1;
   }
 }
@@ -87,16 +68,14 @@
 
 .login-tarjeta-cerrar {
   transform-origin: center;
-  animation: cerrar-panel 0.42s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation: cerrar-panel 0.2s ease forwards;
 }
 
 @keyframes cerrar-panel {
   from {
-    transform: translateY(0) scale(1);
     opacity: 1;
   }
   to {
-    transform: translateY(-24px) scale(0.96);
     opacity: 0;
   }
 }
