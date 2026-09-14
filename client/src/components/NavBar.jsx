@@ -39,6 +39,15 @@ function NavBar() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    const refrescar = () =>
+      setUsuario(
+        JSON.parse(localStorage.getItem('usuario') || sessionStorage.getItem('usuario') || 'null')
+      );
+    window.addEventListener('usuario-actualizado', refrescar);
+    return () => window.removeEventListener('usuario-actualizado', refrescar);
+  }, []);
+
   const cerrarSesion = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('usuario');

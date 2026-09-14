@@ -23,6 +23,7 @@ export function guardarUsuario(usuario) {
   } else {
     sessionStorage.setItem('usuario', JSON.stringify(usuario));
   }
+  window.dispatchEvent(new Event('usuario-actualizado'));
 }
 
 export const niveles = ['principiante', 'intermedio', 'avanzado', 'experto'];
