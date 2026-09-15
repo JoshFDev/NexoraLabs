@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { Form, Button, Alert, InputGroup, Spinner } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import api from '../api';
 import grupoDevelopers from '../assets/grupoDevelopers.jpg';
 import VerificarCorreo from '../components/VerificarCorreo';
@@ -102,12 +102,15 @@ function LoginPage() {
   const [listo, setListo] = useState(false);
   const [agitar, setAgitar] = useState(false);
   const [cerrando, setCerrando] = useState(false);
+  const [salida, setSalida] = useState('');
   const [verificando, setVerificando] = useState(false);
   const [recuperando, setRecuperando] = useState(false);
   const [errores, setErrores] = useState({ email: '', password: '' });
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
   const navigate = useNavigate();
+  const location = useLocation();
+  const dirEntrada = location.state?.dir;
 
   const emailValido = email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
@@ -201,8 +204,8 @@ function LoginPage() {
 
   const irARegistro = (e) => {
     e.preventDefault();
-    setCerrando(true);
-    setTimeout(() => navigate('/registro'), 460);
+    setSalida('izq');
+    setTimeout(() => navigate('/registro', { state: { dir: 'der' } }), 430);
   };
 
   const detectarCaps = (e) => {
@@ -219,7 +222,7 @@ function LoginPage() {
         <span className="login-vineta"></span>
       </div>
 
-      <main className={`login-tarjeta login-tarjeta-doble${cerrando ? ' login-tarjeta-cerrar' : ''}`}>
+      <main className={`login-tarjeta login-tarjeta-doble${salida ? ` login-tarjeta-salir login-salir-${salida}` : cerrando ? ' login-tarjeta-cerrar' : ''}${dirEntrada ? ` login-entrar login-entrar-${dirEntrada}` : ''}`}>
         <div className="login-panel-imagen">
           <img className="login-imagen" src={grupoDevelopers} alt="" aria-hidden="true" />
           <div className="login-imagen-vineta"></div>
@@ -431,8 +434,6 @@ function LoginPage() {
         </div>
         </div>
       </main>
-
-      <footer className="login-pie">© 2026 NexoraLabs · Plataforma de proyectos colaborativos</footer>
 
       <RecuperarPasswordModal mostrar={recuperando} onCerrar={() => setRecuperando(false)} emailInicial={email} />
     </div>

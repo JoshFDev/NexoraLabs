@@ -15,9 +15,10 @@
   z-index: 0;
   overflow: hidden;
   background:
-    radial-gradient(1000px 600px at 75% -20%, rgba(168, 85, 247, 0.2), transparent 60%),
-    radial-gradient(900px 500px at 15% 110%, rgba(109, 40, 217, 0.28), transparent 55%),
-    linear-gradient(135deg, var(--nx-fondo) 0%, #0f061e 100%);
+    radial-gradient(1100px 640px at 82% -18%, rgba(168, 85, 247, 0.25), transparent 60%),
+    radial-gradient(920px 560px at 6% 112%, rgba(109, 40, 217, 0.34), transparent 55%),
+    radial-gradient(760px 540px at 52% 50%, rgba(99, 102, 241, 0.12), transparent 60%),
+    linear-gradient(135deg, #17092b 0%, #261043 55%, #2a1247 100%);
 }
 
 .login-blob {
@@ -123,6 +124,68 @@
 
 .login-pagina .login-tarjeta-doble.login-tarjeta-cerrar {
   animation: cerrar-panel 0.2s ease forwards;
+}
+
+/* ----- Transición deslizante entre auth pages ----- */
+.login-pagina .login-tarjeta-doble.login-tarjeta-salir {
+  transform-origin: center;
+  animation: salir-slide 0.45s cubic-bezier(0.55, 0, 0.55, 0.2) forwards;
+}
+
+.login-pagina .login-tarjeta-doble.login-salir-izq {
+  animation-name: salir-izq;
+}
+
+.login-pagina .login-tarjeta-doble.login-salir-der {
+  animation-name: salir-der;
+}
+
+.login-pagina .login-tarjeta-doble.login-entrar {
+  animation: entrar-slide 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.login-pagina .login-tarjeta-doble.login-entrar-izq {
+  animation-name: entrar-izq;
+}
+
+.login-pagina .login-tarjeta-doble.login-entrar-der {
+  animation-name: entrar-der;
+}
+
+@keyframes salir-izq {
+  to {
+    transform: translateX(-110%);
+    opacity: 0.35;
+  }
+}
+
+@keyframes salir-der {
+  to {
+    transform: translateX(110%);
+    opacity: 0.35;
+  }
+}
+
+@keyframes entrar-izq {
+  from {
+    transform: translateX(-110%);
+    opacity: 0.35;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes entrar-der {
+  from {
+    transform: translateX(110%);
+    opacity: 0.35;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
 
 .login-panel-imagen {

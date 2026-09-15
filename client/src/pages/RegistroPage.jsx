@@ -1,10 +1,18 @@
 import { useEffect, useRef, useState } from 'react';
 import { Form, Button, Alert, InputGroup, Spinner } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import api from '../api';
+import redesDos from '../assets/redesDos.jpg';
 import VerificarCorreo from '../components/VerificarCorreo';
 import './LoginPage.css';
 import './RegistroPage.css';
+
+const IconoUsuario = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" width="30" height="30">
+    <circle cx="12" cy="8.2" r="4" />
+    <path d="M4.5 20c1.2-3.4 4-5 7.5-5s6.3 1.6 7.5 5" />
+  </svg>
+);
 
 const IconoRol = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="17" height="17">
@@ -56,6 +64,7 @@ function RegistroPage() {
   const [form, setForm] = useState({
     nombre: '',
     apellido_paterno: '',
+    apellido_materno: '',
     email: '',
     password: '',
     rol: 'estudiante'
@@ -67,6 +76,7 @@ function RegistroPage() {
   const [listo, setListo] = useState(false);
   const [agitar, setAgitar] = useState(false);
   const [cerrando, setCerrando] = useState(false);
+  const [salida, setSalida] = useState('');
   const [verificando, setVerificando] = useState(false);
   const [emailPendiente, setEmailPendiente] = useState('');
   const [errores, setErrores] = useState({ nombre: '', apellido_paterno: '', email: '', password: '' });
@@ -75,6 +85,8 @@ function RegistroPage() {
   const correoTimer = useRef(null);
   const correoSecuencia = useRef(0);
   const navigate = useNavigate();
+  const location = useLocation();
+  const dirEntrada = location.state?.dir;
 
   const emailValido = form.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email);
 
@@ -159,13 +171,13 @@ function RegistroPage() {
 
   const irALogin = (e) => {
     e.preventDefault();
-    setCerrando(true);
-    setTimeout(() => navigate('/login'), 460);
+    setSalida('der');
+    setTimeout(() => navigate('/login', { state: { dir: 'izq' } }), 430);
   };
 
   return (
     <div className="login-pagina">
-      <div className="login-fondo registro-fondo">
+      <div className="login-fondo">
         <span className="login-blob blob-u"></span>
         <span className="login-blob blob-d"></span>
         <span className="login-blob blob-l"></span>
@@ -173,224 +185,239 @@ function RegistroPage() {
         <span className="login-vineta"></span>
       </div>
 
-      <main className={cerrando ? 'login-tarjeta login-tarjeta-cerrar' : 'login-tarjeta'}>
-        <div className="login-encabezado">
-          <div
-            className="registro-firma"
-            role="img"
-            aria-label="NexoraLabs — Conecta, aprende, crea, avanza"
-            onContextMenu={(e) => e.preventDefault()}
-            onDragStart={(e) => e.preventDefault()}
-            onCopy={(e) => e.preventDefault()}
-          />
-          <h1>{verificando ? 'Verifica tu correo' : 'Crea tu cuenta'}</h1>
-          {verificando && (
-            <p className="login-subtitulo">
-              Ingresa el código que enviamos a <strong>{emailPendiente}</strong> para activar tu cuenta.
-            </p>
-          )}
-        </div>
-
-        {error && !verificando && (
-          <Alert variant="danger" className="login-alerta">
-            <strong>No pudimos crear tu cuenta.</strong> {error}
-          </Alert>
-        )}
-
-        {verificando ? (
-          <VerificarCorreo email={emailPendiente} onVerificado={verificado} />
-        ) : (
-          <Form onSubmit={submit} className={agitar ? 'login-agitar' : ''} noValidate>
-            <div className="registro-fila">
-              <Form.Group className="mb-2" controlId="nombre">
-                <Form.Label className="login-label">Nombre</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Tu nombre"
-                  value={form.nombre}
-                  onChange={cambiar('nombre')}
-                  autoComplete="given-name"
-                  autoFocus
-                  disabled={cargando || listo}
-                  className={errores.nombre ? 'login-control-invalido' : ''}
-                  aria-invalid={!!errores.nombre}
-                  required
-                />
-                {errores.nombre && (
-                  <Form.Text className="login-error-campo" role="alert">
-                    <IconoEstado valido={false} /> {errores.nombre}
-                  </Form.Text>
-                )}
-              </Form.Group>
-
-              <Form.Group className="mb-2" controlId="apellido_paterno">
-                <Form.Label className="login-label">Apellido</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Tu apellido"
-                  value={form.apellido_paterno}
-                  onChange={cambiar('apellido_paterno')}
-                  autoComplete="family-name"
-                  disabled={cargando || listo}
-                  className={errores.apellido_paterno ? 'login-control-invalido' : ''}
-                  aria-invalid={!!errores.apellido_paterno}
-                  required
-                />
-                {errores.apellido_paterno && (
-                  <Form.Text className="login-error-campo" role="alert">
-                    <IconoEstado valido={false} /> {errores.apellido_paterno}
-                  </Form.Text>
-                )}
-              </Form.Group>
+      <main className={`login-tarjeta login-tarjeta-doble${salida ? ` login-tarjeta-salir login-salir-${salida}` : cerrando ? ' login-tarjeta-cerrar' : ''}${dirEntrada ? ` login-entrar login-entrar-${dirEntrada}` : ''}`}>
+        <div className="login-panel-morado">
+          <div className="login-panel-form">
+            <div className="login-encabezado">
+              <span className="login-icono-usuario" aria-hidden="true">
+                <IconoUsuario />
+              </span>
+              <h1>{verificando ? 'Verifica tu correo' : 'Crea tu cuenta'}</h1>
+              {verificando ? (
+                <p className="login-subtitulo">
+                  Ingresa el código que enviamos a <strong>{emailPendiente}</strong> para activar tu cuenta.
+                </p>
+              ) : (
+                <p>Únete a NexoraLabs y empieza a colaborar</p>
+              )}
             </div>
 
-            <Form.Group className="mb-2" controlId="email">
-              <Form.Label className="login-label">Correo electrónico</Form.Label>
-              <InputGroup>
-                <InputGroup.Text className="login-icono-prefijo">
-                  <IconoCorreo />
-                </InputGroup.Text>
-                <Form.Control
-                  type="email"
-                  placeholder="Ingresa tu correo"
-                  value={form.email}
-                  onChange={cambiar('email')}
-                  autoComplete="email"
-                  ref={emailRef}
-                  disabled={cargando || listo}
-                  className={errores.email ? 'login-control-invalido' : ''}
-                  aria-invalid={!!errores.email}
-                  required
-                />
-                {form.email && (
-                  <InputGroup.Text className={emailValido ? 'login-estado-valido' : 'login-estado-invalido'}>
-                    <IconoEstado valido={emailValido} />
-                  </InputGroup.Text>
-                )}
-              </InputGroup>
-              {emailValido && correoEstado && (
-                <Form.Text
-                  className={`login-correo-${correoEstado.cargando ? 'verificando' : correoEstado.estado === 'valido' ? 'ok' : correoEstado.estado === 'invalido' ? 'error' : correoEstado.estado ? 'aviso' : 'aviso'}`}
-                  role={correoEstado.estado === 'invalido' ? 'alert' : undefined}
-                >
-                  {correoEstado.cargando ? (
-                    <>
-                      <Spinner animation="border" size="sm" className="me-1" /> Verificando este correo…
-                    </>
-                  ) : correoEstado.estado === 'valido' ? (
-                    <>
-                      <IconoEstado valido /> Este correo está listo para usarse.
-                    </>
-                  ) : correoEstado.estado === 'invalido' ? (
-                    <>
-                      <IconoEstado valido={false} /> Este correo no parece existir. Escríbelo bien o prueba otro.
-                    </>
-                  ) : correoEstado.estado === 'desechable' ? (
-                    <>Este parece ser un correo desechable; no podrás recuperar tu cuenta si lo pierdes.</>
-                  ) : correoEstado.estado === 'riesgoso' ? (
-                    <>Este correo luce riesgoso. Verifica que realmente sea tuyo.</>
-                  ) : correoEstado.error ? (
-                    <>No pudimos verificar este correo en este momento.</>
-                  ) : (
-                    <>No pudimos confirmar este correo; continúa solo si es tuyo.</>
+            {error && !verificando && (
+              <Alert variant="danger" className="login-alerta">
+                <strong>No pudimos crear tu cuenta.</strong> {error}
+              </Alert>
+            )}
+
+            {verificando ? (
+              <VerificarCorreo email={emailPendiente} onVerificado={verificado} />
+            ) : (
+              <Form onSubmit={submit} className={agitar ? 'login-agitar' : ''} noValidate>
+                <div className="registro-fila">
+                  <Form.Group className="mb-2" controlId="nombre">
+                    <Form.Label className="login-label">Nombre</Form.Label>
+                    <Form.Control
+                      type="text"
+                      placeholder="Tu nombre"
+                      value={form.nombre}
+                      onChange={cambiar('nombre')}
+                      autoComplete="given-name"
+                      autoFocus
+                      disabled={cargando || listo}
+                      className={errores.nombre ? 'login-control-invalido' : ''}
+                      aria-invalid={!!errores.nombre}
+                      required
+                    />
+                    {errores.nombre && (
+                      <Form.Text className="login-error-campo" role="alert">
+                        <IconoEstado valido={false} /> {errores.nombre}
+                      </Form.Text>
+                    )}
+                  </Form.Group>
+
+                  <Form.Group className="mb-2" controlId="apellido_paterno">
+                    <Form.Label className="login-label">Apellido Paterno</Form.Label>
+                    <Form.Control
+                      type="text"
+                      placeholder="Tu apellido"
+                      value={form.apellido_paterno}
+                      onChange={cambiar('apellido_paterno')}
+                      autoComplete="family-name"
+                      disabled={cargando || listo}
+                      className={errores.apellido_paterno ? 'login-control-invalido' : ''}
+                      aria-invalid={!!errores.apellido_paterno}
+                      required
+                    />
+                    {errores.apellido_paterno && (
+                      <Form.Text className="login-error-campo" role="alert">
+                        <IconoEstado valido={false} /> {errores.apellido_paterno}
+                      </Form.Text>
+                    )}
+                  </Form.Group>
+                </div>
+
+                <Form.Group className="mb-2" controlId="email">
+                  <Form.Label className="login-label">Correo electrónico</Form.Label>
+                  <InputGroup>
+                    <InputGroup.Text className="login-icono-prefijo">
+                      <IconoCorreo />
+                    </InputGroup.Text>
+                    <Form.Control
+                      type="email"
+                      placeholder="Ingresa tu correo"
+                      value={form.email}
+                      onChange={cambiar('email')}
+                      autoComplete="email"
+                      ref={emailRef}
+                      disabled={cargando || listo}
+                      className={errores.email ? 'login-control-invalido' : ''}
+                      aria-invalid={!!errores.email}
+                      required
+                    />
+                    {form.email && (
+                      <InputGroup.Text className={emailValido ? 'login-estado-valido' : 'login-estado-invalido'}>
+                        <IconoEstado valido={emailValido} />
+                      </InputGroup.Text>
+                    )}
+                  </InputGroup>
+                  {emailValido && correoEstado && (
+                    <Form.Text
+                      className={`login-correo-${correoEstado.cargando ? 'verificando' : correoEstado.estado === 'valido' ? 'ok' : correoEstado.estado === 'invalido' ? 'error' : correoEstado.estado ? 'aviso' : 'aviso'}`}
+                      role={correoEstado.estado === 'invalido' ? 'alert' : undefined}
+                    >
+                      {correoEstado.cargando ? (
+                        <>
+                          <Spinner animation="border" size="sm" className="me-1" /> Verificando este correo…
+                        </>
+                      ) : correoEstado.estado === 'valido' ? (
+                        <>
+                          <IconoEstado valido /> Este correo está listo para usarse.
+                        </>
+                      ) : correoEstado.estado === 'invalido' ? (
+                        <>
+                          <IconoEstado valido={false} /> Este correo no parece existir. Escríbelo bien o prueba otro.
+                        </>
+                      ) : correoEstado.estado === 'desechable' ? (
+                        <>Este parece ser un correo desechable; no podrás recuperar tu cuenta si lo pierdes.</>
+                      ) : correoEstado.estado === 'riesgoso' ? (
+                        <>Este correo luce riesgoso. Verifica que realmente sea tuyo.</>
+                      ) : correoEstado.error ? (
+                        <>No pudimos verificar este correo en este momento.</>
+                      ) : (
+                        <>No pudimos confirmar este correo; continúa solo si es tuyo.</>
+                      )}
+                    </Form.Text>
                   )}
-                </Form.Text>
-              )}
-              {errores.email && (
-                <Form.Text className="login-error-campo" role="alert">
-                  <IconoEstado valido={false} /> {errores.email}
-                </Form.Text>
-              )}
-            </Form.Group>
+                  {errores.email && (
+                    <Form.Text className="login-error-campo" role="alert">
+                      <IconoEstado valido={false} /> {errores.email}
+                    </Form.Text>
+                  )}
+                </Form.Group>
 
-            <Form.Group className="mb-2" controlId="password">
-              <Form.Label className="login-label">Contraseña</Form.Label>
-              <InputGroup>
-                <InputGroup.Text className="login-icono-prefijo">
-                  <IconoCandado />
-                </InputGroup.Text>
-                <Form.Control
-                  type={mostrarPassword ? 'text' : 'password'}
-                  placeholder="Mínimo 8 caracteres"
-                  value={form.password}
-                  onChange={cambiar('password')}
-                  onKeyUp={detectarCaps}
-                  autoComplete="new-password"
-                  disabled={cargando || listo}
-                  className={errores.password ? 'login-control-invalido' : ''}
-                  aria-invalid={!!errores.password}
-                  required
-                />
-                <Button
-                  variant="outline-light"
-                  className="login-toggle-password"
-                  onClick={() => setMostrarPassword(!mostrarPassword)}
-                  disabled={cargando || listo}
-                  aria-label={mostrarPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
-                >
-                  <IconoOjo abierto={mostrarPassword} />
+                <Form.Group className="mb-2" controlId="password">
+                  <Form.Label className="login-label">Contraseña</Form.Label>
+                  <InputGroup>
+                    <InputGroup.Text className="login-icono-prefijo">
+                      <IconoCandado />
+                    </InputGroup.Text>
+                    <Form.Control
+                      type={mostrarPassword ? 'text' : 'password'}
+                      placeholder="Mínimo 8 caracteres"
+                      value={form.password}
+                      onChange={cambiar('password')}
+                      onKeyUp={detectarCaps}
+                      autoComplete="new-password"
+                      disabled={cargando || listo}
+                      className={errores.password ? 'login-control-invalido' : ''}
+                      aria-invalid={!!errores.password}
+                      required
+                    />
+                    <Button
+                      variant="outline-light"
+                      className="login-toggle-password"
+                      onClick={() => setMostrarPassword(!mostrarPassword)}
+                      disabled={cargando || listo}
+                      aria-label={mostrarPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                    >
+                      <IconoOjo abierto={mostrarPassword} />
+                    </Button>
+                  </InputGroup>
+                  {capsActivo && <small className="login-aviso-caps">⚠ La tecla Bloq Mayús está activada</small>}
+                  {form.password && form.password.length < 8 && (
+                    <small className="login-aviso-minimo">La contraseña debe tener al menos 8 caracteres</small>
+                  )}
+                  {errores.password && (
+                    <Form.Text className="login-error-campo" role="alert">
+                      <IconoEstado valido={false} /> {errores.password}
+                    </Form.Text>
+                  )}
+                </Form.Group>
+
+                <Form.Group className="mb-1" controlId="rol">
+                  <Form.Label className="login-label">Perfil</Form.Label>
+                  <InputGroup>
+                    <InputGroup.Text className="login-icono-prefijo">
+                      <IconoRol />
+                    </InputGroup.Text>
+                    <Form.Select
+                      value={form.rol}
+                      onChange={cambiar('rol')}
+                      className="login-select"
+                      disabled={cargando || listo}
+                    >
+                      {roles.map((r) => (
+                        <option key={r} value={r}>
+                          {r.charAt(0).toUpperCase() + r.slice(1)}
+                        </option>
+                      ))}
+                    </Form.Select>
+                  </InputGroup>
+                </Form.Group>
+
+                <Button type="submit" className="login-boton w-100 mt-3" disabled={cargando || listo}>
+                  {listo ? (
+                    <>
+                      <span className="login-exito-icono">✓</span>¡Cuenta creada!
+                    </>
+                  ) : cargando ? (
+                    <>
+                      <Spinner as="span" animation="border" size="sm" className="me-2" />
+                      Creando cuenta...
+                    </>
+                  ) : (
+                    'Crear cuenta'
+                  )}
                 </Button>
-              </InputGroup>
-              {capsActivo && <small className="login-aviso-caps">⚠ La tecla Bloq Mayús está activada</small>}
-              {form.password && form.password.length < 8 && (
-                <small className="login-aviso-minimo">La contraseña debe tener al menos 8 caracteres</small>
-              )}
-              {errores.password && (
-                <Form.Text className="login-error-campo" role="alert">
-                  <IconoEstado valido={false} /> {errores.password}
-                </Form.Text>
-              )}
-            </Form.Group>
+              </Form>
+            )}
 
-            <Form.Group className="mb-1" controlId="rol">
-              <Form.Label className="login-label">Perfil</Form.Label>
-              <InputGroup>
-                <InputGroup.Text className="login-icono-prefijo">
-                  <IconoRol />
-                </InputGroup.Text>
-                <Form.Select
-                  value={form.rol}
-                  onChange={cambiar('rol')}
-                  className="login-select"
-                  disabled={cargando || listo}
-                >
-                  {roles.map((r) => (
-                    <option key={r} value={r}>
-                      {r.charAt(0).toUpperCase() + r.slice(1)}
-                    </option>
-                  ))}
-                </Form.Select>
-              </InputGroup>
-            </Form.Group>
+            {!verificando && (
+              <p className="login-registro">
+                ¿Ya tienes cuenta?{' '}
+                <a href="/login" className="login-enlace-boton" onClick={irALogin}>
+                  Inicia sesión
+                </a>
+              </p>
+            )}
+          </div>
+        </div>
 
-            <Button type="submit" className="login-boton w-100 mt-3" disabled={cargando || listo}>
-              {listo ? (
-                <>
-                  <span className="login-exito-icono">✓</span>¡Cuenta creada!
-                </>
-              ) : cargando ? (
-                <>
-                  <Spinner as="span" animation="border" size="sm" className="me-2" />
-                  Creando cuenta...
-                </>
-              ) : (
-                'Crear cuenta'
-              )}
-            </Button>
-          </Form>
-        )}
-
-        {!verificando && (
-          <p className="login-registro">
-            ¿Ya tienes cuenta?{' '}
-            <a href="/login" className="login-enlace-boton" onClick={irALogin}>
-              Inicia sesión
-            </a>
-          </p>
-        )}
+        <div className="login-panel-imagen">
+          <img className="login-imagen" src={redesDos} alt="" aria-hidden="true" />
+          <div className="login-imagen-vineta"></div>
+          <div className="login-imagen-contenido">
+            <div
+              className="login-firma"
+              role="img"
+              aria-label="NexoraLabs"
+              onContextMenu={(e) => e.preventDefault()}
+              onDragStart={(e) => e.preventDefault()}
+              onCopy={(e) => e.preventDefault()}
+            />
+            <p className="login-imagen-lema">Conecta, aprende, crea, avanza</p>
+          </div>
+        </div>
       </main>
-
-      <footer className="login-pie">© 2026 NexoraLabs · Plataforma de proyectos colaborativos</footer>
     </div>
   );
 }
