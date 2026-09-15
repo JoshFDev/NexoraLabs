@@ -239,6 +239,12 @@ function LoginPage() {
         <div className="login-panel-morado">
           <div className="login-panel-form">
             <div className="login-encabezado">
+            <span className="login-icono-usuario" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" width="30" height="30">
+                <circle cx="12" cy="8.2" r="4" />
+                <path d="M4.5 20c1.2-3.4 4-5 7.5-5s6.3 1.6 7.5 5" />
+              </svg>
+            </span>
             <h1>{verificando ? 'Verifica tu correo' : 'Bienvenido'}</h1>
             {verificando ? (
               <p className="login-subtitulo">
@@ -376,18 +382,19 @@ function LoginPage() {
                 <span>o continúa con</span>
               </div>
               <div className="login-social-redes">
-                <Button variant="outline-light" onClick={() => social('Google')} aria-label="Iniciar sesión con Google">
-                  <IconoGoogle /> Google
+                <Button variant="outline-light" onClick={() => social('Google')} aria-label="Iniciar sesión con Google" title="Continuar con Google">
+                  <IconoGoogle />
                 </Button>
                 <Button
                   variant="outline-light"
                   onClick={() => social('LinkedIn')}
                   aria-label="Iniciar sesión con LinkedIn"
+                  title="Continuar con LinkedIn"
                 >
-                  <IconoLinkedIn /> LinkedIn
+                  <IconoLinkedIn />
                 </Button>
-                <Button variant="outline-light" onClick={() => social('GitHub')} aria-label="Iniciar sesión con GitHub">
-                  <IconoGitHub /> GitHub
+                <Button variant="outline-light" onClick={() => social('GitHub')} aria-label="Iniciar sesión con GitHub" title="Continuar con GitHub">
+                  <IconoGitHub />
                 </Button>
               </div>
             </div>

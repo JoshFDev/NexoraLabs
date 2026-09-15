@@ -106,7 +106,8 @@
 .login-tarjeta-doble {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  min-height: 100dvh;
+  height: 100dvh;
+  overflow: hidden;
 }
 
 /* La animación de entrada solo se ejecuta la primera vez por sesión.
@@ -137,7 +138,8 @@
   align-items: center;
   justify-content: center;
   padding: clamp(1.1rem, 4vw, 2.5rem);
-  min-height: 100dvh;
+  height: 100dvh;
+  overflow-y: auto;
 }
 
 .login-imagen {
@@ -242,6 +244,21 @@
 .login-encabezado {
   text-align: center;
   margin-bottom: 1.35rem;
+}
+
+/* Icono de usuario (SVG, no emoji) sobre "Bienvenido" */
+.login-icono-usuario {
+  width: 78px;
+  height: 78px;
+  margin: 0 auto 1rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--nx-brillo);
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.32), rgba(109, 40, 217, 0.22));
+  border: 1px solid rgba(168, 85, 247, 0.6);
+  box-shadow: 0 0 22px rgba(168, 85, 247, 0.35);
 }
 
 .login-firma {
@@ -571,30 +588,36 @@
 }
 
 .login-social-redes {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 0.7rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
 }
 
 .login-social-redes .btn {
-  font-size: 0.85rem;
-  font-weight: 600;
-  border-radius: 0.4rem;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: 50%;
   border: 1px solid rgba(237, 233, 255, 0.3);
   background: rgba(237, 233, 255, 0.06);
   color: var(--nx-brillo);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.55rem;
-  padding: 0.62rem 0.5rem;
-  min-height: 44px;
+  padding: 0;
+}
+
+.login-social-redes .btn svg {
+  width: 20px;
+  height: 20px;
 }
 
 .login-social-redes .btn:hover {
   background: rgba(168, 85, 247, 0.28);
   border-color: rgba(168, 85, 247, 0.6);
   color: #fff;
+  transform: translateY(-2px);
 }
 
 .login-social-nota {
