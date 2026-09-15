@@ -25,6 +25,7 @@
   border: 1.5px solid rgba(109, 40, 217, 0.25);
   box-shadow: 0 24px 48px rgba(109, 40, 217, 0.14);
   border-radius: 0.45rem;
+  padding: 1.6rem 1.6rem 1.4rem;
 }
 
 .perfil-encabezado {
@@ -313,6 +314,10 @@
 
   .perfil-paso-nombre {
     display: none;
+  }
+
+  .perfil-tarjeta {
+    padding: 1.2rem 1rem 1rem;
   }
 }
 
