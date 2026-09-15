@@ -36,6 +36,13 @@ NexoraLabs/
 │   ├── middleware/         # verifyToken, authorize
 │   ├── shared/             # Errores, notificaciones, utilidades
 │   └── tests/              # Pruebas con Jest + Supertest
+├── Dockerfile              # Receta de la imagen del backend (API)
+├── docker-compose.yml      # Orquesta api + client (+ mongo con profile "local")
+├── .dockerignore           # Archivos que NO entran al build de Docker
+├── client/
+│   ├── Dockerfile          # Receta del frontend (build + NGINX)
+│   ├── nginx.conf          # Config de NGINX (SPA, gzip)
+│   └── .dockerignore
 ├── .babelrc
 ├── .env.example
 └── package.json
@@ -94,6 +101,57 @@ pnpm dev
 - App: http://localhost:5173
 
 El cliente llama a la API mediante la variable `VITE_API_URL` (por defecto `http://localhost:3000`).
+
+## Docker (contenedores)
+
+Alternativa a la puesta en marcha manual: levanta todo el proyecto con contenedores (Docker Desktop + WSL2). Solo construye con un comando y sin instalar Node/MongoDB a mano.
+
+El `docker-compose.yml` define 3 servicios: `api` (backend), `client` (frontend servido por NGINX) y `mongo` (MongoDB local). El servicio `mongo` tiene un **profile** llamado `local`, que es el interruptor para elegir entre Atlas y base local.
+
+### Modo Atlas (base de datos en la nube, por defecto)
+
+Usa la `MONGO_URI` de tu `.env` y no levanta Mongo local:
+
+```
+docker compose up -d --build
+```
+
+### Modo Mongo local (contenedor DB)
+
+El prefijo `MONGO_URI=...` sobrescribe temporalmente al `.env` y enciende el contenedor `mongo`:
+
+```
+MONGO_URI=mongodb://mongo:27017/nexoralabs docker compose --profile local up -d --build
+```
+
+`mongo` es el nombre del servicio dentro de la red de Docker (no `localhost`). El volumen `mongo_data` persiste los datos aunque apagues o borres los contenedores.
+
+### Rutas en el navegador
+
+- App: http://localhost:5173
+- API: http://localhost:3000
+
+### Datos de ejemplo y otros comandos
+
+Sembrar datos demo dentro del contenedor (solo en modo local):
+
+```
+MONGO_URI=mongodb://mongo:27017/nexoralabs docker compose run --rm api pnpm run seed
+```
+
+Ver logs, detener y revisar la config resuelta:
+
+```
+docker compose logs -f api
+docker compose --profile local down
+docker compose config
+```
+
+Notas:
+
+- El `.env` no se copia dentro de las imagenes (esta en `.dockerignore`); Docker lo inyecta en tiempo de ejecucion con `env_file`.
+- El `client/Dockerfile` usa multi-stage: compila React a archivos estaticos y los sirve con NGINX, por lo que la imagen final es pequena.
+- Si los puertos `3000`, `5173` o `27017` estan ocupados (por `pnpm dev` o `mongod`), quita esos procesos antes de levantar Docker.
 
 ## Datos de ejemplo
 

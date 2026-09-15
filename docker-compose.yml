@@ -1,0 +1,48 @@
+name: nexoralabs
+
+services:
+  api:
+    build: .
+    container_name: nexoralabs-api
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      # El default apunta al contenedor mongo. Si tu .env define MONGO_URI
+      # (Atlas), docker compose la respeta. Con "docker compose config" lo ves.
+      MONGO_URI: ${MONGO_URI:-mongodb://mongo:27017/nexoralabs}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5173,http://localhost:3000}
+      PORT: ${PORT:-3000}
+    ports:
+      - "3000:3000"
+
+  client:
+    build:
+      context: ./client
+      args:
+        VITE_API_URL: http://localhost:3000
+    container_name: nexoralabs-client
+    restart: unless-stopped
+    ports:
+      - "5173:80"
+    depends_on:
+      - api
+
+  mongo:
+    image: mongo:7
+    container_name: nexoralabs-mongo
+    profiles: ["local"]
+    restart: unless-stopped
+    volumes:
+      - mongo_data:/data/db
+    ports:
+      - "27017:27017"
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+
+volumes:
+  mongo_data:
