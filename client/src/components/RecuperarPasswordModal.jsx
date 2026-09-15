@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Modal, Button, Alert, Spinner, Form } from 'react-bootstrap';
 import api from '../api';
+import electronicaJpg from '../assets/Electronica.jpg';
 import './RecuperarPasswordModal.css';
 
 // Modal para restablecer la contraseña olvidada.
@@ -72,11 +73,14 @@ function RecuperarPasswordModal({ mostrar, onCerrar, emailInicial = '' }) {
   };
 
   return (
-    <Modal show={mostrar} onHide={onCerrar} centered dialogClassName="recuperar-modal-dialog">
+    <Modal show={mostrar} onHide={onCerrar} centered dialogClassName="recuperar-modal-dialog" className="recuperar-modal">
       <Modal.Header closeButton className="border-0 px-4 pt-4">
         <Modal.Title className="proyectos-titulo">Recuperar contraseña</Modal.Title>
       </Modal.Header>
       <Modal.Body className="px-4 pb-4">
+        <div className="recuperar-banner">
+          <img src={electronicaJpg} alt="" aria-hidden="true" />
+        </div>
         {listo ? (
           <>
             <Alert variant="success" className="recuperar-aviso">

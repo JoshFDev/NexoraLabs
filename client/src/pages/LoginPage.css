@@ -6,6 +6,7 @@
   overflow: hidden;
   position: relative;
   color: var(--nx-brillo);
+  background-color: var(--nx-fondo);
 }
 
 /* ---------- Fondo animado ---------- */

@@ -17,7 +17,9 @@
     <title>NexoraLabs</title>
     <script>
       if (location.pathname === '/login' || location.pathname === '/registro') {
-        document.documentElement.style.background = '#1a0b2e';
+        var estilo = document.createElement('style');
+        estilo.textContent = 'html, body { background-color: #1a0b2e !important; }';
+        document.head.appendChild(estilo);
       }
     </script>
   </head>

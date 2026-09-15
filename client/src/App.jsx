@@ -29,7 +29,8 @@ function App() {
   useLayoutEffect(() => {
     window.scrollTo(0, 0);
     document.documentElement.scrollTop = 0;
-  }, [pathname]);
+    document.body.style.setProperty('background-color', esPaginaAuth ? '#1a0b2e' : '#f8f9fa', 'important');
+  }, [pathname, esPaginaAuth]);
 
   return (
     <>
